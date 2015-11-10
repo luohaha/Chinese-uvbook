@@ -173,4 +173,117 @@ void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t *buf, const struct soc
 只允许IPV6协议栈  
 在调用`uv_udp_bind`时，设置`UV_UDP_IPV6ONLY`标示，可以强制只使用ipv6。  
 
-多点传送
+组播  
+socket也支持组播，可以这么使用：  
+
+```
+UV_EXTERN int uv_udp_set_membership(uv_udp_t* handle,
+                                    const char* multicast_addr,
+                                    const char* interface_addr,
+                                    uv_membership membership);
+```
+
+其中`membership`可以为`UV_JOIN_GROUP`和`UV_LEAVE_GROUP`。  
+这里有一篇很好的关于组播的[文章](http://www.tldp.org/HOWTO/Multicast-HOWTO-2.html)。  
+可以使用`uv_udp_set_multicast_loop`修改本地的组播。  
+同样可以使用`uv_udp_set_multicast_ttl`修改组播数据报的生存时间。（设定生存时间可以防止数据报由于环路的原因，会出现无限循环的问题）。  
+
+###Querying DNS
+libuv提供了一个异步的DNS解决方案。它提供了自己的`getaddrinfo`。在回调函数中你可以像使用正常的socket操作一样。让我们来看一下例子：
+  
+####dns/main.c
+```
+int main() {
+    loop = uv_default_loop();
+
+    struct addrinfo hints;
+    hints.ai_family = PF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    hints.ai_flags = 0;
+
+    uv_getaddrinfo_t resolver;
+    fprintf(stderr, "irc.freenode.net is... ");
+    int r = uv_getaddrinfo(loop, &resolver, on_resolved, "irc.freenode.net", "6667", &hints);
+
+    if (r) {
+        fprintf(stderr, "getaddrinfo call error %s\n", uv_err_name(r));
+        return 1;
+    }
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+如果`uv_getaddrinfo`返回非零值，说明设置错误了，因此也不会激发回调函数。在函数返回后，所有的参数将会被回收和释放。主机地址，请求服务器地址，还有hints的结构都可以在[这里](http://nikhilm.github.io/uvbook/getaddrinfo)找到详细的说明。如果想使用同步请求，可以将回调函数设置为NULL。  
+
+在回调函数on_resolved中，你可以从`struct addrinfo(s)`链表中获取返回的IP，最后需要调用`uv_freeaddrinfo`回收掉链表。下面的例子演示了回调函数的内容。  
+
+####dns/main.c
+```
+void on_resolved(uv_getaddrinfo_t *resolver, int status, struct addrinfo *res) {
+    if (status < 0) {
+        fprintf(stderr, "getaddrinfo callback error %s\n", uv_err_name(status));
+        return;
+    }
+
+    char addr[17] = {'\0'};
+    uv_ip4_name((struct sockaddr_in*) res->ai_addr, addr, 16);
+    fprintf(stderr, "%s\n", addr);
+
+    uv_connect_t *connect_req = (uv_connect_t*) malloc(sizeof(uv_connect_t));
+    uv_tcp_t *socket = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
+    uv_tcp_init(loop, socket);
+
+    uv_tcp_connect(connect_req, socket, (const struct sockaddr*) res->ai_addr, on_connect);
+
+    uv_freeaddrinfo(res);
+}
+```
+
+libuv同样提供了DNS逆解析的函数[uv_getnameinfo](http://docs.libuv.org/en/v1.x/dns.html#c.uv_getnameinfo])。  
+
+###Network interfaces
+
+可以调用`uv_interface_addresses`获得系统的网络接口信息。下面这个简单的例子打印出所有可以获取的信息。这在服务器开始准备绑定IP地址的时候很有用。  
+
+####interfaces/main.c
+
+```
+#include <stdio.h>
+#include <uv.h>
+
+int main() {
+    char buf[512];
+    uv_interface_address_t *info;
+    int count, i;
+
+    uv_interface_addresses(&info, &count);
+    i = count;
+
+    printf("Number of interfaces: %d\n", count);
+    while (i--) {
+        uv_interface_address_t interface = info[i];
+
+        printf("Name: %s\n", interface.name);
+        printf("Internal? %s\n", interface.is_internal ? "Yes" : "No");
+        
+        if (interface.address.address4.sin_family == AF_INET) {
+            uv_ip4_name(&interface.address.address4, buf, sizeof(buf));
+            printf("IPv4 address: %s\n", buf);
+        }
+        else if (interface.address.address4.sin_family == AF_INET6) {
+            uv_ip6_name(&interface.address.address6, buf, sizeof(buf));
+            printf("IPv6 address: %s\n", buf);
+        }
+
+        printf("\n");
+    }
+
+    uv_free_interface_addresses(info, count);
+    return 0;
+}
+```
+
+`is_internal`可以用来表示是否是内部的IP。由于一个物理接口会有多个IP地址，所以每一次while循环的时候都会打印一次。  
+
+
