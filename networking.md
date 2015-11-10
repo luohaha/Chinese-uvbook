@@ -10,7 +10,7 @@ TCP是面向连接的，字节流协议，因此基于libuv的stream实现。
 ####server
 服务器端的建立流程如下：  
 1.```uv_tcp_init```建立tcp句柄。  
-2.```uv_tcp_bind```绑定。
+2.```uv_tcp_bind```绑定。  
 3.```uv_listen```建立监听，当有新的连接到来时，激活调用回调函数。  
 4.```uv_accept```接收链接。   
 5.使用stream处理来和客户端通信。  
@@ -129,4 +129,48 @@ int main() {
 ip地址为0.0.0.0，用来绑定所有的接口。255.255.255.255是一个广播地址，这也意味着数据报将往所有的子网接口中发送。端口号为0代表着由操作系统随机分配一个端口。
 ```
 
-首先，我们设置了一个接收的socket，端口号为68，作为DHCP客户端，然后开始从中读取数据。它会接收所有来自DHCP服务器的返回数据。我们设置了```UV_UDP_REUSEADDR```标记，用来和其他共享端口的 DHCP客户端和平共处。接着，我们设置了一个类似的发送socket，然后使用```uv_udp_send```向DHCP服务器（在67端口）
+首先，我们设置了一个接收的socket，端口号为68，作为DHCP客户端，然后开始从中读取数据。它会接收所有来自DHCP服务器的返回数据。我们设置了```UV_UDP_REUSEADDR```标记，用来和其他共享端口的 DHCP客户端和平共处。接着，我们设置了一个类似的发送socket，然后使用```uv_udp_send```向DHCP服务器（在67端口）发送广播。  
+
+设置广播发送是非常必要的，否则你会接收到`EACCES`[错误](http://beej.us/guide/bgnet/output/html/multipage/advanced.html#broadcast)。和此前一样，如果在读写中出错，返回码<0。  
+
+因为UDP不会建立连接，因此回调函数会接收到关于发送者的额外的信息。  
+
+当没有可读数据后，nread等于0。如果`addr`是`null`，它代表了没有可读数据（回调函数不会做任何处理）。如果不为null，则说明了从addr中接收到一个空的数据报。如果flag为```UV_UDP_PARTIAL```，则代表了内存分配的空间不够存放接收到的数据了，在这种情形下，操作系统会丢弃存不下的数据。  
+
+####udp-dhcp/main.c - Reading packets
+```
+void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t *buf, const struct sockaddr *addr, unsigned flags) {
+    if (nread < 0) {
+        fprintf(stderr, "Read error %s\n", uv_err_name(nread));
+        uv_close((uv_handle_t*) req, NULL);
+        free(buf->base);
+        return;
+    }
+
+    char sender[17] = { 0 };
+    uv_ip4_name((const struct sockaddr_in*) addr, sender, 16);
+    fprintf(stderr, "Recv from %s\n", sender);
+
+    // ... DHCP specific code
+    unsigned int *as_integer = (unsigned int*)buf->base;
+    unsigned int ipbin = ntohl(as_integer[4]);
+    unsigned char ip[4] = {0};
+    int i;
+    for (i = 0; i < 4; i++)
+        ip[i] = (ipbin >> i*8) & 0xff;
+    fprintf(stderr, "Offered IP %d.%d.%d.%d\n", ip[3], ip[2], ip[1], ip[0]);
+
+    free(buf->base);
+    uv_udp_recv_stop(req);
+}
+```
+
+####UDP Options
+
+生存时间（Time-to-live）  
+可以通过`uv_udp_set_ttl`更改生存时间。  
+
+只允许IPV6协议栈  
+在调用`uv_udp_bind`时，设置`UV_UDP_IPV6ONLY`标示，可以强制只使用ipv6。  
+
+多点传送
