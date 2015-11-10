@@ -92,3 +92,41 @@ uv_tcp_connect(connect, socket, dest, on_connect);
 你必须以管理员的权限运行udp-dhcp，因为它的端口号低于1024
 ```
 
+####udp-dhcp/main.c - Setup and send UDP packets
+```
+uv_loop_t *loop;
+uv_udp_t send_socket;
+uv_udp_t recv_socket;
+
+int main() {
+    loop = uv_default_loop();
+
+    uv_udp_init(loop, &recv_socket);
+    struct sockaddr_in recv_addr;
+    uv_ip4_addr("0.0.0.0", 68, &recv_addr);
+    uv_udp_bind(&recv_socket, (const struct sockaddr *)&recv_addr, UV_UDP_REUSEADDR);
+    uv_udp_recv_start(&recv_socket, alloc_buffer, on_read);
+
+    uv_udp_init(loop, &send_socket);
+    struct sockaddr_in broadcast_addr;
+    uv_ip4_addr("0.0.0.0", 0, &broadcast_addr);
+    uv_udp_bind(&send_socket, (const struct sockaddr *)&broadcast_addr, 0);
+    uv_udp_set_broadcast(&send_socket, 1);
+
+    uv_udp_send_t send_req;
+    uv_buf_t discover_msg = make_discover_msg();
+
+    struct sockaddr_in send_addr;
+    uv_ip4_addr("255.255.255.255", 67, &send_addr);
+    uv_udp_send(&send_req, &send_socket, &discover_msg, 1, (const struct sockaddr *)&send_addr, on_send);
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+#####note
+```
+ip地址为0.0.0.0，用来绑定所有的接口。255.255.255.255是一个广播地址，这也意味着数据报将往所有的子网接口中发送。端口号为0代表着由操作系统随机分配一个端口。
+```
+
+首先，我们设置了一个接收的socket，端口号为68，作为DHCP客户端，然后开始从中读取数据。它会接收所有来自DHCP服务器的返回数据。我们设置了```UV_UDP_REUSEADDR```标记，用来和其他共享端口的 DHCP客户端和平共处。接着，我们设置了一个类似的发送socket，然后使用```uv_udp_send```向DHCP服务器（在67端口）
