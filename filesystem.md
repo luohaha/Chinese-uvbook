@@ -357,10 +357,10 @@ void write_data(uv_stream_t *dest, size_t size, uv_buf_t buf, uv_write_cb cb) {
 }
 ```
 
-```write_data()```开辟了一块地址空间存储从缓冲区读取出来的数据，我们之所以这样做是因为，两个调用```write_data()```是相互独立的。为了保证它们不会因为读取速度的原因，由于共享一片缓冲区而损失掉独立性，所以才开辟了新的两块区域。当然这只是一个简单的例子，你可以使用更聪明的内存管理方法来实现它，比如引用计数或者缓冲区池等。  
+`write_data()`开辟了一块地址空间存储从缓冲区读取出来的数据，我们之所以这样做是因为，两个调用`write_data()`是相互独立的。为了保证它们不会因为读取速度的原因，由于共享一片缓冲区而损失掉独立性，所以才开辟了新的两块区域。当然这只是一个简单的例子，你可以使用更聪明的内存管理方法来实现它，比如引用计数或者缓冲区池等。    
 
-####WARNING
 
+#####WARNING
 ```
 你的程序在被其他的程序调用的过程中，有意无意地会向pipe写入数据，这样的话它会很容易被信号SIGPIPE终止掉，你最好加入这句：  
 signal(SIGPIPE, SIG_IGN)  
@@ -371,7 +371,7 @@ signal(SIGPIPE, SIG_IGN)
 #File change events
 
 所有的现代操作系统都会提供相应的API来监视文件和文件夹的变化。libuv同样包括了这样的文件监视库(**如Linux的inotify，Darwin的FSEvents，BSD的kqueue，Windows的ReadDirectoryChangesW， Solaris的event ports**)。这是libuv中很不协调的部分，因为在跨平台上实现这个功能很难。为了更好地说明，我们现在来写一个监视文件变化的命令： 
- 
+
 ```
 ./onchange <command> <file1> [file2] ...
 ```
