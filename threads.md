@@ -200,4 +200,48 @@ int main() {
 
 `uv_queue_work()`是一个便利的函数，它使得一个应用程序能够在不同的线程运行任务，当任务完成后，回调函数将会被触发。它看起来好像很简单，但是它真正吸引人的地方在于它能够使得任何第三方的库都能以event-loop的方式执行。当使用event-loop的时候，最重要的是不能让loop线程阻塞，或者是执行高cpu占用的程序，因为这样会使得loop慢下来，loop event的高效特性也不能得到很好地发挥。  
 
-然而，有很多现存的程序都带有阻塞的特性(比如最常见的I/O)
+然而，很多带有阻塞的特性的程序(比如最常见的I/O）使用开辟新线程来响应新请求(最经典的‘一个客户，一个线程模型’)。使用event-loop可以提供另一种实现的方式。libuv提供了一个很好的抽象，使得你能够很好地使用它。  
+
+下面有一个很好的例子，灵感来自<<[nodejs is cancer](http://teddziuba.github.io/2011/10/node-js-is-cancer.html)>>。我们将要执行fibonacci数列，并且睡眠一段时间，但是将阻塞和cpu占用时间长的任务分配到不同的线程，使得其不会阻塞event loop上的其他任务。  
+
+####queue-work/main.c - lazy fibonacci
+
+```
+void fib(uv_work_t *req) {
+    int n = *(int *) req->data;
+    if (random() % 2)
+        sleep(1);
+    else
+        sleep(3);
+    long fib = fib_(n);
+    fprintf(stderr, "%dth fibonacci is %lu\n", n, fib);
+}
+
+void after_fib(uv_work_t *req, int status) {
+    fprintf(stderr, "Done calculating %dth fibonacci\n", *(int *) req->data);
+}
+```
+
+任务函数很简单，在函数中也没有出现关于要在不同线程中执行的代码。uv_work_t是关键线索，你可以通过`void *data`传递任何数据，使用它来完成线程之间的沟通任务。但是要注意多线程之间的数据同步的问题。  
+
+触发器是`uv_queue_work`：  
+
+####queue-work/main.c
+
+```
+int main() {
+    loop = uv_default_loop();
+
+    int data[FIB_UNTIL];
+    uv_work_t req[FIB_UNTIL];
+    int i;
+    for (i = 0; i < FIB_UNTIL; i++) {
+        data[i] = i;
+        req[i].data = (void *) &data[i];
+        uv_queue_work(loop, &req[i], fib, after_fib);
+    }
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
