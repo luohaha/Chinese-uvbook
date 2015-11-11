@@ -59,7 +59,7 @@ uv_thread_join不像pthread_join那样，允许线线程通过第二个参数向
 
 ####Mutexes
 
-libuv上的互斥量函数与pthread上存在一一映射。  
+libuv上的互斥量函数与pthread上存在一一映射。如果对pthread上的mutex不是很了解可以看[这里](https://computing.llnl.gov/tutorials/pthreads/)。
 
 ####libuv mutex functions
 
@@ -73,6 +73,131 @@ UV_EXTERN void uv_mutex_unlock(uv_mutex_t* handle);
 
 `uv_mutex_init`与`uv_mutex_trylock`在成功执行后，返回0，或者在错误时，返回错误码。  
 
-如果libuv在编译的时候开启了调试模式，uv_mutex_destroy(), uv_mutex_lock() 和 uv_mutex_unlock()会在出错的地方调用`abort()`中断。类似的，uv_mutex_trylock()也同样会在错误发生时中断，除了EAGAIN和EBUSY。  
+如果libuv在编译的时候开启了调试模式，uv_mutex_destroy(), uv_mutex_lock() 和 uv_mutex_unlock()会在出错的地方调用`abort()`中断。类似的，uv_mutex_trylock()也同样会在错误发生时中断，除了EAGAIN和EBUSY这两个错误信息。  
 
-递归地调用互斥量函数在某些系统平台上是支持的，但是你不能太过度依赖。因为例如在BSD上递归地调用互斥量函数会返回错误，比如你准备su
+递归地调用互斥量函数在某些系统平台上是支持的，但是你不能太过度依赖。因为例如在BSD上递归地调用互斥量函数会返回错误，比如你准备使用互斥量函数给一个已经上锁的临界区再次上锁的时候，就会出错。比如，像下面这个例子：  
+
+```
+uv_mutex_lock(a_mutex);
+uv_thread_create(thread_id, entry, (void *)a_mutex);
+uv_mutex_lock(a_mutex);
+// more things here
+```
+
+在调试模式下，第二次调用`uv_mutex_lock()`会导致程序崩溃，或者是返回错误。  
+
+#####NOTE
+```
+在linux中是支持递归上锁的，但是在libuv的API中并未实现。
+```
+
+####Lock
+
+读写锁是更颗粒化的实现机制。两个读者线程可以同时从共享区中读取数据。当读者在读取数据时，写者不能获取写入。当写者在写入数据时，其他的写者或者读者都不能，写入或者读取共享区。读写锁在数据库操作中非常常见，下面是一个玩具式的例子：  
+
+####ocks/main.c - simple rwlocks
+
+```
+#include <stdio.h>
+#include <uv.h>
+
+uv_barrier_t blocker;
+uv_rwlock_t numlock;
+int shared_num;
+
+void reader(void *n)
+{
+    int num = *(int *)n;
+    int i;
+    for (i = 0; i < 20; i++) {
+        uv_rwlock_rdlock(&numlock);
+        printf("Reader %d: acquired lock\n", num);
+        printf("Reader %d: shared num = %d\n", num, shared_num);
+        uv_rwlock_rdunlock(&numlock);
+        printf("Reader %d: released lock\n", num);
+    }
+    uv_barrier_wait(&blocker);
+}
+
+void writer(void *n)
+{
+    int num = *(int *)n;
+    int i;
+    for (i = 0; i < 20; i++) {
+        uv_rwlock_wrlock(&numlock);
+        printf("Writer %d: acquired lock\n", num);
+        shared_num++;
+        printf("Writer %d: incremented shared num = %d\n", num, shared_num);
+        uv_rwlock_wrunlock(&numlock);
+        printf("Writer %d: released lock\n", num);
+    }
+    uv_barrier_wait(&blocker);
+}
+
+int main()
+{
+    uv_barrier_init(&blocker, 4);
+
+    shared_num = 0;
+    uv_rwlock_init(&numlock);
+
+    uv_thread_t threads[3];
+
+    int thread_nums[] = {1, 2, 1};
+    uv_thread_create(&threads[0], reader, &thread_nums[0]);
+    uv_thread_create(&threads[1], reader, &thread_nums[1]);
+
+    uv_thread_create(&threads[2], writer, &thread_nums[2]);
+
+    uv_barrier_wait(&blocker);
+    uv_barrier_destroy(&blocker);
+
+    uv_rwlock_destroy(&numlock);
+    return 0;
+}
+```
+
+试着来执行一下上面的程序，看读者有多少次会同步执行。在有多个写者的时候，调度器会给予他们高优先级。  
+
+我们同样会使用屏障来等待所有的线程都已经结束，最后再将屏障和锁一块回收。  
+
+####Others
+
+libuv同样支持[信号量](https://en.wikipedia.org/wiki/Semaphore_\(programming\))，[条件变量](https://en.wikipedia.org/wiki/Monitor_\(synchronization\)#Waiting_and_signaling)和[屏障](https://en.wikipedia.org/wiki/Barrier_\(computer_science\))，而且API的使用方法和pthread中的用法很类似。（如果你对上面的三个名词还不是很熟，可以看[这里](http://www.wuzesheng.com/?p=1668)，[这里](http://name5566.com/4535.html)，[这里](http://www.cnblogs.com/panhao/p/4653623.html)）。 
+
+ 还有，libuv提供了一个简单易用的函数`uv_once()`。多个线程调用这个函数，参数可以使用一个uv_once_t和一个指向特定函数的指针，最终只有一个线程能够执行这个特定函数。这个特定函数只会被调用一次：  
+ 
+ ```
+ /* Initialize guard */
+static uv_once_t once_only = UV_ONCE_INIT;
+
+int i = 0;
+
+void increment() {
+    i++;
+}
+
+void thread1() {
+    /* ... work */
+    uv_once(once_only, increment);
+}
+
+void thread2() {
+    /* ... work */
+    uv_once(once_only, increment);
+}
+
+int main() {
+    /* ... spawn threads */
+}
+ ```
+
+当所有的线程执行完毕，i==1。  
+
+再libuv的v0.11.11版本里，推出了uv_key_t结构和操作[线程局部存储TLS](http://baike.baidu.com/view/598128.htm)的API，使用方法同样和pthread类似。  
+
+###libuv work queue
+
+`uv_queue_work()`是一个便利的函数，它使得一个应用程序能够在不同的线程运行任务，当任务完成后，回调函数将会被触发。它看起来好像很简单，但是它真正吸引人的地方在于它能够使得任何第三方的库都能以event-loop的方式执行。当使用event-loop的时候，最重要的是不能让loop线程阻塞，或者是执行高cpu占用的程序，因为这样会使得loop慢下来，loop event的高效特性也不能得到很好地发挥。  
+
+然而，有很多现存的程序都带有阻塞的特性(比如最常见的I/O)
