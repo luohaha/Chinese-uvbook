@@ -341,3 +341,54 @@ int main() {
 ```
 
 ```
+
+####progress/main.c
+```
+void fake_download(uv_work_t *req) {
+    int size = *((int*) req->data);
+    int downloaded = 0;
+    double percentage;
+    while (downloaded < size) {
+        percentage = downloaded*100.0/size;
+        async.data = (void*) &percentage;
+        uv_async_send(&async);
+
+        sleep(1);
+        downloaded += (200+random())%1000; // can only download max 1000bytes/sec,
+                                           // but at least a 200;
+    }
+}
+
+```
+
+在上述的下载函数中，我们修改了进度显示器，使用`uv_async_send`发送进度信息。要记住：`uv_async_send`同样是非阻塞的，调用后会立即返回。  
+
+####progress/main.c
+
+```
+void print_progress(uv_async_t *handle) {
+    double percentage = *((double*) handle->data);
+    fprintf(stderr, "Downloaded %.2f%%\n", percentage);
+}
+```
+
+函数print_progress是标准的libuv模式，从监视器中抽取数据。  
+
+最后最重要的是把监视器回收。  
+
+####progress/main.c
+```
+void after(uv_work_t *req, int status) {
+    fprintf(stderr, "Download complete\n");
+    uv_close((uv_handle_t*) &async, NULL);
+}
+```
+
+在例子的最后，我们要说下data域的滥用，[bnoordhuis]()指出使用data域可能会存在线程安全问题，`uv_async_send()`事实上只是唤醒了event-loop。可以使用互斥量或者读写锁来保证执行顺序的正确性。  
+
+#####Warning
+
+```
+互斥量和读写锁不能在信号处理函数中正确工作，但是`uv_async_send`可以。
+```
+
