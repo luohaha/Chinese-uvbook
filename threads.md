@@ -222,7 +222,7 @@ void after_fib(uv_work_t *req, int status) {
 }
 ```
 
-任务函数很简单，在函数中也没有出现关于要在不同线程中执行的代码。uv_work_t是关键线索，你可以通过`void *data`传递任何数据，使用它来完成线程之间的沟通任务。但是要注意多线程之间的数据同步的问题。  
+任务函数很简单，也还没有运行在线程之上。uv_work_t是关键线索，你可以通过`void *data`传递任何数据，使用它来完成线程之间的沟通任务。但是要注意多线程之间的数据同步的问题。  
 
 触发器是`uv_queue_work`：  
 
@@ -245,3 +245,99 @@ int main() {
 }
 ```
 
+不同的线程都会调用fib函数，并且传入uv_work_t结构的参数，一旦fib函数返回，after_fib会被event loop中的线程调用，然后同样被传入uv_work_t结构的参数。  
+
+从libuv 0.9.4版后，添加了函数`uv_cancel()`。它可以用来取消工作队列中的任务。只有任务在还未被执行或者未执行完毕的时候可以被取消，否则`uv_cancel()`会失败。  
+
+当用户想要终止程序的时候，`uv_cancel()`可以用来清理任务队列中的等待执行的任务。例如，一个音乐播放器可以以歌手的名字对歌曲进行排序，如果这个时候用户想要退出这个程序，`uv_cancel()`就可以做到快速退出，而不用等待执行完任务队列后，再退出。  
+
+让我们对上述程序做一些修改，用来演示`uv_cancel()`的用法。首先让我们注册一个处理中断的函数。  
+
+####queue-cancel/main.c
+
+```
+int main() {
+    loop = uv_default_loop();
+
+    int data[FIB_UNTIL];
+    int i;
+    for (i = 0; i < FIB_UNTIL; i++) {
+        data[i] = i;
+        fib_reqs[i].data = (void *) &data[i];
+        uv_queue_work(loop, &fib_reqs[i], fib, after_fib);
+    }
+
+    uv_signal_t sig;
+    uv_signal_init(loop, &sig);
+    uv_signal_start(&sig, signal_handler, SIGINT);
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+`Ctrl+C`触发执行`uv_cancel()`回收任务队列中所有的任务，如果任务已经开始执行或者执行完毕，`uv_cancel()`返回0。  
+
+####queue-cancel/main.c  
+
+```
+void signal_handler(uv_signal_t *req, int signum)
+{
+    printf("Signal received!\n");
+    int i;
+    for (i = 0; i < FIB_UNTIL; i++) {
+        uv_cancel((uv_req_t*) &fib_reqs[i]);
+    }
+    uv_signal_stop(req);
+}
+```
+
+对于已经成功取消的任务，他的回调函数的参数status会被设置为`UV_ECANCELED`。  
+
+####queue-cancel/main.c
+
+```
+void after_fib(uv_work_t *req, int status) {
+    if (status == UV_ECANCELED)
+        fprintf(stderr, "Calculation of %d cancelled.\n", *(int *) req->data);
+}
+```
+
+`uv_cancel()`函数同样可以用在`uv_fs_t`和`uv_getaddrinfo_t`请求上。对于一系列的文件系统操作函数来说，`uv_fs_t.errorno`会同样被设置为`UV_ECANCELED`。  
+
+#####Tip
+
+```
+一个良好设计的程序，应该能够终止一个已经开始运行的长耗时任务。要实现这种功能，任务应该周期性地检查一个
+```
+
+###Inter-thread communication
+
+很多时候，你希望正在运行的线程之间能够相互发送消息。例如你在运行一个持续时间长的任务（可能使用uv_queue_work），但是你需要在主线程中监视它的进度情况。下面有一个简单的例子，演示了一个下载管理程序向用户展示各个下载线程的进度。  
+
+####progress/main.c
+
+```
+uv_loop_t *loop;
+uv_async_t async;
+
+int main() {
+    loop = uv_default_loop();
+
+    uv_work_t req;
+    int size = 10240;
+    req.data = (void*) &size;
+
+    uv_async_init(loop, &async, print_progress);
+    uv_queue_work(loop, &req, fake_download, after);
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+因为异步的线程通信是基于event-loop的，所以所有的线程都可以是发送方，但是只有在event-loop上的线程可以是接收方（或者说event-loop是接收方）。在上述的代码中，当异步监视者接收到信号的时候，libuv会激发回调函数（print_progress）。  
+
+#####WARNING
+
+```
+
+```
