@@ -408,14 +408,14 @@ int main(int argc, char **argv) {
   UV_FS_EVENT_RECURSIVE = 4
 ```
 
-```UV_FS_EVENT_RECURSIVE```可以在支持的系统平台上递归地监视子文件夹。  
-在回调函数```run_command()```中，接收的参数如下：  
-1.```uv_fs_event_t *handle```-句柄。里面的path保存了发生改变的文件的地址。  
-2.```const char *filename```-发生改变的文件名。   
-3.```int flags``` -```UV_RENAME```名字改变，```UV_CHANGE```内容改变。   
-4.```int status```－当前为0.
+`UV_FS_EVENT_RECURSIVE`可以在支持的系统平台上递归地监视子文件夹。  
+在回调函数`run_command()`中，接收的参数如下：  
+1.`uv_fs_event_t *handle`-句柄。里面的path保存了发生改变的文件的地址。  
+2.`const char *filename`-发生改变的文件名。   
+3.`int flags` -`UV_RENAME`名字改变，`UV_CHANGE`内容改变。   
+4.`int status`－当前为0.
 
-在我们的例子中，简单地打印参数和调用``system()``.
+在我们的例子中，简单地打印参数和调用`system()`.
 
 ####onchange/main.c - file change notification callback
 ```
