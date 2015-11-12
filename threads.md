@@ -339,7 +339,7 @@ int main() {
 #####WARNING
 
 ```
-
+应该注意: 消息的发送是异步的,回调函数应该在另外一个线程调用了uv_async_send后立即被调用, 或者在稍后的某个时刻被调用. libuv也有可能多次调用 uv_async_send，但只调用了一次回调函数. 唯一可以保证的是: 线程在调用uv_async_send之后回调函数可至少被调用一次. 如果你没有未调用的 uv_async_send, 那么回调函数也不会被调用. 如果你调用了两次(以上)的 uv_async_send, 而 libuv 暂时还没有机会运行回调函数, 则libuv可能会在多次调用 uv_async_send 后只调用一次回调函数, 你的回调函数绝对不会在一次事件中被调用两次(或多次)。
 ```
 
 ####progress/main.c
@@ -384,7 +384,7 @@ void after(uv_work_t *req, int status) {
 }
 ```
 
-在例子的最后，我们要说下data域的滥用，[bnoordhuis]()指出使用data域可能会存在线程安全问题，`uv_async_send()`事实上只是唤醒了event-loop。可以使用互斥量或者读写锁来保证执行顺序的正确性。  
+在例子的最后，我们要说下data域的滥用，[bnoordhuis](https://github.com/bnoordhuis)指出使用data域可能会存在线程安全问题，`uv_async_send()`事实上只是唤醒了event-loop。可以使用互斥量或者读写锁来保证执行顺序的正确性。  
 
 #####Warning
 
@@ -392,3 +392,21 @@ void after(uv_work_t *req, int status) {
 互斥量和读写锁不能在信号处理函数中正确工作，但是`uv_async_send`可以。
 ```
 
+一种需要使用`uv_async_send`的场景是，当调用需要线程交互的库时。例如，举一个在nodejs中V8引擎的例子，上下文和对象都是与v8引擎的线程绑定的，从另一个线程中，直接向v8请求数据会导致返回不确定的结果。但是，考虑到现在很多nodejs的模块都是和第三方库绑定的，可以像下面一样，解决这个问题：  
+
+1.在node中，第三方库会建立javascript的回调函数，以便回调函数被调用时，能够返回更多的信息。
+  
+```
+var lib = require('lib');
+lib.on_progress(function() {
+    console.log("Progress");
+});
+
+lib.do();
+
+// do other stuff
+```
+
+2.`lib.do`应该是非阻塞的，但是第三方库却是阻塞的，所以需要调用`uv_queue_work`函数。  
+3.在另外一个线程中完成任务想要调用progress的回调函数，但是不能直接与v8通信，所以需要`uv_async_send`函数。  
+4.在主线程（v8线程）中调用的异步回调函数，会在v8的配合下执行javscript的回调函数。（也就是说，主线程会调用回调函数，并且提供v8解析javascript的功能，以便其完成任务）。
