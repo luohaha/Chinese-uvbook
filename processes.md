@@ -278,3 +278,151 @@ int main() {
 
 这时你启动proc-streams，也就是在main中产生一个执行test的子进程，你只会看到“This is stderr”。你可以试着设置stdout也继承父进程。  
 
+同样可以把上述方法用于流的重定向。比如，把flag设为`UV_INHERIT_STREAM`，然后再设置父进程中的`data.stream`，这时子进程只会把这个stream当成是标准的I/O。这可以用来实现，例如[CGI](https://en.wikipedia.org/wiki/Common_Gateway_Interface)。  
+
+一个简单的CGI脚本的例子如下：  
+
+####cgi/tick.c
+
+```
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+    int i;
+    for (i = 0; i < 10; i++) {
+        printf("tick\n");
+        fflush(stdout);
+        sleep(1);
+    }
+    printf("BOOM!\n");
+    return 0;
+}
+```
+
+CGI服务器用到了这章和网络那章的知识，所以每一个client在中断连接后，都会被发送tick。  
+
+####cgi/main.c
+
+```
+void on_new_connection(uv_stream_t *server, int status) {
+    if (status == -1) {
+        // error!
+        return;
+    }
+
+    uv_tcp_t *client = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
+    uv_tcp_init(loop, client);
+    if (uv_accept(server, (uv_stream_t*) client) == 0) {
+        invoke_cgi_script(client);
+    }
+    else {
+        uv_close((uv_handle_t*) client, NULL);
+    }
+```
+
+上述代码中，我们接受了连接，并把socket（流）传递给`invoke_cgi_script`。  
+
+####cgi/main.c
+
+```
+  args[1] = NULL;
+
+    /* ... finding the executable path and setting up arguments ... */
+
+    options.stdio_count = 3;
+    uv_stdio_container_t child_stdio[3];
+    child_stdio[0].flags = UV_IGNORE;
+    child_stdio[1].flags = UV_INHERIT_STREAM;
+    child_stdio[1].data.stream = (uv_stream_t*) client;
+    child_stdio[2].flags = UV_IGNORE;
+    options.stdio = child_stdio;
+
+    options.exit_cb = cleanup_handles;
+    options.file = args[0];
+    options.args = args;
+
+    // Set this so we can close the socket after the child process exits.
+    child_req.data = (void*) client;
+    int r;
+    if ((r = uv_spawn(loop, &child_req, &options))) {
+        fprintf(stderr, "%s\n", uv_strerror(r));
+```
+
+cgi的`stdout`被绑定到socket上，所以无论tick脚本程序打印什么，都会发送到client端。通过使用进程，我们能够很好地处理读写并发操作，而且用起来也很方便。但是要记得这么做，是很浪费资源的。  
+
+###Pipes
+
+libuv的`uv_pipe_t`结构可能会让一些unix程序员产生困惑，因为它像魔术般变幻出`|`和[`pipe(7)`](http://man7.org/linux/man-pages/man7/pipe.7.html)。但这里的`uv_pipe_t`并不是IPC机制里的匿名管道（在IPC里，pipe是匿名管道，只允许父子进程之间通信。FIFO则允许没有亲戚关系的进程间通信，显然llibuv里的`uv_pipe_t`不是第一种）。`uv_pipe_t`背后有[unix本地socket](http://man7.org/linux/man-pages/man7/unix.7.html)或者[windows实名管道](https://msdn.microsoft.com/en-us/library/windows/desktop/aa365590\(v=vs.85\).aspx)的支持，可以实现多进程间的通信。下面会具体讨论。  
+
+####Parent-child IPC
+
+父进程与子进程可以通过单工或者双工管道通信，获得管道可以通过设置`uv_stdio_container_t.flags`为`UV_CREATE_PIPE`，`UV_READABLE_PIPE`或者`UV_WRITABLE_PIPE`的按位或的值。上述的读／写标记是对于子进程而言的。  
+
+####Arbitrary process IPC
+
+既然本地socket具有确定的名称，而且是以文件系统上的位置来标示的（例如，unix中socket是文件的一种存在形式），那么它就可以用来在不相关的进程间完成通信任务。被开源桌面环境使用的[`D-BUS`系统](http://www.freedesktop.org/wiki/Software/dbus/)也是使用了本地socket来作为事件通知的，例如，当消息来到，或者检测到硬件的时候，各种应用程序会被通知到。mysql服务器也运行着一个本地socket，等待客户端的访问。  
+
+当使用本地socket的时候，客户端／服务器模型通常和之前类似。在完成初始化后，发送和接受消息的方法和之前的tcp类似，接下来我们同样适用echo服务器的例子来说明。  
+
+####pipe-echo-server/main.c
+
+```
+int main() {
+    loop = uv_default_loop();
+
+    uv_pipe_t server;
+    uv_pipe_init(loop, &server, 0);
+
+    signal(SIGINT, remove_sock);
+
+    int r;
+    if ((r = uv_pipe_bind(&server, "echo.sock"))) {
+        fprintf(stderr, "Bind error %s\n", uv_err_name(r));
+        return 1;
+    }
+    if ((r = uv_listen((uv_stream_t*) &server, 128, on_new_connection))) {
+        fprintf(stderr, "Listen error %s\n", uv_err_name(r));
+        return 2;
+    }
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+我们把socket命名为echo.sock，意味着它将会在本地文件夹中被创造。对于stream API来说，本地socekt表现得和tcp的socket差不多。你可以使用socat测试一下服务器：  
+
+```
+$ socat - /path/to/socket
+```
+
+客户端如果想要和服务器端连接的话，应该使用：  
+
+```
+void uv_pipe_connect(uv_connect_t *req, uv_pipe_t *handle, const char *name, uv_connect_cb cb);
+```
+
+上述函数，name应该为echo.sock。  
+
+####Sending file descriptors over pipes
+
+最酷的事情是本地socket可以传递文件描述符，也就是说进程间可以交换文件描述符。这样就允许进程将它们的I/O描述符传递给其他进程。它的应用场景包括，比如负载均衡服务器，分派工作进程等，各种可以使得cpu使用最优化的应用。libuv当前只支持通过管道传输tcp socket或者其他的pipe。  
+
+为了展示这个功能，我们将来实现一个由循环中的工人进程处理client端请求，的这么一个echo服务器程序。这个程序有一些复杂，在教程中只截取了部分的片段，为了更好地理解，我推荐你去读下完整的[代码](https://github.com/nikhilm/uvbook/tree/master/code/multi-echo-server)。  
+
+工人进程很简单，文件描述符将从主进程传递给它。  
+
+####multi-echo-server/worker.c
+
+```
+uv_loop_t *loop;
+uv_pipe_t queue;
+int main() {
+    loop = uv_default_loop();
+
+    uv_pipe_init(loop, &queue, 1 /* ipc */);
+    uv_pipe_open(&queue, 0);
+    uv_read_start((uv_stream_t*)&queue, alloc_buffer, on_new_connection);
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
