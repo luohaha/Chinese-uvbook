@@ -83,7 +83,7 @@ void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
 *`UV_PROCESS_SETUID`-将子进程的执行用户id（UID）设置为`uv_process_options_t.uid`中的值。  
 *`UV_PROCESS_SETGID`-将子进程的执行组id(GID)设置为`uv_process_options_t.gid`中的值。  
 只有在unix系的操作系统中支持设置用户id和组id，在windows下设置会失败，`uv_spawn`会返回`UV_ENOTSUP`。 
-*`UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS`-  
+*`UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS`-在windows上，`uv_process_options_t.args`参数不要用引号包裹。此标记对unix无效。
 *`UV_PROCESS_DETACHED`-使得子进程脱离父进程，这样子进程就可以在父进程退出后继续进行。请看下面的例子：  
 
 ###Detaching processes
@@ -426,7 +426,7 @@ int main() {
 }
 ```
 
-`queue`是另一端连接上主进程的管道，因此，文件描述符可以传送过来。在`uv_pipe_init`中将ipc参数设置为1很关键，因为它标明了这个管道将被用来做进程间通信。因为主进程需要把文件handle赋给了工人进程作为标准输入，因此我们使用`uv_pipe_open`把stdin与管道连接（别忘了，0代表stdin）。  
+`queue`是另一端连接上主进程的管道，因此，文件描述符可以传送过来。在`uv_pipe_init`中将ipc参数设置为1很关键，因为它标明了这个管道将被用来做进程间通信。因为主进程需要把文件handle赋给了工人进程作为标准输入，因此我们使用`uv_pipe_open`把stdin作为pipe（别忘了，0代表stdin）。  
 
 ####multi-echo-server/worker.c
 
@@ -462,3 +462,91 @@ void on_new_connection(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf) {
 }
 ```
 
+首先，我们调用`uv_pipe_pending_count`来确定从handle中可以读取出数据。如果你的程序能够处理不同类型的handle，这时`uv_pipe_pending_type`就可以用来决定当前的类型。虽然在这里使用`accept`看起来很怪，但实际上是讲得通的。`accept`最常见的用途是从其他的文件描述符（监听的socket）获取文件描述符（client端）。这从原理上说，和我们现在要做的是一样的：从queue中获取文件描述符（client）。接下来，worker可以执行标准的echo服务器的工作了。  
+
+我们再来看看主进程，观察如何启动worker来达到负载均衡。  
+
+####multi-echo-server/main.c
+
+```
+struct child_worker {
+    uv_process_t req;
+    uv_process_options_t options;
+    uv_pipe_t pipe;
+} *workers;
+```
+
+`child_worker`结构包裹着进程，和连接主进程和各个独立进程的管道。  
+
+####multi-echo-server/main.c
+
+```
+void setup_workers() {
+    round_robin_counter = 0;
+
+    // ...
+
+    // launch same number of workers as number of CPUs
+    uv_cpu_info_t *info;
+    int cpu_count;
+    uv_cpu_info(&info, &cpu_count);
+    uv_free_cpu_info(info, cpu_count);
+
+    child_worker_count = cpu_count;
+
+    workers = calloc(sizeof(struct child_worker), cpu_count);
+    while (cpu_count--) {
+        struct child_worker *worker = &workers[cpu_count];
+        uv_pipe_init(loop, &worker->pipe, 1);
+
+        uv_stdio_container_t child_stdio[3];
+        child_stdio[0].flags = UV_CREATE_PIPE | UV_READABLE_PIPE;
+        child_stdio[0].data.stream = (uv_stream_t*) &worker->pipe;
+        child_stdio[1].flags = UV_IGNORE;
+        child_stdio[2].flags = UV_INHERIT_FD;
+        child_stdio[2].data.fd = 2;
+
+        worker->options.stdio = child_stdio;
+        worker->options.stdio_count = 3;
+
+        worker->options.exit_cb = close_process_handle;
+        worker->options.file = args[0];
+        worker->options.args = args;
+
+        uv_spawn(loop, &worker->req, &worker->options); 
+        fprintf(stderr, "Started worker %d\n", worker->req.pid);
+    }
+}
+```
+
+首先，我们使用酷炫的`uv_cpu_info`函数获取到当前的cpu的核心个数，所以我们也能启动一样数目的worker进程。再次强调一下，务必将`uv_pipe_init`的ipc参数设置为1。接下来，我们指定子进程的`stdin`是一个可读的管道（从子进程的角度来说）。接下来的一切就很直观了，worker进程被启动，等待着文件描述符被写入到他们的标准输入中。  
+
+在主进程的`on_new_connection`中，我们接收了client端的socket，然后把它传递给worker环中的下一个可用的worker进程。  
+
+####multi-echo-server/main.c
+
+```
+void on_new_connection(uv_stream_t *server, int status) {
+    if (status == -1) {
+        // error!
+        return;
+    }
+
+    uv_tcp_t *client = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
+    uv_tcp_init(loop, client);
+    if (uv_accept(server, (uv_stream_t*) client) == 0) {
+        uv_write_t *write_req = (uv_write_t*) malloc(sizeof(uv_write_t));
+        dummy_buf = uv_buf_init("a", 1);
+        struct child_worker *worker = &workers[round_robin_counter];
+        uv_write2(write_req, (uv_stream_t*) &worker->pipe, &dummy_buf, 1, (uv_stream_t*) client, NULL);
+        round_robin_counter = (round_robin_counter + 1) % child_worker_count;
+    }
+    else {
+        uv_close((uv_handle_t*) client, NULL);
+    }
+}
+```
+
+`uv_write2`能够在所有的情形上做了一个很好的抽象，我们只需要将client作为一个参数即可完成传输。现在，我们的多进程echo服务器已经可以运转起来啦。  
+
+感谢Kyle指出了`uv_write2`需要一个不为空的buffer。  
