@@ -426,3 +426,39 @@ int main() {
 }
 ```
 
+`queue`是另一端连接上主进程的管道，因此，文件描述符可以传送过来。在`uv_pipe_init`中将ipc参数设置为1很关键，因为它标明了这个管道将被用来做进程间通信。因为主进程需要把文件handle赋给了工人进程作为标准输入，因此我们使用`uv_pipe_open`把stdin与管道连接（别忘了，0代表stdin）。  
+
+####multi-echo-server/worker.c
+
+```
+void on_new_connection(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf) {
+    if (nread < 0) {
+        if (nread != UV_EOF)
+            fprintf(stderr, "Read error %s\n", uv_err_name(nread));
+        uv_close((uv_handle_t*) q, NULL);
+        return;
+    }
+
+    uv_pipe_t *pipe = (uv_pipe_t*) q;
+    if (!uv_pipe_pending_count(pipe)) {
+        fprintf(stderr, "No pending count\n");
+        return;
+    }
+
+    uv_handle_type pending = uv_pipe_pending_type(pipe);
+    assert(pending == UV_TCP);
+
+    uv_tcp_t *client = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
+    uv_tcp_init(loop, client);
+    if (uv_accept(q, (uv_stream_t*) client) == 0) {
+        uv_os_fd_t fd;
+        uv_fileno((const uv_handle_t*) client, &fd);
+        fprintf(stderr, "Worker %d: Accepted fd %d\n", getpid(), fd);
+        uv_read_start((uv_stream_t*) client, alloc_buffer, echo_read);
+    }
+    else {
+        uv_close((uv_handle_t*) client, NULL);
+    }
+}
+```
+
