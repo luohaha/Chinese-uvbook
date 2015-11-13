@@ -27,3 +27,34 @@ event-loop最终会被`uv_run()`启动－当使用libuv时，最后都会调用�
 但是libuv使用了另外一个解决方案，那就是异步，非阻塞。大多数的现代操作系统提供了基于事件通知的子系统。例如，一个正常的socket上的`read`调用会发生阻塞，直到发送方把信息发送过来。但是，实际上程序可以请求操作系统监视socket事件的到来，并将这个事件通知放到事件队列中。这样，程序就可以很简单地检查事件是否到来（可能此时正在使用cpu做数值处理的运算），并及时地获取数据。说libuv是异步的，是因为程序可以在一头表达对某一事件的兴趣，并在另一头获取到数据（对于时间或是空间来说）。它是非阻塞是因为应用程序无需在请求数据后等待，可以自由地做其他的事。libuv的事件循环方式很好地与该模型匹配, 因为操作系统事件可以视为另外一种libuv事件. 非阻塞方式可以保证在其他事件到来时被尽快处理。  
 
 #####Note
+我们不需要关心I/O在后台是如何工作的，但是由于我们的计算机硬件的工作方式，线程是处理器最基本的执行单元，libuv和操作系统通常会运行后台/工作者线程, 或者采用非阻塞方式来轮流执行任务。  
+
+Bert Belder，一个libuv的核心开发者，通过一个短视频向我们解释了libuv的架构和它的后台工作方式。如果你之前没有接触过类似libuv，libev，这个视频会非常有用。视频的网址是(https://youtu.be/nGn60vDSxQ4)。
+
+包含了libuv的event-loop的更多详细信息的[文档](http://docs.libuv.org/en/v1.x/design.html#the-i-o-loop)。  
+
+###HELLO WORLD
+
+让我们开始写第一个libuv程序吧！它什么都没做，只是开启了一个loop，然后很快地推出了。  
+
+####helloworld/main.c
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <uv.h>
+
+int main() {
+    uv_loop_t *loop = malloc(sizeof(uv_loop_t));
+    uv_loop_init(loop);
+
+    printf("Now quitting.\n");
+    uv_run(loop, UV_RUN_DEFAULT);
+
+    uv_loop_close(loop);
+    free(loop);
+    return 0;
+}
+```
+
+这个程序会很快就退出了，因为没有可以很处理的事件。一个libuv必须时刻监视着
