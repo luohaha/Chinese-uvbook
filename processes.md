@@ -48,7 +48,7 @@ int main() {
 uv_process_options_t options = {0};
 ```
 
-`uv_process_t`只是作为句柄，所有的选择项都通过`uv_process_options_t`设置，为了简单地开始一个进程，你只需要设置file和args，file是要执行的程序，args是所需的参数（和c语言中main函数的传入参数类似）。因为`uv_spawn`在内部使用了[execvp]()，所以不需要提供绝对地址。遵从惯例，实际传入参数的数目要多于需要的参数，因为最后一个参数会被设为NULL。  
+`uv_process_t`只是作为句柄，所有的选择项都通过`uv_process_options_t`设置，为了简单地开始一个进程，你只需要设置file和args，file是要执行的程序，args是所需的参数（和c语言中main函数的传入参数类似）。因为`uv_spawn`在内部使用了[execvp](http://man7.org/linux/man-pages/man3/exec.3.html)，所以不需要提供绝对地址。遵从惯例，实际传入参数的数目要多于需要的参数，因为最后一个参数会被设为NULL。  
 
 在函数`uv_spawn`被调用之后，`uv_process_t.pid`会包含子进程的id。  
 
@@ -121,9 +121,160 @@ int main() {
 
 ###Sending signals to processes
 
-libuv打包了unix标准的`kill(2)`系统调用，并且在windows上实现了一个类似用法的调用。要注意的是：所有的`SIGTERM`，`SIGINT`和`SIGKILL`都会导致进程的中断。`uv_kill`函数如下所示：  
+libuv打包了unix标准的`kill(2)`系统调用，并且在windows上实现了一个类似用法的调用，但要注意：所有的`SIGTERM`，`SIGINT`和`SIGKILL`都会导致进程的中断。`uv_kill`函数如下所示：  
 
 ```
 uv_err_t uv_kill(int pid, int signum);
 ```
+
+对于用libuv启动的进程，应该使用`uv_process_kill`终止，它会以`uv_process_t`作为第一个参数，而不是pid。当使用`uv_process_kill`后，记得使用`uv_close`关闭`uv_process_t`。  
+
+###Signals
+
+libuv对unix信号和一些[windows下类似的机制](http://docs.libuv.org/en/v1.x/signal.html#signal)，做了很好的打包。  
+
+使用`uv_signal_init`初始化一饿handle，然后将它与loop关联。为了使用handle监听特定的信号，使用`uv_signal_start()`函数。每一个handle只能与一个信号关联，后续的`uv_signal_start`会覆盖前面的关联。使用`uv_signal_stop`终止监听。下面的这个小例子展示了各种用法：  
+
+####signal/main.c
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <uv.h>
+
+uv_loop_t* create_loop()
+{
+    uv_loop_t *loop = malloc(sizeof(uv_loop_t));
+    if (loop) {
+      uv_loop_init(loop);
+    }
+    return loop;
+}
+
+void signal_handler(uv_signal_t *handle, int signum)
+{
+    printf("Signal received: %d\n", signum);
+    uv_signal_stop(handle);
+}
+
+// two signal handlers in one loop
+void thread1_worker(void *userp)
+{
+    uv_loop_t *loop1 = create_loop();
+
+    uv_signal_t sig1a, sig1b;
+    uv_signal_init(loop1, &sig1a);
+    uv_signal_start(&sig1a, signal_handler, SIGUSR1);
+
+    uv_signal_init(loop1, &sig1b);
+    uv_signal_start(&sig1b, signal_handler, SIGUSR1);
+
+    uv_run(loop1, UV_RUN_DEFAULT);
+}
+
+// two signal handlers, each in its own loop
+void thread2_worker(void *userp)
+{
+    uv_loop_t *loop2 = create_loop();
+    uv_loop_t *loop3 = create_loop();
+
+    uv_signal_t sig2;
+    uv_signal_init(loop2, &sig2);
+    uv_signal_start(&sig2, signal_handler, SIGUSR1);
+
+    uv_signal_t sig3;
+    uv_signal_init(loop3, &sig3);
+    uv_signal_start(&sig3, signal_handler, SIGUSR1);
+
+    while (uv_run(loop2, UV_RUN_NOWAIT) || uv_run(loop3, UV_RUN_NOWAIT)) {
+    }
+}
+
+int main()
+{
+    printf("PID %d\n", getpid());
+
+    uv_thread_t thread1, thread2;
+
+    uv_thread_create(&thread1, thread1_worker, 0);
+    uv_thread_create(&thread2, thread2_worker, 0);
+
+    uv_thread_join(&thread1);
+    uv_thread_join(&thread2);
+    return 0;
+}
+```
+
+#####Note
+
+`uv_run(loop, UV_RUN_NOWAIT)`和`uv_run(loop, UV_RUN_ONCE)`非常像，因为它们都只处理一个事件。但是不同在于，UV_RUN_ONCE会在没有任务的时候阻塞，但是UV_RUN_NOWAIT会立刻返回。我们使用`NOWAIT`，这样才使得一个loop不会因为另外一个loop没有要处理的事件而挨饿。  
+
+当向进程发送`SIGUSR1`，你会发现signal_handler函数被激发了4次，每次都对应一个`uv_signal_t`。然后signal_handler调用uv_signal_stop终止了每一个`uv_signal_t`，最终程序退出。对每个handler函数来说，任务的分配很重要。一个使用了多个event-loop的服务器程序，只要简单地给每一个进程添加信号SIGINT监视器，就可以保证程序在中断退出前，数据能够安全地保存。  
+
+###Child Process I/O
+
+一个正常的新产生的进程都有自己的一套文件描述符映射表，例如0，1，2分别对应`stdin`，`stdout`和`stderr`。有时候父进程想要将自己的文件描述符映射表分享给子进程。例如，你的程序启动了一个子命令，并且把所有的错误信息输出到log文件中，但是不能使用`stdout`。因此，你想要使得你的子进程和父进程一样，拥有`stderr`。在这种情形下，libuv提供了继承文件描述符的功能。在下面的例子中，我们会调用这么一个测试程序：  
+
+####proc-streams/test.c
+
+```
+#include <stdio.h>
+
+int main()
+{
+    fprintf(stderr, "This is stderr\n");
+    printf("This is stdout\n");
+    return 0;
+}
+```
+
+实际的执行程序` proc-streams`在运行的时候，只向子进程分享stderr。在`stdio`域中的`uv_process_options_t`设置了子进程的文件描述符。首先设置`stdio_count`，定义文件描述符的个数。再使用`uv_stdio_container_t`队列来设置`uv_process_options_t.stdio`。  
+
+```
+typedef struct uv_stdio_container_s {
+  uv_stdio_flags flags;
+
+  union {
+    uv_stream_t* stream;
+    int fd;
+  } data;
+} uv_stdio_container_t;
+```
+
+上边的flag值可取多种。比如，如果你不打算使用，可以设置为`UV_IGNORE`。如果与stdio中对应的前三个文件描述符被标记为`UV_IGNORE`，那么它们会被重定向到`/dev/null`。  
+
+因为我们想要传递一个已经存在的文件描述符，所以使用`UV_INHERIT_FD`。因此，fd被设为stderr。  
+
+####proc-streams/main.c
+
+```
+int main() {
+    loop = uv_default_loop();
+
+    /* ... */
+
+    options.stdio_count = 3;
+    uv_stdio_container_t child_stdio[3];
+    child_stdio[0].flags = UV_IGNORE;
+    child_stdio[1].flags = UV_IGNORE;
+    child_stdio[2].flags = UV_INHERIT_FD;
+    child_stdio[2].data.fd = 2;
+    options.stdio = child_stdio;
+
+    options.exit_cb = on_exit;
+    options.file = args[0];
+    options.args = args;
+
+    int r;
+    if ((r = uv_spawn(loop, &child_req, &options))) {
+        fprintf(stderr, "%s\n", uv_strerror(r));
+        return 1;
+    }
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+这时你启动proc-streams，也就是在main中产生一个执行test的子进程，你只会看到“This is stderr”。你可以试着设置stdout也继承父进程。  
 
