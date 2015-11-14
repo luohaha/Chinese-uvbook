@@ -27,3 +27,27 @@ uv_timer_stop(&timer_req);
 uv_timer_set_repeat(uv_timer_t *timer, int64_t repeat);
 ```
 
+它会在可能的时候发挥作用。如果上述函数是在回调函数中调用的，这意味着：  
+
+* 如果定时器未设置为循环，这意味着定时器已经停止。需要先用`uv_timer_start`重新启动。  
+* 如果定时器被设置为循环，那么下一次超时的时间已经被规划好了，所以在切换到新的间隔之前，旧的间隔还会发挥一次作用。  
+
+函数：  
+
+```
+int uv_timer_again(uv_timer_t *)
+```
+
+用来重启定时器，相当于停止定时器，然后使用原先的timeout和repeat值来重新启动定时器。如果当该函数调用时，定时器未启动，则调用失败（错误码为`UV_EINVAL`）并且返回－1。  
+
+下面的一节会出现使用定时器的例子。  
+
+###Event loop reference count
+
+event-loop在没有了活跃的handle之后，便会终止。整套系统的工作方式是：在handle增加时，event-loop的引用计数加1，在handle停止时，引用计数减少1。当然，libuv也允许手动地更改引用计数，通过使用：  
+
+```
+void uv_ref(uv_handle_t*);
+void uv_unref(uv_handle_t*);
+```
+
