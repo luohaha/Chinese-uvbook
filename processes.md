@@ -80,11 +80,11 @@ void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
 
 通过使用下面标识的按位或的值设置`uv_process_options_t.flags`的值，可以定义子进程的行为：  
 
-*`UV_PROCESS_SETUID`-将子进程的执行用户id（UID）设置为`uv_process_options_t.uid`中的值。  
-*`UV_PROCESS_SETGID`-将子进程的执行组id(GID)设置为`uv_process_options_t.gid`中的值。  
+* `UV_PROCESS_SETUID`-将子进程的执行用户id（UID）设置为`uv_process_options_t.uid`中的值。  
+* `UV_PROCESS_SETGID`-将子进程的执行组id(GID)设置为`uv_process_options_t.gid`中的值。  
 只有在unix系的操作系统中支持设置用户id和组id，在windows下设置会失败，`uv_spawn`会返回`UV_ENOTSUP`。 
-*`UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS`-在windows上，`uv_process_options_t.args`参数不要用引号包裹。此标记对unix无效。
-*`UV_PROCESS_DETACHED`-使得子进程脱离父进程，这样子进程就可以在父进程退出后继续进行。请看下面的例子：  
+* `UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS`-在windows上，`uv_process_options_t.args`参数不要用引号包裹。此标记对unix无效。  
+* `UV_PROCESS_DETACHED`-使得子进程脱离父进程，这样子进程就可以在父进程退出后继续进行。请看下面的例子：  
 
 ###Detaching processes
 
