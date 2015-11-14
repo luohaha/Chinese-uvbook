@@ -57,4 +57,20 @@ int main() {
 }
 ```
 
-这个程序会很快就退出了，因为没有可以很处理的事件。一个libuv必须时刻监视着
+这个程序会很快就退出了，因为没有可以很处理的事件。我们可以使用各种API函数来告诉event-loop我们要监视的事件。  
+
+从libuv的1.0版本开始，用户就可以在使用`uv_loop_init`初始化loop之前，给其分配相应的内存。这就允许你植入自定义的内存管理方法。记住要使用`uv_loop_close(uv_loop_t *)`关闭loop，然后再回收内存空间。在例子中，程序退出的时候会关闭loop，系统也会自动回收内存。对于长时间运行的程序来说，合理释放内存很重要。   
+
+###Default loop
+
+可以使用`uv_default_loop`获取libuv提供的默认loop。如果你只需要一个loop的话，可以使用这个。  
+
+#####Note
+
+nodejs中使用了默认的loop作为自己的主loop。如果你在编写nodejs的绑定，你应该注意一下。  
+
+###Error handling
+
+初始化函数或者是同步执行的函数，会在执行失败后返回代表错误的负数。但是对于异步执行的函数，会在执行失败的时候，给它们的回调函数传递一个状态参数。错误信息被定义为`UV_E`[常量](http://docs.libuv.org/en/v1.x/errors.html#error-constants)。  
+
+  
