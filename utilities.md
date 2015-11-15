@@ -555,4 +555,6 @@ n B | Moves cursor down by n lines
 n C | Moves cursor right by n columns
 m | Obeys string of display settings, in this case green background (40+2), white text (30+7)
 
+正如你所见，它能输出酷炫的效果，你甚至可以发挥想象，用它来制作电子游戏。更有趣的输出，可以使用`http://www.gnu.org/software/ncurses/ncurses.html`。  
+
  
