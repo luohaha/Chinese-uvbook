@@ -51,3 +51,73 @@ void uv_ref(uv_handle_t*);
 void uv_unref(uv_handle_t*);
 ```
 
+这样，就可以达到允许loop即使在有正在活动的定时器时，仍然能够推出。或者是使用自定义的uv_handle_t对象来使得loop保持工作。  
+
+第二个函数可以和间隔循环定时器结合使用。你会有一个每隔x秒执行一次的垃圾回收器，或者是你的网络服务器会每隔一段时间向其他人发送一次心跳信号。如果你想要在你其他的监视器都退出后，终止程序。这时你就可以立即unref定时器，即便定时器这时是loop上唯一还在运行的监视器，你依旧可以停止`uv_run()`。  
+
+它们同样会出现在nodejs中，如js的API中封装的libuv方法。每一个js的对象产生一个`uv_handle_t`（所有监视器的超类），同样可以被uv_ref和uv_unref。  
+
+####ref-timer/main.c
+
+```
+uv_loop_t *loop;
+uv_timer_t gc_req;
+uv_timer_t fake_job_req;
+
+int main() {
+    loop = uv_default_loop();
+
+    uv_timer_init(loop, &gc_req);
+    uv_unref((uv_handle_t*) &gc_req);
+
+    uv_timer_start(&gc_req, gc, 0, 2000);
+
+    // could actually be a TCP download or something
+    uv_timer_init(loop, &fake_job_req);
+    uv_timer_start(&fake_job_req, fake_job, 9000, 0);
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+首先初始化垃圾回收器的定时器，然后在立刻`unref`它。注意观察9秒之后，此时fake_job完成，程序会自动退出，即使垃圾回收器还在运行。  
+
+####Idler pattern
+
+空转的回调函数会在每一次的event-loop循环激发一次。空转的回调函数可以用来执行一些优先级较低的活动。比如，你可以向开发者发送应用程序的每日性能表现情况，以便于分析，或者是使用用户应用cpu时间来做[SETI](http://www.seti.org)运算:)。空转程序还可以用于GUI应用。比如你在使用event-loop来下载文件，如果tcp连接未中断而且当前并没有其他的事件，则你的event-loop会阻塞，这也就意味着你的下载进度条会停滞，用户会面对一个无响应的程序。面对这种情况，空转监视器可以保持UI可操作。  
+
+####idle-compute/main.c
+
+```
+uv_loop_t *loop;
+uv_fs_t stdin_watcher;
+uv_idle_t idler;
+char buffer[1024];
+
+int main() {
+    loop = uv_default_loop();
+
+    uv_idle_init(loop, &idler);
+
+    uv_buf_t buf = uv_buf_init(buffer, 1024);
+    uv_fs_read(loop, &stdin_watcher, 0, &buf, 1, -1, on_type);
+    uv_idle_start(&idler, crunch_away);
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+上述程序中，我们将空转监视器和我们真正关心的事件排在一起。`crunch_away`会被循环地调用，直到输入字符并回车。然后程序会被中断很短的时间，用来处理数据读取，然后在接着调用空转的回调函数。  
+
+####idle-compute/main.c
+
+```
+void crunch_away(uv_idle_t* handle) {
+    // Compute extra-terrestrial life
+    // fold proteins
+    // computer another digit of PI
+    // or similar
+    fprintf(stderr, "Computing PI...\n");
+    // just to avoid overwhelming your terminal emulator
+    uv_idle_stop(handle);
+}
+```
+
