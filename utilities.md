@@ -121,3 +121,51 @@ void crunch_away(uv_idle_t* handle) {
 }
 ```
 
+###Passing data to worker thread
+
+在使用`uv_queue_work`的时候，你通常需要给工作线程传递复杂的数据。解决方案是自定义struct，然后使用`uv_work_t.data`指向它。一个稍微的不同是必须让`uv_work_t`作为这个自定义struct的成员之一（把这叫做接力棒）。这么做就可以使得，同时回收数据和`uv_wortk_t`。  
+
+```
+struct ftp_baton {
+    uv_work_t req;
+    char *host;
+    int port;
+    char *username;
+    char *password;
+}
+```
+
+```
+ftp_baton *baton = (ftp_baton*) malloc(sizeof(ftp_baton));
+baton->req.data = (void*) baton;
+baton->host = strdup("my.webhost.com");
+baton->port = 21;
+// ...
+
+uv_queue_work(loop, &baton->req, ftp_session, ftp_cleanup);
+```
+
+现在我们创建完了接力棒，并把它排入了队列中。  
+
+现在就可以随性所欲地获取自己想要的数据啦。  
+
+```
+void ftp_session(uv_work_t *req) {
+    ftp_baton *baton = (ftp_baton*) req->data;
+
+    fprintf(stderr, "Connecting to %s\n", baton->host);
+}
+
+void ftp_cleanup(uv_work_t *req) {
+    ftp_baton *baton = (ftp_baton*) req->data;
+
+    free(baton->host);
+    // ...
+    free(baton);
+}
+```
+
+我们既回收了接力棒，同时也回收了监视器。  
+
+###External I/O with polling
+
