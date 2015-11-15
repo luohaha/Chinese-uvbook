@@ -169,3 +169,51 @@ void ftp_cleanup(uv_work_t *req) {
 
 ###External I/O with polling
 
+通常在使用第三方库的时候，需要应对他们自己的IO，还有保持监视他们的socket和内部文件。在此情形下，不可能使用标准的IO流操作，但需要讲第三方库整体地整合进event-loop中。这样的话，第三方库就必须允许你访问它的内部文件描述符，并且提供可以处理细微任务的函数。但是一些第三库并不允许你这么做，他们只提供了一个标准的阻塞IO函数，此函数会完成所有的工作并返回。在event-loop的线程直接使用它们是不明智的，而是应该使用libuv的工作线程。当然，这也意味着失去了对第三方库的颗粒化控制。  
+
+libuv的`uv_poll`简单地监视了使用了操作系统的监控机制的文件描述符。从某方面说，libuv实现的所有的IO操作，的背后均有`uv_poll`的支持。无论操作系统何时监视到文件描述符的改变，libuv都会调用响应的回调函数。  
+
+现在我们简单地实现一个下载管理程序，它会通过[libcurl](http://curl.haxx.se/libcurl/)来下载文件。我们不会直接控制libcurl，而是使用libuv的event-loop，通过非阻塞的异步的[多重接口](http://curl.haxx.se/libcurl/c/libcurl-multi.html)来处理下载，与此同时，libuv会监控IO的就绪状态。  
+
+####uvwget/main.c - The setup
+
+```
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <uv.h>
+#include <curl/curl.h>
+
+uv_loop_t *loop;
+CURLM *curl_handle;
+uv_timer_t timeout;
+}
+
+int main(int argc, char **argv) {
+    loop = uv_default_loop();
+
+    if (argc <= 1)
+        return 0;
+
+    if (curl_global_init(CURL_GLOBAL_ALL)) {
+        fprintf(stderr, "Could not init cURL\n");
+        return 1;
+    }
+
+    uv_timer_init(loop, &timeout);
+
+    curl_handle = curl_multi_init();
+    curl_multi_setopt(curl_handle, CURLMOPT_SOCKETFUNCTION, handle_socket);
+    curl_multi_setopt(curl_handle, CURLMOPT_TIMERFUNCTION, start_timeout);
+
+    while (argc-- > 1) {
+        add_download(argv[argc], argc);
+    }
+
+    uv_run(loop, UV_RUN_DEFAULT);
+    curl_multi_cleanup(curl_handle);
+    return 0;
+}
+```
+
+每种库整合进libuv的方式都是不同的。以libcurl的例子来说，我们注册了两个回调函数。socket回调函数`handle_socket`会在socket状态改变的时候被触发，因此我们不得不开始轮询它。`start_timeout`是用来
