@@ -1,0 +1,707 @@
+<!DOCTYPE HTML>
+<html lang="en" >
+    
+    <head>
+        
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>进程 | libuv中文教程</title>
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 2.5.2">
+        
+        
+        <meta name="HandheldFriendly" content="true"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+        <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+        
+    <link rel="stylesheet" href="gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-highlight/website.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-search/search.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-fontsettings/website.css">
+        
+    
+    
+
+        
+    
+    
+    <link rel="next" href="./advanced_event_loops.html" />
+    
+    
+    <link rel="prev" href="./threads.html" />
+    
+
+        
+    </head>
+    <body>
+        
+        
+    <div class="book" data-level="6" data-chapter-title="进程" data-filepath="processes.md" data-basepath="." data-revision="Sun Nov 15 2015 21:59:08 GMT+0800 (CST)">
+    
+
+<div class="book-summary">
+    <nav role="navigation">
+        <ul class="summary">
+            
+            
+            
+            
+
+            
+
+            
+    
+        <li class="chapter " data-level="0" data-path="index.html">
+            
+                
+                    <a href="./index.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                        Introduction
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="1" data-path="introduction.html">
+            
+                
+                    <a href="./introduction.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>1.</b>
+                        
+                        简介
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="2" data-path="basics_of_libuv.html">
+            
+                
+                    <a href="./basics_of_libuv.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>2.</b>
+                        
+                        libuv基础
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="3" data-path="filesystem.html">
+            
+                
+                    <a href="./filesystem.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>3.</b>
+                        
+                        文件系统
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="4" data-path="networking.html">
+            
+                
+                    <a href="./networking.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>4.</b>
+                        
+                        网络
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="5" data-path="threads.html">
+            
+                
+                    <a href="./threads.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>5.</b>
+                        
+                        线程
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter active" data-level="6" data-path="processes.html">
+            
+                
+                    <a href="./processes.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>6.</b>
+                        
+                        进程
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="7" data-path="advanced_event_loops.html">
+            
+                
+                    <a href="./advanced_event_loops.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>7.</b>
+                        
+                        高级事件循环
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="8" data-path="utilities.html">
+            
+                
+                    <a href="./utilities.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>8.</b>
+                        
+                        实用工具
+                    </a>
+            
+            
+        </li>
+    
+        <li class="chapter " data-level="9" data-path="about.html">
+            
+                
+                    <a href="./about.html">
+                
+                        <i class="fa fa-check"></i>
+                        
+                            <b>9.</b>
+                        
+                        关于
+                    </a>
+            
+            
+        </li>
+    
+
+
+            
+            <li class="divider"></li>
+            <li>
+                <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+                    Published with GitBook
+                </a>
+            </li>
+            
+        </ul>
+    </nav>
+</div>
+
+    <div class="book-body">
+        <div class="body-inner">
+            <div class="book-header" role="navigation">
+    <!-- Actions Left -->
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="./" >libuv中文教程</a>
+    </h1>
+</div>
+
+            <div class="page-wrapper" tabindex="-1" role="main">
+                <div class="page-inner">
+                
+                
+                    <section class="normal" id="section-">
+                    
+                        <h1 id="processes">Processes</h1>
+<p>libuv&#x63D0;&#x4F9B;&#x4E86;&#x76F8;&#x5F53;&#x591A;&#x7684;&#x5B50;&#x8FDB;&#x7A0B;&#x7BA1;&#x7406;&#x51FD;&#x6570;&#xFF0C;&#x5E76;&#x4E14;&#x662F;&#x8DE8;&#x5E73;&#x53F0;&#x7684;&#xFF0C;&#x8FD8;&#x5141;&#x8BB8;&#x4F7F;&#x7528;stream&#xFF0C;&#x6216;&#x8005;&#x8BF4;pipe&#x5B8C;&#x6210;&#x8FDB;&#x7A0B;&#x95F4;&#x901A;&#x4FE1;&#x3002;  </p>
+<p>&#x5728;UNIX&#x4E2D;&#x6709;&#x4E00;&#x4E2A;&#x5171;&#x8BC6;&#xFF0C;&#x5C31;&#x662F;&#x8FDB;&#x7A0B;&#x53EA;&#x505A;&#x4E00;&#x4EF6;&#x4E8B;&#xFF0C;&#x5E76;&#x628A;&#x5B83;&#x505A;&#x597D;&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x8FDB;&#x7A0B;&#x901A;&#x5E38;&#x901A;&#x8FC7;&#x521B;&#x5EFA;&#x5B50;&#x8FDB;&#x7A0B;&#x6765;&#x5B8C;&#x6210;&#x4E0D;&#x540C;&#x7684;&#x4EFB;&#x52A1;&#xFF08;&#x4F8B;&#x5982;&#xFF0C;&#x5728;shell&#x4E2D;&#x4F7F;&#x7528;pipe&#xFF09;&#x3002; &#x4E00;&#x4E2A;&#x591A;&#x8FDB;&#x7A0B;&#x7684;&#xFF0C;&#x901A;&#x8FC7;&#x6D88;&#x606F;&#x901A;&#x4FE1;&#x7684;&#x6A21;&#x578B;&#xFF0C;&#x603B;&#x6BD4;&#x591A;&#x7EBF;&#x7A0B;&#x7684;&#xFF0C;&#x5171;&#x4EAB;&#x5185;&#x5B58;&#x7684;&#x6A21;&#x578B;&#x8981;&#x5BB9;&#x6613;&#x7406;&#x89E3;&#x5F97;&#x591A;&#x3002;  </p>
+<p>&#x5F53;&#x524D;&#x4E00;&#x4E2A;&#x6BD4;&#x8F83;&#x5E38;&#x89C1;&#x7684;&#x53CD;&#x5BF9;&#x4E8B;&#x4EF6;&#x9A71;&#x52A8;&#x7F16;&#x7A0B;&#x7684;&#x539F;&#x56E0;&#x5728;&#x4E8E;&#xFF0C;&#x5176;&#x4E0D;&#x80FD;&#x5F88;&#x597D;&#x5730;&#x5229;&#x7528;&#x73B0;&#x4EE3;&#x591A;&#x6838;&#x8BA1;&#x7B97;&#x673A;&#x7684;&#x4F18;&#x52BF;&#x3002;&#x4E00;&#x4E2A;&#x591A;&#x7EBF;&#x7A0B;&#x7684;&#x7A0B;&#x5E8F;&#xFF0C;&#x5185;&#x6838;&#x53EF;&#x4EE5;&#x5C06;&#x7EBF;&#x7A0B;&#x8C03;&#x5EA6;&#x5230;&#x4E0D;&#x540C;&#x7684;cpu&#x6838;&#x5FC3;&#x4E2D;&#x6267;&#x884C;&#xFF0C;&#x4EE5;&#x63D0;&#x9AD8;&#x6027;&#x80FD;&#x3002;&#x4F46;&#x662F;&#x4E00;&#x4E2A;event-loop&#x7684;&#x7A0B;&#x5E8F;&#x53EA;&#x6709;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x3002;&#x5B9E;&#x9645;&#x4E0A;&#xFF0C;&#x5DE5;&#x4F5C;&#x533A;&#x53EF;&#x4EE5;&#x88AB;&#x5206;&#x914D;&#x5230;&#x591A;&#x8FDB;&#x7A0B;&#x4E0A;&#xFF0C;&#x6BCF;&#x4E00;&#x4E2A;&#x8FDB;&#x7A0B;&#x6267;&#x884C;&#x4E00;&#x4E2A;event-loop&#xFF0C;&#x7136;&#x540E;&#x6BCF;&#x4E00;&#x4E2A;&#x8FDB;&#x7A0B;&#x88AB;&#x5206;&#x914D;&#x5230;&#x4E0D;&#x540C;&#x7684;cpu&#x6838;&#x5FC3;&#x4E2D;&#x6267;&#x884C;&#x3002;  </p>
+<h3 id="spawning-child-processes">Spawning child processes</h3>
+<p>&#x4E00;&#x4E2A;&#x6700;&#x7B80;&#x5355;&#x7684;&#x7528;&#x9014;&#x662F;&#xFF0C;&#x4F60;&#x60F3;&#x8981;&#x5F00;&#x59CB;&#x4E00;&#x4E2A;&#x8FDB;&#x7A0B;&#xFF0C;&#x7136;&#x540E;&#x77E5;&#x9053;&#x5B83;&#x4EC0;&#x4E48;&#x65F6;&#x5019;&#x7EC8;&#x6B62;&#x3002;&#x9700;&#x8981;&#x4F7F;&#x7528;<code>uv_spawn</code>&#x5B8C;&#x6210;&#x4EFB;&#x52A1;&#xFF1A;  </p>
+<h4 id="spawnmainc">spawn/main.c</h4>
+<pre><code>uv_loop_t *loop;
+uv_process_t child_req;
+uv_process_options_t options;
+int main() {
+    loop = uv_default_loop();
+
+    char* args[3];
+    args[0] = &quot;mkdir&quot;;
+    args[1] = &quot;test-dir&quot;;
+    args[2] = NULL;
+
+    options.exit_cb = on_exit;
+    options.file = &quot;mkdir&quot;;
+    options.args = args;
+
+    int r;
+    if ((r = uv_spawn(loop, &amp;child_req, &amp;options))) {
+        fprintf(stderr, &quot;%s\n&quot;, uv_strerror(r));
+        return 1;
+    } else {
+        fprintf(stderr, &quot;Launched process with ID %d\n&quot;, child_req.pid);
+    }
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+</code></pre><h5 id="note">Note</h5>
+<p>&#x7531;&#x4E8E;&#x4E0A;&#x8FF0;&#x7684;options&#x662F;&#x5168;&#x5C40;&#x53D8;&#x91CF;&#xFF0C;&#x56E0;&#x6B64;&#x88AB;&#x521D;&#x59CB;&#x5316;&#x4E3A;0&#x3002;&#x5982;&#x679C;&#x4F60;&#x5728;&#x5C40;&#x90E8;&#x53D8;&#x91CF;&#x4E2D;&#x5B9A;&#x4E49;options&#xFF0C;&#x8BF7;&#x8BB0;&#x5F97;&#x5C06;&#x6240;&#x6709;&#x6CA1;&#x7528;&#x7684;&#x57DF;&#x8BBE;&#x4E3A;0   </p>
+<pre><code>uv_process_options_t options = {0};
+</code></pre><p><code>uv_process_t</code>&#x53EA;&#x662F;&#x4F5C;&#x4E3A;&#x53E5;&#x67C4;&#xFF0C;&#x6240;&#x6709;&#x7684;&#x9009;&#x62E9;&#x9879;&#x90FD;&#x901A;&#x8FC7;<code>uv_process_options_t</code>&#x8BBE;&#x7F6E;&#xFF0C;&#x4E3A;&#x4E86;&#x7B80;&#x5355;&#x5730;&#x5F00;&#x59CB;&#x4E00;&#x4E2A;&#x8FDB;&#x7A0B;&#xFF0C;&#x4F60;&#x53EA;&#x9700;&#x8981;&#x8BBE;&#x7F6E;file&#x548C;args&#xFF0C;file&#x662F;&#x8981;&#x6267;&#x884C;&#x7684;&#x7A0B;&#x5E8F;&#xFF0C;args&#x662F;&#x6240;&#x9700;&#x7684;&#x53C2;&#x6570;&#xFF08;&#x548C;c&#x8BED;&#x8A00;&#x4E2D;main&#x51FD;&#x6570;&#x7684;&#x4F20;&#x5165;&#x53C2;&#x6570;&#x7C7B;&#x4F3C;&#xFF09;&#x3002;&#x56E0;&#x4E3A;<code>uv_spawn</code>&#x5728;&#x5185;&#x90E8;&#x4F7F;&#x7528;&#x4E86;<a href="http://man7.org/linux/man-pages/man3/exec.3.html" target="_blank">execvp</a>&#xFF0C;&#x6240;&#x4EE5;&#x4E0D;&#x9700;&#x8981;&#x63D0;&#x4F9B;&#x7EDD;&#x5BF9;&#x5730;&#x5740;&#x3002;&#x9075;&#x4ECE;&#x60EF;&#x4F8B;&#xFF0C;&#x5B9E;&#x9645;&#x4F20;&#x5165;&#x53C2;&#x6570;&#x7684;&#x6570;&#x76EE;&#x8981;&#x591A;&#x4E8E;&#x9700;&#x8981;&#x7684;&#x53C2;&#x6570;&#xFF0C;&#x56E0;&#x4E3A;&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x4F1A;&#x88AB;&#x8BBE;&#x4E3A;NULL&#x3002;  </p>
+<p>&#x5728;&#x51FD;&#x6570;<code>uv_spawn</code>&#x88AB;&#x8C03;&#x7528;&#x4E4B;&#x540E;&#xFF0C;<code>uv_process_t.pid</code>&#x4F1A;&#x5305;&#x542B;&#x5B50;&#x8FDB;&#x7A0B;&#x7684;id&#x3002;  </p>
+<p>&#x56DE;&#x8C03;&#x51FD;&#x6570;<code>on_exit()</code>&#x4F1A;&#x5728;&#x88AB;&#x8C03;&#x7528;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x4F20;&#x5165;exit&#x72B6;&#x6001;&#x548C;&#x5BFC;&#x81F4;exit&#x7684;&#x4FE1;&#x53F7;&#x3002;  </p>
+<h4 id="spawnmainc">spawn/main.c</h4>
+<pre><code>void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
+    fprintf(stderr, &quot;Process exited with status %&quot; PRId64 &quot;, signal %d\n&quot;, exit_status, term_signal);
+    uv_close((uv_handle_t*) req, NULL);
+</code></pre><p>&#x5728;&#x8FDB;&#x7A0B;&#x5173;&#x95ED;&#x540E;&#xFF0C;&#x9700;&#x8981;&#x56DE;&#x6536;handler&#x3002;  </p>
+<h3 id="changing-process-parameters">Changing process parameters</h3>
+<p>&#x5728;&#x5B50;&#x8FDB;&#x7A0B;&#x5F00;&#x59CB;&#x6267;&#x884C;&#x524D;&#xFF0C;&#x4F60;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x4F7F;&#x7528;<code>uv_process_options_t</code>&#x8BBE;&#x7F6E;&#x8FD0;&#x884C;&#x73AF;&#x5883;&#x3002;  </p>
+<h3 id="change-execution-directory">Change execution directory</h3>
+<p>&#x8BBE;&#x7F6E;<code>uv_process_options_t.cwd</code>&#xFF0C;&#x66F4;&#x6539;&#x76F8;&#x5E94;&#x7684;&#x76EE;&#x5F55;&#x3002;  </p>
+<h3 id="set-environment-variables">Set environment variables</h3>
+<p><code>uv_process_options_t.env</code>&#x7684;&#x683C;&#x5F0F;&#x662F;&#x4EE5;null&#x4E3A;&#x7ED3;&#x5C3E;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x6570;&#x7EC4;&#xFF0C;&#x5176;&#x4E2D;&#x6BCF;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x5F62;&#x5F0F;&#x90FD;&#x662F;<code>VAR=VALUE</code>&#x3002;&#x8FD9;&#x4E9B;&#x503C;&#x7528;&#x6765;&#x8BBE;&#x7F6E;&#x8FDB;&#x7A0B;&#x7684;&#x73AF;&#x5883;&#x53D8;&#x91CF;&#x3002;&#x5982;&#x679C;&#x5B50;&#x8FDB;&#x7A0B;&#x60F3;&#x8981;&#x7EE7;&#x627F;&#x7236;&#x8FDB;&#x7A0B;&#x7684;&#x73AF;&#x5883;&#x53D8;&#x91CF;&#xFF0C;&#x5C31;&#x5C06;<code>uv_process_options_t.env</code>&#x8BBE;&#x4E3A;null&#x3002;  </p>
+<h3 id="option-flags">Option flags</h3>
+<p>&#x901A;&#x8FC7;&#x4F7F;&#x7528;&#x4E0B;&#x9762;&#x6807;&#x8BC6;&#x7684;&#x6309;&#x4F4D;&#x6216;&#x7684;&#x503C;&#x8BBE;&#x7F6E;<code>uv_process_options_t.flags</code>&#x7684;&#x503C;&#xFF0C;&#x53EF;&#x4EE5;&#x5B9A;&#x4E49;&#x5B50;&#x8FDB;&#x7A0B;&#x7684;&#x884C;&#x4E3A;&#xFF1A;  </p>
+<ul>
+<li><code>UV_PROCESS_SETUID</code>-&#x5C06;&#x5B50;&#x8FDB;&#x7A0B;&#x7684;&#x6267;&#x884C;&#x7528;&#x6237;id&#xFF08;UID&#xFF09;&#x8BBE;&#x7F6E;&#x4E3A;<code>uv_process_options_t.uid</code>&#x4E2D;&#x7684;&#x503C;&#x3002;  </li>
+<li><code>UV_PROCESS_SETGID</code>-&#x5C06;&#x5B50;&#x8FDB;&#x7A0B;&#x7684;&#x6267;&#x884C;&#x7EC4;id(GID)&#x8BBE;&#x7F6E;&#x4E3A;<code>uv_process_options_t.gid</code>&#x4E2D;&#x7684;&#x503C;&#x3002;<br>&#x53EA;&#x6709;&#x5728;unix&#x7CFB;&#x7684;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x4E2D;&#x652F;&#x6301;&#x8BBE;&#x7F6E;&#x7528;&#x6237;id&#x548C;&#x7EC4;id&#xFF0C;&#x5728;windows&#x4E0B;&#x8BBE;&#x7F6E;&#x4F1A;&#x5931;&#x8D25;&#xFF0C;<code>uv_spawn</code>&#x4F1A;&#x8FD4;&#x56DE;<code>UV_ENOTSUP</code>&#x3002; </li>
+<li><code>UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS</code>-&#x5728;windows&#x4E0A;&#xFF0C;<code>uv_process_options_t.args</code>&#x53C2;&#x6570;&#x4E0D;&#x8981;&#x7528;&#x5F15;&#x53F7;&#x5305;&#x88F9;&#x3002;&#x6B64;&#x6807;&#x8BB0;&#x5BF9;unix&#x65E0;&#x6548;&#x3002;  </li>
+<li><code>UV_PROCESS_DETACHED</code>-&#x4F7F;&#x5F97;&#x5B50;&#x8FDB;&#x7A0B;&#x8131;&#x79BB;&#x7236;&#x8FDB;&#x7A0B;&#xFF0C;&#x8FD9;&#x6837;&#x5B50;&#x8FDB;&#x7A0B;&#x5C31;&#x53EF;&#x4EE5;&#x5728;&#x7236;&#x8FDB;&#x7A0B;&#x9000;&#x51FA;&#x540E;&#x7EE7;&#x7EED;&#x8FDB;&#x884C;&#x3002;&#x8BF7;&#x770B;&#x4E0B;&#x9762;&#x7684;&#x4F8B;&#x5B50;&#xFF1A;  </li>
+</ul>
+<h3 id="detaching-processes">Detaching processes</h3>
+<p>&#x4F7F;&#x7528;&#x6807;&#x8BC6;<code>UV_PROCESS_DETACHED</code>&#x53EF;&#x4EE5;&#x542F;&#x52A8;&#x5B88;&#x62A4;&#x8FDB;&#x7A0B;(daemon)&#xFF0C;&#x6216;&#x8005;&#x662F;&#x4F7F;&#x5F97;&#x5B50;&#x8FDB;&#x7A0B;&#x4ECE;&#x7236;&#x8FDB;&#x7A0B;&#x4E2D;&#x72EC;&#x7ACB;&#x51FA;&#x6765;&#xFF0C;&#x8FD9;&#x6837;&#x7236;&#x8FDB;&#x7A0B;&#x7684;&#x9000;&#x51FA;&#x5C31;&#x4E0D;&#x4F1A;&#x5F71;&#x54CD;&#x5230;&#x5B83;&#x3002;   </p>
+<h4 id="detachmainc">detach/main.c</h4>
+<pre><code>int main() {
+    loop = uv_default_loop();
+
+    char* args[3];
+    args[0] = &quot;sleep&quot;;
+    args[1] = &quot;100&quot;;
+    args[2] = NULL;
+
+    options.exit_cb = NULL;
+    options.file = &quot;sleep&quot;;
+    options.args = args;
+    options.flags = UV_PROCESS_DETACHED;
+
+    int r;
+    if ((r = uv_spawn(loop, &amp;child_req, &amp;options))) {
+        fprintf(stderr, &quot;%s\n&quot;, uv_strerror(r));
+        return 1;
+    }
+    fprintf(stderr, &quot;Launched sleep with PID %d\n&quot;, child_req.pid);
+    uv_unref((uv_handle_t*) &amp;child_req);
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+</code></pre><p>&#x8BB0;&#x4F4F;&#x4E00;&#x70B9;&#xFF0C;&#x5C31;&#x662F;handle&#x4F1A;&#x59CB;&#x7EC8;&#x76D1;&#x89C6;&#x7740;&#x5B50;&#x8FDB;&#x7A0B;&#xFF0C;&#x6240;&#x4EE5;&#x4F60;&#x7684;&#x7A0B;&#x5E8F;&#x4E0D;&#x4F1A;&#x9000;&#x51FA;&#x3002;<code>uv_unref()</code>&#x4F1A;&#x89E3;&#x9664;handle&#x3002;  </p>
+<h3 id="sending-signals-to-processes">Sending signals to processes</h3>
+<p>libuv&#x6253;&#x5305;&#x4E86;unix&#x6807;&#x51C6;&#x7684;<code>kill(2)</code>&#x7CFB;&#x7EDF;&#x8C03;&#x7528;&#xFF0C;&#x5E76;&#x4E14;&#x5728;windows&#x4E0A;&#x5B9E;&#x73B0;&#x4E86;&#x4E00;&#x4E2A;&#x7C7B;&#x4F3C;&#x7528;&#x6CD5;&#x7684;&#x8C03;&#x7528;&#xFF0C;&#x4F46;&#x8981;&#x6CE8;&#x610F;&#xFF1A;&#x6240;&#x6709;&#x7684;<code>SIGTERM</code>&#xFF0C;<code>SIGINT</code>&#x548C;<code>SIGKILL</code>&#x90FD;&#x4F1A;&#x5BFC;&#x81F4;&#x8FDB;&#x7A0B;&#x7684;&#x4E2D;&#x65AD;&#x3002;<code>uv_kill</code>&#x51FD;&#x6570;&#x5982;&#x4E0B;&#x6240;&#x793A;&#xFF1A;  </p>
+<pre><code>uv_err_t uv_kill(int pid, int signum);
+</code></pre><p>&#x5BF9;&#x4E8E;&#x7528;libuv&#x542F;&#x52A8;&#x7684;&#x8FDB;&#x7A0B;&#xFF0C;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;<code>uv_process_kill</code>&#x7EC8;&#x6B62;&#xFF0C;&#x5B83;&#x4F1A;&#x4EE5;<code>uv_process_t</code>&#x4F5C;&#x4E3A;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#xFF0C;&#x800C;&#x4E0D;&#x662F;pid&#x3002;&#x5F53;&#x4F7F;&#x7528;<code>uv_process_kill</code>&#x540E;&#xFF0C;&#x8BB0;&#x5F97;&#x4F7F;&#x7528;<code>uv_close</code>&#x5173;&#x95ED;<code>uv_process_t</code>&#x3002;  </p>
+<h3 id="signals">Signals</h3>
+<p>libuv&#x5BF9;unix&#x4FE1;&#x53F7;&#x548C;&#x4E00;&#x4E9B;<a href="http://docs.libuv.org/en/v1.x/signal.html#signal" target="_blank">windows&#x4E0B;&#x7C7B;&#x4F3C;&#x7684;&#x673A;&#x5236;</a>&#xFF0C;&#x505A;&#x4E86;&#x5F88;&#x597D;&#x7684;&#x6253;&#x5305;&#x3002;  </p>
+<p>&#x4F7F;&#x7528;<code>uv_signal_init</code>&#x521D;&#x59CB;&#x5316;&#x4E00;&#x997F;handle&#xFF0C;&#x7136;&#x540E;&#x5C06;&#x5B83;&#x4E0E;loop&#x5173;&#x8054;&#x3002;&#x4E3A;&#x4E86;&#x4F7F;&#x7528;handle&#x76D1;&#x542C;&#x7279;&#x5B9A;&#x7684;&#x4FE1;&#x53F7;&#xFF0C;&#x4F7F;&#x7528;<code>uv_signal_start()</code>&#x51FD;&#x6570;&#x3002;&#x6BCF;&#x4E00;&#x4E2A;handle&#x53EA;&#x80FD;&#x4E0E;&#x4E00;&#x4E2A;&#x4FE1;&#x53F7;&#x5173;&#x8054;&#xFF0C;&#x540E;&#x7EED;&#x7684;<code>uv_signal_start</code>&#x4F1A;&#x8986;&#x76D6;&#x524D;&#x9762;&#x7684;&#x5173;&#x8054;&#x3002;&#x4F7F;&#x7528;<code>uv_signal_stop</code>&#x7EC8;&#x6B62;&#x76D1;&#x542C;&#x3002;&#x4E0B;&#x9762;&#x7684;&#x8FD9;&#x4E2A;&#x5C0F;&#x4F8B;&#x5B50;&#x5C55;&#x793A;&#x4E86;&#x5404;&#x79CD;&#x7528;&#x6CD5;&#xFF1A;  </p>
+<h4 id="signalmainc">signal/main.c</h4>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;uv.h&gt;
+
+uv_loop_t* create_loop()
+{
+    uv_loop_t *loop = malloc(sizeof(uv_loop_t));
+    if (loop) {
+      uv_loop_init(loop);
+    }
+    return loop;
+}
+
+void signal_handler(uv_signal_t *handle, int signum)
+{
+    printf(&quot;Signal received: %d\n&quot;, signum);
+    uv_signal_stop(handle);
+}
+
+// two signal handlers in one loop
+void thread1_worker(void *userp)
+{
+    uv_loop_t *loop1 = create_loop();
+
+    uv_signal_t sig1a, sig1b;
+    uv_signal_init(loop1, &amp;sig1a);
+    uv_signal_start(&amp;sig1a, signal_handler, SIGUSR1);
+
+    uv_signal_init(loop1, &amp;sig1b);
+    uv_signal_start(&amp;sig1b, signal_handler, SIGUSR1);
+
+    uv_run(loop1, UV_RUN_DEFAULT);
+}
+
+// two signal handlers, each in its own loop
+void thread2_worker(void *userp)
+{
+    uv_loop_t *loop2 = create_loop();
+    uv_loop_t *loop3 = create_loop();
+
+    uv_signal_t sig2;
+    uv_signal_init(loop2, &amp;sig2);
+    uv_signal_start(&amp;sig2, signal_handler, SIGUSR1);
+
+    uv_signal_t sig3;
+    uv_signal_init(loop3, &amp;sig3);
+    uv_signal_start(&amp;sig3, signal_handler, SIGUSR1);
+
+    while (uv_run(loop2, UV_RUN_NOWAIT) || uv_run(loop3, UV_RUN_NOWAIT)) {
+    }
+}
+
+int main()
+{
+    printf(&quot;PID %d\n&quot;, getpid());
+
+    uv_thread_t thread1, thread2;
+
+    uv_thread_create(&amp;thread1, thread1_worker, 0);
+    uv_thread_create(&amp;thread2, thread2_worker, 0);
+
+    uv_thread_join(&amp;thread1);
+    uv_thread_join(&amp;thread2);
+    return 0;
+}
+</code></pre><h5 id="note">Note</h5>
+<p><code>uv_run(loop, UV_RUN_NOWAIT)</code>&#x548C;<code>uv_run(loop, UV_RUN_ONCE)</code>&#x975E;&#x5E38;&#x50CF;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x4EEC;&#x90FD;&#x53EA;&#x5904;&#x7406;&#x4E00;&#x4E2A;&#x4E8B;&#x4EF6;&#x3002;&#x4F46;&#x662F;&#x4E0D;&#x540C;&#x5728;&#x4E8E;&#xFF0C;UV_RUN_ONCE&#x4F1A;&#x5728;&#x6CA1;&#x6709;&#x4EFB;&#x52A1;&#x7684;&#x65F6;&#x5019;&#x963B;&#x585E;&#xFF0C;&#x4F46;&#x662F;UV_RUN_NOWAIT&#x4F1A;&#x7ACB;&#x523B;&#x8FD4;&#x56DE;&#x3002;&#x6211;&#x4EEC;&#x4F7F;&#x7528;<code>NOWAIT</code>&#xFF0C;&#x8FD9;&#x6837;&#x624D;&#x4F7F;&#x5F97;&#x4E00;&#x4E2A;loop&#x4E0D;&#x4F1A;&#x56E0;&#x4E3A;&#x53E6;&#x5916;&#x4E00;&#x4E2A;loop&#x6CA1;&#x6709;&#x8981;&#x5904;&#x7406;&#x7684;&#x4E8B;&#x4EF6;&#x800C;&#x6328;&#x997F;&#x3002;  </p>
+<p>&#x5F53;&#x5411;&#x8FDB;&#x7A0B;&#x53D1;&#x9001;<code>SIGUSR1</code>&#xFF0C;&#x4F60;&#x4F1A;&#x53D1;&#x73B0;signal_handler&#x51FD;&#x6570;&#x88AB;&#x6FC0;&#x53D1;&#x4E86;4&#x6B21;&#xFF0C;&#x6BCF;&#x6B21;&#x90FD;&#x5BF9;&#x5E94;&#x4E00;&#x4E2A;<code>uv_signal_t</code>&#x3002;&#x7136;&#x540E;signal_handler&#x8C03;&#x7528;uv_signal_stop&#x7EC8;&#x6B62;&#x4E86;&#x6BCF;&#x4E00;&#x4E2A;<code>uv_signal_t</code>&#xFF0C;&#x6700;&#x7EC8;&#x7A0B;&#x5E8F;&#x9000;&#x51FA;&#x3002;&#x5BF9;&#x6BCF;&#x4E2A;handler&#x51FD;&#x6570;&#x6765;&#x8BF4;&#xFF0C;&#x4EFB;&#x52A1;&#x7684;&#x5206;&#x914D;&#x5F88;&#x91CD;&#x8981;&#x3002;&#x4E00;&#x4E2A;&#x4F7F;&#x7528;&#x4E86;&#x591A;&#x4E2A;event-loop&#x7684;&#x670D;&#x52A1;&#x5668;&#x7A0B;&#x5E8F;&#xFF0C;&#x53EA;&#x8981;&#x7B80;&#x5355;&#x5730;&#x7ED9;&#x6BCF;&#x4E00;&#x4E2A;&#x8FDB;&#x7A0B;&#x6DFB;&#x52A0;&#x4FE1;&#x53F7;SIGINT&#x76D1;&#x89C6;&#x5668;&#xFF0C;&#x5C31;&#x53EF;&#x4EE5;&#x4FDD;&#x8BC1;&#x7A0B;&#x5E8F;&#x5728;&#x4E2D;&#x65AD;&#x9000;&#x51FA;&#x524D;&#xFF0C;&#x6570;&#x636E;&#x80FD;&#x591F;&#x5B89;&#x5168;&#x5730;&#x4FDD;&#x5B58;&#x3002;  </p>
+<h3 id="child-process-io">Child Process I/O</h3>
+<p>&#x4E00;&#x4E2A;&#x6B63;&#x5E38;&#x7684;&#x65B0;&#x4EA7;&#x751F;&#x7684;&#x8FDB;&#x7A0B;&#x90FD;&#x6709;&#x81EA;&#x5DF1;&#x7684;&#x4E00;&#x5957;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x6620;&#x5C04;&#x8868;&#xFF0C;&#x4F8B;&#x5982;0&#xFF0C;1&#xFF0C;2&#x5206;&#x522B;&#x5BF9;&#x5E94;<code>stdin</code>&#xFF0C;<code>stdout</code>&#x548C;<code>stderr</code>&#x3002;&#x6709;&#x65F6;&#x5019;&#x7236;&#x8FDB;&#x7A0B;&#x60F3;&#x8981;&#x5C06;&#x81EA;&#x5DF1;&#x7684;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x6620;&#x5C04;&#x8868;&#x5206;&#x4EAB;&#x7ED9;&#x5B50;&#x8FDB;&#x7A0B;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4F60;&#x7684;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x4E86;&#x4E00;&#x4E2A;&#x5B50;&#x547D;&#x4EE4;&#xFF0C;&#x5E76;&#x4E14;&#x628A;&#x6240;&#x6709;&#x7684;&#x9519;&#x8BEF;&#x4FE1;&#x606F;&#x8F93;&#x51FA;&#x5230;log&#x6587;&#x4EF6;&#x4E2D;&#xFF0C;&#x4F46;&#x662F;&#x4E0D;&#x80FD;&#x4F7F;&#x7528;<code>stdout</code>&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x4F60;&#x60F3;&#x8981;&#x4F7F;&#x5F97;&#x4F60;&#x7684;&#x5B50;&#x8FDB;&#x7A0B;&#x548C;&#x7236;&#x8FDB;&#x7A0B;&#x4E00;&#x6837;&#xFF0C;&#x62E5;&#x6709;<code>stderr</code>&#x3002;&#x5728;&#x8FD9;&#x79CD;&#x60C5;&#x5F62;&#x4E0B;&#xFF0C;libuv&#x63D0;&#x4F9B;&#x4E86;&#x7EE7;&#x627F;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x7684;&#x529F;&#x80FD;&#x3002;&#x5728;&#x4E0B;&#x9762;&#x7684;&#x4F8B;&#x5B50;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x4F1A;&#x8C03;&#x7528;&#x8FD9;&#x4E48;&#x4E00;&#x4E2A;&#x6D4B;&#x8BD5;&#x7A0B;&#x5E8F;&#xFF1A;  </p>
+<h4 id="procstreamstestc">proc-streams/test.c</h4>
+<pre><code>#include &lt;stdio.h&gt;
+
+int main()
+{
+    fprintf(stderr, &quot;This is stderr\n&quot;);
+    printf(&quot;This is stdout\n&quot;);
+    return 0;
+}
+</code></pre><p>&#x5B9E;&#x9645;&#x7684;&#x6267;&#x884C;&#x7A0B;&#x5E8F;<code>proc-streams</code>&#x5728;&#x8FD0;&#x884C;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x53EA;&#x5411;&#x5B50;&#x8FDB;&#x7A0B;&#x5206;&#x4EAB;stderr&#x3002;&#x5728;<code>stdio</code>&#x57DF;&#x4E2D;&#x7684;<code>uv_process_options_t</code>&#x8BBE;&#x7F6E;&#x4E86;&#x5B50;&#x8FDB;&#x7A0B;&#x7684;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x3002;&#x9996;&#x5148;&#x8BBE;&#x7F6E;<code>stdio_count</code>&#xFF0C;&#x5B9A;&#x4E49;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x7684;&#x4E2A;&#x6570;&#x3002;&#x518D;&#x4F7F;&#x7528;<code>uv_stdio_container_t</code>&#x961F;&#x5217;&#x6765;&#x8BBE;&#x7F6E;<code>uv_process_options_t.stdio</code>&#x3002;  </p>
+<pre><code>typedef struct uv_stdio_container_s {
+  uv_stdio_flags flags;
+
+  union {
+    uv_stream_t* stream;
+    int fd;
+  } data;
+} uv_stdio_container_t;
+</code></pre><p>&#x4E0A;&#x8FB9;&#x7684;flag&#x503C;&#x53EF;&#x53D6;&#x591A;&#x79CD;&#x3002;&#x6BD4;&#x5982;&#xFF0C;&#x5982;&#x679C;&#x4F60;&#x4E0D;&#x6253;&#x7B97;&#x4F7F;&#x7528;&#xFF0C;&#x53EF;&#x4EE5;&#x8BBE;&#x7F6E;&#x4E3A;<code>UV_IGNORE</code>&#x3002;&#x5982;&#x679C;&#x4E0E;stdio&#x4E2D;&#x5BF9;&#x5E94;&#x7684;&#x524D;&#x4E09;&#x4E2A;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x88AB;&#x6807;&#x8BB0;&#x4E3A;<code>UV_IGNORE</code>&#xFF0C;&#x90A3;&#x4E48;&#x5B83;&#x4EEC;&#x4F1A;&#x88AB;&#x91CD;&#x5B9A;&#x5411;&#x5230;<code>/dev/null</code>&#x3002;  </p>
+<p>&#x56E0;&#x4E3A;&#x6211;&#x4EEC;&#x60F3;&#x8981;&#x4F20;&#x9012;&#x4E00;&#x4E2A;&#x5DF2;&#x7ECF;&#x5B58;&#x5728;&#x7684;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#xFF0C;&#x6240;&#x4EE5;&#x4F7F;&#x7528;<code>UV_INHERIT_FD</code>&#x3002;&#x56E0;&#x6B64;&#xFF0C;fd&#x88AB;&#x8BBE;&#x4E3A;stderr&#x3002;  </p>
+<h4 id="procstreamsmainc">proc-streams/main.c</h4>
+<pre><code>int main() {
+    loop = uv_default_loop();
+
+    /* ... */
+
+    options.stdio_count = 3;
+    uv_stdio_container_t child_stdio[3];
+    child_stdio[0].flags = UV_IGNORE;
+    child_stdio[1].flags = UV_IGNORE;
+    child_stdio[2].flags = UV_INHERIT_FD;
+    child_stdio[2].data.fd = 2;
+    options.stdio = child_stdio;
+
+    options.exit_cb = on_exit;
+    options.file = args[0];
+    options.args = args;
+
+    int r;
+    if ((r = uv_spawn(loop, &amp;child_req, &amp;options))) {
+        fprintf(stderr, &quot;%s\n&quot;, uv_strerror(r));
+        return 1;
+    }
+
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+</code></pre><p>&#x8FD9;&#x65F6;&#x4F60;&#x542F;&#x52A8;proc-streams&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x5728;main&#x4E2D;&#x4EA7;&#x751F;&#x4E00;&#x4E2A;&#x6267;&#x884C;test&#x7684;&#x5B50;&#x8FDB;&#x7A0B;&#xFF0C;&#x4F60;&#x53EA;&#x4F1A;&#x770B;&#x5230;&#x201C;This is stderr&#x201D;&#x3002;&#x4F60;&#x53EF;&#x4EE5;&#x8BD5;&#x7740;&#x8BBE;&#x7F6E;stdout&#x4E5F;&#x7EE7;&#x627F;&#x7236;&#x8FDB;&#x7A0B;&#x3002;  </p>
+<p>&#x540C;&#x6837;&#x53EF;&#x4EE5;&#x628A;&#x4E0A;&#x8FF0;&#x65B9;&#x6CD5;&#x7528;&#x4E8E;&#x6D41;&#x7684;&#x91CD;&#x5B9A;&#x5411;&#x3002;&#x6BD4;&#x5982;&#xFF0C;&#x628A;flag&#x8BBE;&#x4E3A;<code>UV_INHERIT_STREAM</code>&#xFF0C;&#x7136;&#x540E;&#x518D;&#x8BBE;&#x7F6E;&#x7236;&#x8FDB;&#x7A0B;&#x4E2D;&#x7684;<code>data.stream</code>&#xFF0C;&#x8FD9;&#x65F6;&#x5B50;&#x8FDB;&#x7A0B;&#x53EA;&#x4F1A;&#x628A;&#x8FD9;&#x4E2A;stream&#x5F53;&#x6210;&#x662F;&#x6807;&#x51C6;&#x7684;I/O&#x3002;&#x8FD9;&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x5B9E;&#x73B0;&#xFF0C;&#x4F8B;&#x5982;<a href="https://en.wikipedia.org/wiki/Common_Gateway_Interface" target="_blank">CGI</a>&#x3002;  </p>
+<p>&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;CGI&#x811A;&#x672C;&#x7684;&#x4F8B;&#x5B50;&#x5982;&#x4E0B;&#xFF1A;  </p>
+<h4 id="cgitickc">cgi/tick.c</h4>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;unistd.h&gt;
+
+int main() {
+    int i;
+    for (i = 0; i &lt; 10; i++) {
+        printf(&quot;tick\n&quot;);
+        fflush(stdout);
+        sleep(1);
+    }
+    printf(&quot;BOOM!\n&quot;);
+    return 0;
+}
+</code></pre><p>CGI&#x670D;&#x52A1;&#x5668;&#x7528;&#x5230;&#x4E86;&#x8FD9;&#x7AE0;&#x548C;&#x7F51;&#x7EDC;&#x90A3;&#x7AE0;&#x7684;&#x77E5;&#x8BC6;&#xFF0C;&#x6240;&#x4EE5;&#x6BCF;&#x4E00;&#x4E2A;client&#x5728;&#x4E2D;&#x65AD;&#x8FDE;&#x63A5;&#x540E;&#xFF0C;&#x90FD;&#x4F1A;&#x88AB;&#x53D1;&#x9001;tick&#x3002;  </p>
+<h4 id="cgimainc">cgi/main.c</h4>
+<pre><code>void on_new_connection(uv_stream_t *server, int status) {
+    if (status == -1) {
+        // error!
+        return;
+    }
+
+    uv_tcp_t *client = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
+    uv_tcp_init(loop, client);
+    if (uv_accept(server, (uv_stream_t*) client) == 0) {
+        invoke_cgi_script(client);
+    }
+    else {
+        uv_close((uv_handle_t*) client, NULL);
+    }
+</code></pre><p>&#x4E0A;&#x8FF0;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x63A5;&#x53D7;&#x4E86;&#x8FDE;&#x63A5;&#xFF0C;&#x5E76;&#x628A;socket&#xFF08;&#x6D41;&#xFF09;&#x4F20;&#x9012;&#x7ED9;<code>invoke_cgi_script</code>&#x3002;  </p>
+<h4 id="cgimainc">cgi/main.c</h4>
+<pre><code>  args[1] = NULL;
+
+    /* ... finding the executable path and setting up arguments ... */
+
+    options.stdio_count = 3;
+    uv_stdio_container_t child_stdio[3];
+    child_stdio[0].flags = UV_IGNORE;
+    child_stdio[1].flags = UV_INHERIT_STREAM;
+    child_stdio[1].data.stream = (uv_stream_t*) client;
+    child_stdio[2].flags = UV_IGNORE;
+    options.stdio = child_stdio;
+
+    options.exit_cb = cleanup_handles;
+    options.file = args[0];
+    options.args = args;
+
+    // Set this so we can close the socket after the child process exits.
+    child_req.data = (void*) client;
+    int r;
+    if ((r = uv_spawn(loop, &amp;child_req, &amp;options))) {
+        fprintf(stderr, &quot;%s\n&quot;, uv_strerror(r));
+</code></pre><p>cgi&#x7684;<code>stdout</code>&#x88AB;&#x7ED1;&#x5B9A;&#x5230;socket&#x4E0A;&#xFF0C;&#x6240;&#x4EE5;&#x65E0;&#x8BBA;tick&#x811A;&#x672C;&#x7A0B;&#x5E8F;&#x6253;&#x5370;&#x4EC0;&#x4E48;&#xFF0C;&#x90FD;&#x4F1A;&#x53D1;&#x9001;&#x5230;client&#x7AEF;&#x3002;&#x901A;&#x8FC7;&#x4F7F;&#x7528;&#x8FDB;&#x7A0B;&#xFF0C;&#x6211;&#x4EEC;&#x80FD;&#x591F;&#x5F88;&#x597D;&#x5730;&#x5904;&#x7406;&#x8BFB;&#x5199;&#x5E76;&#x53D1;&#x64CD;&#x4F5C;&#xFF0C;&#x800C;&#x4E14;&#x7528;&#x8D77;&#x6765;&#x4E5F;&#x5F88;&#x65B9;&#x4FBF;&#x3002;&#x4F46;&#x662F;&#x8981;&#x8BB0;&#x5F97;&#x8FD9;&#x4E48;&#x505A;&#xFF0C;&#x662F;&#x5F88;&#x6D6A;&#x8D39;&#x8D44;&#x6E90;&#x7684;&#x3002;  </p>
+<h3 id="pipes">Pipes</h3>
+<p>libuv&#x7684;<code>uv_pipe_t</code>&#x7ED3;&#x6784;&#x53EF;&#x80FD;&#x4F1A;&#x8BA9;&#x4E00;&#x4E9B;unix&#x7A0B;&#x5E8F;&#x5458;&#x4EA7;&#x751F;&#x56F0;&#x60D1;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x50CF;&#x9B54;&#x672F;&#x822C;&#x53D8;&#x5E7B;&#x51FA;<code>|</code>&#x548C;<a href="http://man7.org/linux/man-pages/man7/pipe.7.html" target="_blank"><code>pipe(7)</code></a>&#x3002;&#x4F46;&#x8FD9;&#x91CC;&#x7684;<code>uv_pipe_t</code>&#x5E76;&#x4E0D;&#x662F;IPC&#x673A;&#x5236;&#x91CC;&#x7684;&#x533F;&#x540D;&#x7BA1;&#x9053;&#xFF08;&#x5728;IPC&#x91CC;&#xFF0C;pipe&#x662F;&#x533F;&#x540D;&#x7BA1;&#x9053;&#xFF0C;&#x53EA;&#x5141;&#x8BB8;&#x7236;&#x5B50;&#x8FDB;&#x7A0B;&#x4E4B;&#x95F4;&#x901A;&#x4FE1;&#x3002;FIFO&#x5219;&#x5141;&#x8BB8;&#x6CA1;&#x6709;&#x4EB2;&#x621A;&#x5173;&#x7CFB;&#x7684;&#x8FDB;&#x7A0B;&#x95F4;&#x901A;&#x4FE1;&#xFF0C;&#x663E;&#x7136;llibuv&#x91CC;&#x7684;<code>uv_pipe_t</code>&#x4E0D;&#x662F;&#x7B2C;&#x4E00;&#x79CD;&#xFF09;&#x3002;<code>uv_pipe_t</code>&#x80CC;&#x540E;&#x6709;<a href="http://man7.org/linux/man-pages/man7/unix.7.html" target="_blank">unix&#x672C;&#x5730;socket</a>&#x6216;&#x8005;<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa365590\(v=vs.85\" target="_blank">windows&#x5B9E;&#x540D;&#x7BA1;&#x9053;</a>.aspx)&#x7684;&#x652F;&#x6301;&#xFF0C;&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x591A;&#x8FDB;&#x7A0B;&#x95F4;&#x7684;&#x901A;&#x4FE1;&#x3002;&#x4E0B;&#x9762;&#x4F1A;&#x5177;&#x4F53;&#x8BA8;&#x8BBA;&#x3002;  </p>
+<h4 id="parentchild-ipc">Parent-child IPC</h4>
+<p>&#x7236;&#x8FDB;&#x7A0B;&#x4E0E;&#x5B50;&#x8FDB;&#x7A0B;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5355;&#x5DE5;&#x6216;&#x8005;&#x53CC;&#x5DE5;&#x7BA1;&#x9053;&#x901A;&#x4FE1;&#xFF0C;&#x83B7;&#x5F97;&#x7BA1;&#x9053;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x8BBE;&#x7F6E;<code>uv_stdio_container_t.flags</code>&#x4E3A;<code>UV_CREATE_PIPE</code>&#xFF0C;<code>UV_READABLE_PIPE</code>&#x6216;&#x8005;<code>UV_WRITABLE_PIPE</code>&#x7684;&#x6309;&#x4F4D;&#x6216;&#x7684;&#x503C;&#x3002;&#x4E0A;&#x8FF0;&#x7684;&#x8BFB;&#xFF0F;&#x5199;&#x6807;&#x8BB0;&#x662F;&#x5BF9;&#x4E8E;&#x5B50;&#x8FDB;&#x7A0B;&#x800C;&#x8A00;&#x7684;&#x3002;  </p>
+<h4 id="arbitrary-process-ipc">Arbitrary process IPC</h4>
+<p>&#x65E2;&#x7136;&#x672C;&#x5730;socket&#x5177;&#x6709;&#x786E;&#x5B9A;&#x7684;&#x540D;&#x79F0;&#xFF0C;&#x800C;&#x4E14;&#x662F;&#x4EE5;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x4E0A;&#x7684;&#x4F4D;&#x7F6E;&#x6765;&#x6807;&#x793A;&#x7684;&#xFF08;&#x4F8B;&#x5982;&#xFF0C;unix&#x4E2D;socket&#x662F;&#x6587;&#x4EF6;&#x7684;&#x4E00;&#x79CD;&#x5B58;&#x5728;&#x5F62;&#x5F0F;&#xFF09;&#xFF0C;&#x90A3;&#x4E48;&#x5B83;&#x5C31;&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x5728;&#x4E0D;&#x76F8;&#x5173;&#x7684;&#x8FDB;&#x7A0B;&#x95F4;&#x5B8C;&#x6210;&#x901A;&#x4FE1;&#x4EFB;&#x52A1;&#x3002;&#x88AB;&#x5F00;&#x6E90;&#x684C;&#x9762;&#x73AF;&#x5883;&#x4F7F;&#x7528;&#x7684;<a href="http://www.freedesktop.org/wiki/Software/dbus/" target="_blank"><code>D-BUS</code>&#x7CFB;&#x7EDF;</a>&#x4E5F;&#x662F;&#x4F7F;&#x7528;&#x4E86;&#x672C;&#x5730;socket&#x6765;&#x4F5C;&#x4E3A;&#x4E8B;&#x4EF6;&#x901A;&#x77E5;&#x7684;&#xFF0C;&#x4F8B;&#x5982;&#xFF0C;&#x5F53;&#x6D88;&#x606F;&#x6765;&#x5230;&#xFF0C;&#x6216;&#x8005;&#x68C0;&#x6D4B;&#x5230;&#x786C;&#x4EF6;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5404;&#x79CD;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x4F1A;&#x88AB;&#x901A;&#x77E5;&#x5230;&#x3002;mysql&#x670D;&#x52A1;&#x5668;&#x4E5F;&#x8FD0;&#x884C;&#x7740;&#x4E00;&#x4E2A;&#x672C;&#x5730;socket&#xFF0C;&#x7B49;&#x5F85;&#x5BA2;&#x6237;&#x7AEF;&#x7684;&#x8BBF;&#x95EE;&#x3002;  </p>
+<p>&#x5F53;&#x4F7F;&#x7528;&#x672C;&#x5730;socket&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5BA2;&#x6237;&#x7AEF;&#xFF0F;&#x670D;&#x52A1;&#x5668;&#x6A21;&#x578B;&#x901A;&#x5E38;&#x548C;&#x4E4B;&#x524D;&#x7C7B;&#x4F3C;&#x3002;&#x5728;&#x5B8C;&#x6210;&#x521D;&#x59CB;&#x5316;&#x540E;&#xFF0C;&#x53D1;&#x9001;&#x548C;&#x63A5;&#x53D7;&#x6D88;&#x606F;&#x7684;&#x65B9;&#x6CD5;&#x548C;&#x4E4B;&#x524D;&#x7684;tcp&#x7C7B;&#x4F3C;&#xFF0C;&#x63A5;&#x4E0B;&#x6765;&#x6211;&#x4EEC;&#x540C;&#x6837;&#x9002;&#x7528;echo&#x670D;&#x52A1;&#x5668;&#x7684;&#x4F8B;&#x5B50;&#x6765;&#x8BF4;&#x660E;&#x3002;  </p>
+<h4 id="pipeechoservermainc">pipe-echo-server/main.c</h4>
+<pre><code>int main() {
+    loop = uv_default_loop();
+
+    uv_pipe_t server;
+    uv_pipe_init(loop, &amp;server, 0);
+
+    signal(SIGINT, remove_sock);
+
+    int r;
+    if ((r = uv_pipe_bind(&amp;server, &quot;echo.sock&quot;))) {
+        fprintf(stderr, &quot;Bind error %s\n&quot;, uv_err_name(r));
+        return 1;
+    }
+    if ((r = uv_listen((uv_stream_t*) &amp;server, 128, on_new_connection))) {
+        fprintf(stderr, &quot;Listen error %s\n&quot;, uv_err_name(r));
+        return 2;
+    }
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+</code></pre><p>&#x6211;&#x4EEC;&#x628A;socket&#x547D;&#x540D;&#x4E3A;echo.sock&#xFF0C;&#x610F;&#x5473;&#x7740;&#x5B83;&#x5C06;&#x4F1A;&#x5728;&#x672C;&#x5730;&#x6587;&#x4EF6;&#x5939;&#x4E2D;&#x88AB;&#x521B;&#x9020;&#x3002;&#x5BF9;&#x4E8E;stream API&#x6765;&#x8BF4;&#xFF0C;&#x672C;&#x5730;socekt&#x8868;&#x73B0;&#x5F97;&#x548C;tcp&#x7684;socket&#x5DEE;&#x4E0D;&#x591A;&#x3002;&#x4F60;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;socat&#x6D4B;&#x8BD5;&#x4E00;&#x4E0B;&#x670D;&#x52A1;&#x5668;&#xFF1A;  </p>
+<pre><code>$ socat - /path/to/socket
+</code></pre><p>&#x5BA2;&#x6237;&#x7AEF;&#x5982;&#x679C;&#x60F3;&#x8981;&#x548C;&#x670D;&#x52A1;&#x5668;&#x7AEF;&#x8FDE;&#x63A5;&#x7684;&#x8BDD;&#xFF0C;&#x5E94;&#x8BE5;&#x4F7F;&#x7528;&#xFF1A;  </p>
+<pre><code>void uv_pipe_connect(uv_connect_t *req, uv_pipe_t *handle, const char *name, uv_connect_cb cb);
+</code></pre><p>&#x4E0A;&#x8FF0;&#x51FD;&#x6570;&#xFF0C;name&#x5E94;&#x8BE5;&#x4E3A;echo.sock&#x3002;  </p>
+<h4 id="sending-file-descriptors-over-pipes">Sending file descriptors over pipes</h4>
+<p>&#x6700;&#x9177;&#x7684;&#x4E8B;&#x60C5;&#x662F;&#x672C;&#x5730;socket&#x53EF;&#x4EE5;&#x4F20;&#x9012;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x8FDB;&#x7A0B;&#x95F4;&#x53EF;&#x4EE5;&#x4EA4;&#x6362;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x3002;&#x8FD9;&#x6837;&#x5C31;&#x5141;&#x8BB8;&#x8FDB;&#x7A0B;&#x5C06;&#x5B83;&#x4EEC;&#x7684;I/O&#x63CF;&#x8FF0;&#x7B26;&#x4F20;&#x9012;&#x7ED9;&#x5176;&#x4ED6;&#x8FDB;&#x7A0B;&#x3002;&#x5B83;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;&#x5305;&#x62EC;&#xFF0C;&#x6BD4;&#x5982;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x670D;&#x52A1;&#x5668;&#xFF0C;&#x5206;&#x6D3E;&#x5DE5;&#x4F5C;&#x8FDB;&#x7A0B;&#x7B49;&#xFF0C;&#x5404;&#x79CD;&#x53EF;&#x4EE5;&#x4F7F;&#x5F97;cpu&#x4F7F;&#x7528;&#x6700;&#x4F18;&#x5316;&#x7684;&#x5E94;&#x7528;&#x3002;libuv&#x5F53;&#x524D;&#x53EA;&#x652F;&#x6301;&#x901A;&#x8FC7;&#x7BA1;&#x9053;&#x4F20;&#x8F93;tcp socket&#x6216;&#x8005;&#x5176;&#x4ED6;&#x7684;pipe&#x3002;  </p>
+<p>&#x4E3A;&#x4E86;&#x5C55;&#x793A;&#x8FD9;&#x4E2A;&#x529F;&#x80FD;&#xFF0C;&#x6211;&#x4EEC;&#x5C06;&#x6765;&#x5B9E;&#x73B0;&#x4E00;&#x4E2A;&#x7531;&#x5FAA;&#x73AF;&#x4E2D;&#x7684;&#x5DE5;&#x4EBA;&#x8FDB;&#x7A0B;&#x5904;&#x7406;client&#x7AEF;&#x8BF7;&#x6C42;&#xFF0C;&#x7684;&#x8FD9;&#x4E48;&#x4E00;&#x4E2A;echo&#x670D;&#x52A1;&#x5668;&#x7A0B;&#x5E8F;&#x3002;&#x8FD9;&#x4E2A;&#x7A0B;&#x5E8F;&#x6709;&#x4E00;&#x4E9B;&#x590D;&#x6742;&#xFF0C;&#x5728;&#x6559;&#x7A0B;&#x4E2D;&#x53EA;&#x622A;&#x53D6;&#x4E86;&#x90E8;&#x5206;&#x7684;&#x7247;&#x6BB5;&#xFF0C;&#x4E3A;&#x4E86;&#x66F4;&#x597D;&#x5730;&#x7406;&#x89E3;&#xFF0C;&#x6211;&#x63A8;&#x8350;&#x4F60;&#x53BB;&#x8BFB;&#x4E0B;&#x5B8C;&#x6574;&#x7684;<a href="https://github.com/nikhilm/uvbook/tree/master/code/multi-echo-server" target="_blank">&#x4EE3;&#x7801;</a>&#x3002;  </p>
+<p>&#x5DE5;&#x4EBA;&#x8FDB;&#x7A0B;&#x5F88;&#x7B80;&#x5355;&#xFF0C;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x5C06;&#x4ECE;&#x4E3B;&#x8FDB;&#x7A0B;&#x4F20;&#x9012;&#x7ED9;&#x5B83;&#x3002;  </p>
+<h4 id="multiechoserverworkerc">multi-echo-server/worker.c</h4>
+<pre><code>uv_loop_t *loop;
+uv_pipe_t queue;
+int main() {
+    loop = uv_default_loop();
+
+    uv_pipe_init(loop, &amp;queue, 1 /* ipc */);
+    uv_pipe_open(&amp;queue, 0);
+    uv_read_start((uv_stream_t*)&amp;queue, alloc_buffer, on_new_connection);
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+</code></pre><p><code>queue</code>&#x662F;&#x53E6;&#x4E00;&#x7AEF;&#x8FDE;&#x63A5;&#x4E0A;&#x4E3B;&#x8FDB;&#x7A0B;&#x7684;&#x7BA1;&#x9053;&#xFF0C;&#x56E0;&#x6B64;&#xFF0C;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x53EF;&#x4EE5;&#x4F20;&#x9001;&#x8FC7;&#x6765;&#x3002;&#x5728;<code>uv_pipe_init</code>&#x4E2D;&#x5C06;ipc&#x53C2;&#x6570;&#x8BBE;&#x7F6E;&#x4E3A;1&#x5F88;&#x5173;&#x952E;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x6807;&#x660E;&#x4E86;&#x8FD9;&#x4E2A;&#x7BA1;&#x9053;&#x5C06;&#x88AB;&#x7528;&#x6765;&#x505A;&#x8FDB;&#x7A0B;&#x95F4;&#x901A;&#x4FE1;&#x3002;&#x56E0;&#x4E3A;&#x4E3B;&#x8FDB;&#x7A0B;&#x9700;&#x8981;&#x628A;&#x6587;&#x4EF6;handle&#x8D4B;&#x7ED9;&#x4E86;&#x5DE5;&#x4EBA;&#x8FDB;&#x7A0B;&#x4F5C;&#x4E3A;&#x6807;&#x51C6;&#x8F93;&#x5165;&#xFF0C;&#x56E0;&#x6B64;&#x6211;&#x4EEC;&#x4F7F;&#x7528;<code>uv_pipe_open</code>&#x628A;stdin&#x4F5C;&#x4E3A;pipe&#xFF08;&#x522B;&#x5FD8;&#x4E86;&#xFF0C;0&#x4EE3;&#x8868;stdin&#xFF09;&#x3002;  </p>
+<h4 id="multiechoserverworkerc">multi-echo-server/worker.c</h4>
+<pre><code>void on_new_connection(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf) {
+    if (nread &lt; 0) {
+        if (nread != UV_EOF)
+            fprintf(stderr, &quot;Read error %s\n&quot;, uv_err_name(nread));
+        uv_close((uv_handle_t*) q, NULL);
+        return;
+    }
+
+    uv_pipe_t *pipe = (uv_pipe_t*) q;
+    if (!uv_pipe_pending_count(pipe)) {
+        fprintf(stderr, &quot;No pending count\n&quot;);
+        return;
+    }
+
+    uv_handle_type pending = uv_pipe_pending_type(pipe);
+    assert(pending == UV_TCP);
+
+    uv_tcp_t *client = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
+    uv_tcp_init(loop, client);
+    if (uv_accept(q, (uv_stream_t*) client) == 0) {
+        uv_os_fd_t fd;
+        uv_fileno((const uv_handle_t*) client, &amp;fd);
+        fprintf(stderr, &quot;Worker %d: Accepted fd %d\n&quot;, getpid(), fd);
+        uv_read_start((uv_stream_t*) client, alloc_buffer, echo_read);
+    }
+    else {
+        uv_close((uv_handle_t*) client, NULL);
+    }
+}
+</code></pre><p>&#x9996;&#x5148;&#xFF0C;&#x6211;&#x4EEC;&#x8C03;&#x7528;<code>uv_pipe_pending_count</code>&#x6765;&#x786E;&#x5B9A;&#x4ECE;handle&#x4E2D;&#x53EF;&#x4EE5;&#x8BFB;&#x53D6;&#x51FA;&#x6570;&#x636E;&#x3002;&#x5982;&#x679C;&#x4F60;&#x7684;&#x7A0B;&#x5E8F;&#x80FD;&#x591F;&#x5904;&#x7406;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684;handle&#xFF0C;&#x8FD9;&#x65F6;<code>uv_pipe_pending_type</code>&#x5C31;&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x51B3;&#x5B9A;&#x5F53;&#x524D;&#x7684;&#x7C7B;&#x578B;&#x3002;&#x867D;&#x7136;&#x5728;&#x8FD9;&#x91CC;&#x4F7F;&#x7528;<code>accept</code>&#x770B;&#x8D77;&#x6765;&#x5F88;&#x602A;&#xFF0C;&#x4F46;&#x5B9E;&#x9645;&#x4E0A;&#x662F;&#x8BB2;&#x5F97;&#x901A;&#x7684;&#x3002;<code>accept</code>&#x6700;&#x5E38;&#x89C1;&#x7684;&#x7528;&#x9014;&#x662F;&#x4ECE;&#x5176;&#x4ED6;&#x7684;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#xFF08;&#x76D1;&#x542C;&#x7684;socket&#xFF09;&#x83B7;&#x53D6;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#xFF08;client&#x7AEF;&#xFF09;&#x3002;&#x8FD9;&#x4ECE;&#x539F;&#x7406;&#x4E0A;&#x8BF4;&#xFF0C;&#x548C;&#x6211;&#x4EEC;&#x73B0;&#x5728;&#x8981;&#x505A;&#x7684;&#x662F;&#x4E00;&#x6837;&#x7684;&#xFF1A;&#x4ECE;queue&#x4E2D;&#x83B7;&#x53D6;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#xFF08;client&#xFF09;&#x3002;&#x63A5;&#x4E0B;&#x6765;&#xFF0C;worker&#x53EF;&#x4EE5;&#x6267;&#x884C;&#x6807;&#x51C6;&#x7684;echo&#x670D;&#x52A1;&#x5668;&#x7684;&#x5DE5;&#x4F5C;&#x4E86;&#x3002;  </p>
+<p>&#x6211;&#x4EEC;&#x518D;&#x6765;&#x770B;&#x770B;&#x4E3B;&#x8FDB;&#x7A0B;&#xFF0C;&#x89C2;&#x5BDF;&#x5982;&#x4F55;&#x542F;&#x52A8;worker&#x6765;&#x8FBE;&#x5230;&#x8D1F;&#x8F7D;&#x5747;&#x8861;&#x3002;  </p>
+<h4 id="multiechoservermainc">multi-echo-server/main.c</h4>
+<pre><code>struct child_worker {
+    uv_process_t req;
+    uv_process_options_t options;
+    uv_pipe_t pipe;
+} *workers;
+</code></pre><p><code>child_worker</code>&#x7ED3;&#x6784;&#x5305;&#x88F9;&#x7740;&#x8FDB;&#x7A0B;&#xFF0C;&#x548C;&#x8FDE;&#x63A5;&#x4E3B;&#x8FDB;&#x7A0B;&#x548C;&#x5404;&#x4E2A;&#x72EC;&#x7ACB;&#x8FDB;&#x7A0B;&#x7684;&#x7BA1;&#x9053;&#x3002;  </p>
+<h4 id="multiechoservermainc">multi-echo-server/main.c</h4>
+<pre><code>void setup_workers() {
+    round_robin_counter = 0;
+
+    // ...
+
+    // launch same number of workers as number of CPUs
+    uv_cpu_info_t *info;
+    int cpu_count;
+    uv_cpu_info(&amp;info, &amp;cpu_count);
+    uv_free_cpu_info(info, cpu_count);
+
+    child_worker_count = cpu_count;
+
+    workers = calloc(sizeof(struct child_worker), cpu_count);
+    while (cpu_count--) {
+        struct child_worker *worker = &amp;workers[cpu_count];
+        uv_pipe_init(loop, &amp;worker-&gt;pipe, 1);
+
+        uv_stdio_container_t child_stdio[3];
+        child_stdio[0].flags = UV_CREATE_PIPE | UV_READABLE_PIPE;
+        child_stdio[0].data.stream = (uv_stream_t*) &amp;worker-&gt;pipe;
+        child_stdio[1].flags = UV_IGNORE;
+        child_stdio[2].flags = UV_INHERIT_FD;
+        child_stdio[2].data.fd = 2;
+
+        worker-&gt;options.stdio = child_stdio;
+        worker-&gt;options.stdio_count = 3;
+
+        worker-&gt;options.exit_cb = close_process_handle;
+        worker-&gt;options.file = args[0];
+        worker-&gt;options.args = args;
+
+        uv_spawn(loop, &amp;worker-&gt;req, &amp;worker-&gt;options); 
+        fprintf(stderr, &quot;Started worker %d\n&quot;, worker-&gt;req.pid);
+    }
+}
+</code></pre><p>&#x9996;&#x5148;&#xFF0C;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x9177;&#x70AB;&#x7684;<code>uv_cpu_info</code>&#x51FD;&#x6570;&#x83B7;&#x53D6;&#x5230;&#x5F53;&#x524D;&#x7684;cpu&#x7684;&#x6838;&#x5FC3;&#x4E2A;&#x6570;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4EEC;&#x4E5F;&#x80FD;&#x542F;&#x52A8;&#x4E00;&#x6837;&#x6570;&#x76EE;&#x7684;worker&#x8FDB;&#x7A0B;&#x3002;&#x518D;&#x6B21;&#x5F3A;&#x8C03;&#x4E00;&#x4E0B;&#xFF0C;&#x52A1;&#x5FC5;&#x5C06;<code>uv_pipe_init</code>&#x7684;ipc&#x53C2;&#x6570;&#x8BBE;&#x7F6E;&#x4E3A;1&#x3002;&#x63A5;&#x4E0B;&#x6765;&#xFF0C;&#x6211;&#x4EEC;&#x6307;&#x5B9A;&#x5B50;&#x8FDB;&#x7A0B;&#x7684;<code>stdin</code>&#x662F;&#x4E00;&#x4E2A;&#x53EF;&#x8BFB;&#x7684;&#x7BA1;&#x9053;&#xFF08;&#x4ECE;&#x5B50;&#x8FDB;&#x7A0B;&#x7684;&#x89D2;&#x5EA6;&#x6765;&#x8BF4;&#xFF09;&#x3002;&#x63A5;&#x4E0B;&#x6765;&#x7684;&#x4E00;&#x5207;&#x5C31;&#x5F88;&#x76F4;&#x89C2;&#x4E86;&#xFF0C;worker&#x8FDB;&#x7A0B;&#x88AB;&#x542F;&#x52A8;&#xFF0C;&#x7B49;&#x5F85;&#x7740;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x88AB;&#x5199;&#x5165;&#x5230;&#x4ED6;&#x4EEC;&#x7684;&#x6807;&#x51C6;&#x8F93;&#x5165;&#x4E2D;&#x3002;  </p>
+<p>&#x5728;&#x4E3B;&#x8FDB;&#x7A0B;&#x7684;<code>on_new_connection</code>&#x4E2D;&#xFF0C;&#x6211;&#x4EEC;&#x63A5;&#x6536;&#x4E86;client&#x7AEF;&#x7684;socket&#xFF0C;&#x7136;&#x540E;&#x628A;&#x5B83;&#x4F20;&#x9012;&#x7ED9;worker&#x73AF;&#x4E2D;&#x7684;&#x4E0B;&#x4E00;&#x4E2A;&#x53EF;&#x7528;&#x7684;worker&#x8FDB;&#x7A0B;&#x3002;  </p>
+<h4 id="multiechoservermainc">multi-echo-server/main.c</h4>
+<pre><code>void on_new_connection(uv_stream_t *server, int status) {
+    if (status == -1) {
+        // error!
+        return;
+    }
+
+    uv_tcp_t *client = (uv_tcp_t*) malloc(sizeof(uv_tcp_t));
+    uv_tcp_init(loop, client);
+    if (uv_accept(server, (uv_stream_t*) client) == 0) {
+        uv_write_t *write_req = (uv_write_t*) malloc(sizeof(uv_write_t));
+        dummy_buf = uv_buf_init(&quot;a&quot;, 1);
+        struct child_worker *worker = &amp;workers[round_robin_counter];
+        uv_write2(write_req, (uv_stream_t*) &amp;worker-&gt;pipe, &amp;dummy_buf, 1, (uv_stream_t*) client, NULL);
+        round_robin_counter = (round_robin_counter + 1) % child_worker_count;
+    }
+    else {
+        uv_close((uv_handle_t*) client, NULL);
+    }
+}
+</code></pre><p><code>uv_write2</code>&#x80FD;&#x591F;&#x5728;&#x6240;&#x6709;&#x7684;&#x60C5;&#x5F62;&#x4E0A;&#x505A;&#x4E86;&#x4E00;&#x4E2A;&#x5F88;&#x597D;&#x7684;&#x62BD;&#x8C61;&#xFF0C;&#x6211;&#x4EEC;&#x53EA;&#x9700;&#x8981;&#x5C06;client&#x4F5C;&#x4E3A;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x5373;&#x53EF;&#x5B8C;&#x6210;&#x4F20;&#x8F93;&#x3002;&#x73B0;&#x5728;&#xFF0C;&#x6211;&#x4EEC;&#x7684;&#x591A;&#x8FDB;&#x7A0B;echo&#x670D;&#x52A1;&#x5668;&#x5DF2;&#x7ECF;&#x53EF;&#x4EE5;&#x8FD0;&#x8F6C;&#x8D77;&#x6765;&#x5566;&#x3002;  </p>
+<p>&#x611F;&#x8C22;Kyle&#x6307;&#x51FA;&#x4E86;<code>uv_write2</code>&#x9700;&#x8981;&#x4E00;&#x4E2A;&#x4E0D;&#x4E3A;&#x7A7A;&#x7684;buffer&#x3002;  </p>
+
+                    
+                    </section>
+                
+                
+                </div>
+            </div>
+        </div>
+
+        
+        <a href="./threads.html" class="navigation navigation-prev " aria-label="Previous page: 线程"><i class="fa fa-angle-left"></i></a>
+        
+        
+        <a href="./advanced_event_loops.html" class="navigation navigation-next " aria-label="Next page: 高级事件循环"><i class="fa fa-angle-right"></i></a>
+        
+    </div>
+</div>
+
+        
+<script src="gitbook/app.js"></script>
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-search/search.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-sharing/buttons.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
+    
+
+<script>
+require(["gitbook"], function(gitbook) {
+    var config = {"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
+    gitbook.start(config);
+});
+</script>
+
+        
+    </body>
+    
+</html>
