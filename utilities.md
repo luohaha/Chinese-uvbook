@@ -452,3 +452,107 @@ int uv_tty_init(uv_loop_t*, uv_tty_t*, uv_file fd, int readable)
 
 最好还要使用`uv_tty_set_mode`来设置其为正常模式。也就是运行大多数的TTY格式，流控制和其他的设置。其他的模式还有[这些](http://docs.libuv.org/en/v1.x/tty.html#c.uv_tty_mode_t)。  
 
+记得当你的程序退出后，要使用`uv_tty_reset_mode`恢复终端的状态。这才是礼貌的做法。另外要注意礼貌的地方是关心重定向。如果使用者将你的命令的输出重定向到文件，控制序列不应该被重写，因为这会阻碍可读性和grep。为了保证文件描述符确实是TTY，可以使用`uv_guess_handle`函数，比较返回值是否为`UV_TTY`。  
+
+下面是一个把白字打印到红色背景上的例子。  
+
+####tty/main.c
+
+```
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <uv.h>
+
+uv_loop_t *loop;
+uv_tty_t tty;
+int main() {
+    loop = uv_default_loop();
+
+    uv_tty_init(loop, &tty, 1, 0);
+    uv_tty_set_mode(&tty, UV_TTY_MODE_NORMAL);
+    
+    if (uv_guess_handle(1) == UV_TTY) {
+        uv_write_t req;
+        uv_buf_t buf;
+        buf.base = "\033[41;37m";
+        buf.len = strlen(buf.base);
+        uv_write(&req, (uv_stream_t*) &tty, &buf, 1, NULL);
+    }
+
+    uv_write_t req;
+    uv_buf_t buf;
+    buf.base = "Hello TTY\n";
+    buf.len = strlen(buf.base);
+    uv_write(&req, (uv_stream_t*) &tty, &buf, 1, NULL);
+    uv_tty_reset_mode();
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+最后要说的是`uv_tty_get_winsize()`，它能获取到终端的宽和长，当成功获取后返回0。下面这个小程序实现了一个动画的效果。  
+
+####tty-gravity/main.c
+
+```
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <uv.h>
+
+uv_loop_t *loop;
+uv_tty_t tty;
+uv_timer_t tick;
+uv_write_t write_req;
+int width, height;
+int pos = 0;
+char *message = "  Hello TTY  ";
+
+void update(uv_timer_t *req) {
+    char data[500];
+
+    uv_buf_t buf;
+    buf.base = data;
+    buf.len = sprintf(data, "\033[2J\033[H\033[%dB\033[%luC\033[42;37m%s",
+                            pos,
+                            (unsigned long) (width-strlen(message))/2,
+                            message);
+    uv_write(&write_req, (uv_stream_t*) &tty, &buf, 1, NULL);
+
+    pos++;
+    if (pos > height) {
+        uv_tty_reset_mode();
+        uv_timer_stop(&tick);
+    }
+}
+
+int main() {
+    loop = uv_default_loop();
+
+    uv_tty_init(loop, &tty, 1, 0);
+    uv_tty_set_mode(&tty, 0);
+    
+    if (uv_tty_get_winsize(&tty, &width, &height)) {
+        fprintf(stderr, "Could not get TTY information\n");
+        uv_tty_reset_mode();
+        return 1;
+    }
+
+    fprintf(stderr, "Width %d, height %d\n", width, height);
+    uv_timer_init(loop, &tick);
+    uv_timer_start(&tick, update, 200, 200);
+    return uv_run(loop, UV_RUN_DEFAULT);
+}
+```
+
+escape codes的对应表如下：  
+
+代码 | 意义 
+------------ | ------------- 
+2 J | Clear part of the screen, 2 is entire screen
+H | Moves cursor to certain position, default top-left
+n B | Moves cursor down by n lines
+n C | Moves cursor right by n columns
+m | Obeys string of display settings, in this case green background (40+2), white text (30+7)
+
+ 
