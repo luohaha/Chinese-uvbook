@@ -436,3 +436,19 @@ int main(int argc, char **argv) {
 
 函数`uv_dlopen`需要传入一个动态链接库的路径作为参数。当它成功时返回0，出错时返回－1。使用`uv_dlerror`可以获取出错的消息。  
 
+`uv_dlsym`的第三个参数保存了一个指向第二个参数所保存的函数的指针。`init_plugin_function`是一个函数的指针，它指向了我们所需要的程序插件的函数。  
+
+###TTY
+
+文字终端长期支持非常标准化的[控制序列](https://en.wikipedia.org/wiki/ANSI_escape_code)。它经常被用来增强终端输出的可读性。例如`grep --colour`。libuv提供了跨平台的，`uv_tty_t`抽象（stream）和相关的处理ANSI escape codes 的函数。这也就是说，libuv同样在Windows上实现了对等的ANSI codes，并且提供了获取终端信息的函数。  
+
+首先要做的是，使用读／写文件描述符来初始化`uv_tty_t`。如下：  
+
+```
+int uv_tty_init(uv_loop_t*, uv_tty_t*, uv_file fd, int readable)
+```
+
+设置`readable`为true，意味着你打算使用`uv_read_start`从stream从中读取数据。  
+
+最好还要使用`uv_tty_set_mode`来设置其为正常模式。也就是运行大多数的TTY格式，流控制和其他的设置。其他的模式还有[这些](http://docs.libuv.org/en/v1.x/tty.html#c.uv_tty_mode_t)。  
+
