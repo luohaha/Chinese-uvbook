@@ -250,4 +250,133 @@ void add_download(const char *url, int num) {
 
 我们允许libcurl直接向文件写入数据。  
 
-`start_timeout`会被libcurl立即调用。
+`start_timeout`会被libcurl立即调用。它会启动一个libuv的定时器，使用`CURL_SOCKET_TIMEOUT`驱动`curl_multi_socket_action`，当其超时时，调用它。`curl_multi_socket_action`会驱动libcurl，也会在socket状态改变的时候被调用。但在我们深入讲解它之前，我们需要轮询监听socket，等待`handle_socket`被调用。  
+
+####uvwget/main.c - Setting up polling
+
+```
+void start_timeout(CURLM *multi, long timeout_ms, void *userp) {
+    if (timeout_ms <= 0)
+        timeout_ms = 1; /* 0 means directly call socket_action, but we'll do it in a bit */
+    uv_timer_start(&timeout, on_timeout, timeout_ms, 0);
+}
+
+int handle_socket(CURL *easy, curl_socket_t s, int action, void *userp, void *socketp) {
+    curl_context_t *curl_context;
+    if (action == CURL_POLL_IN || action == CURL_POLL_OUT) {
+        if (socketp) {
+            curl_context = (curl_context_t*) socketp;
+        }
+        else {
+            curl_context = create_curl_context(s);
+            curl_multi_assign(curl_handle, s, (void *) curl_context);
+        }
+    }
+
+    switch (action) {
+        case CURL_POLL_IN:
+            uv_poll_start(&curl_context->poll_handle, UV_READABLE, curl_perform);
+            break;
+        case CURL_POLL_OUT:
+            uv_poll_start(&curl_context->poll_handle, UV_WRITABLE, curl_perform);
+            break;
+        case CURL_POLL_REMOVE:
+            if (socketp) {
+                uv_poll_stop(&((curl_context_t*)socketp)->poll_handle);
+                destroy_curl_context((curl_context_t*) socketp);                
+                curl_multi_assign(curl_handle, s, NULL);
+            }
+            break;
+        default:
+            abort();
+    }
+
+    return 0;
+}
+```
+
+我们关心的是socket的文件描述符s，还有action。对应每一个socket，我们都创造了`uv_poll_t`，并用`curl_multi_assign`把它们关联起来。每当回调函数被调用时，`socketp`都会指向它。  
+
+在下载完成或失败后，libcurl需要移除poll。所以我们停止并回收了poll的handle。  
+
+我们使用`UV_READABLE`或`UV_WRITABLE`开始轮询，基于libcurl想要监视的事件。当socket已经准备好读或写后，libuv会调用轮询的回调函数。在相同的handle上调用多次`uv_poll_start`是被允许的，这么做可以更新事件的参数。`curl_perform`是整个程序的关键。  
+
+####uvwget/main.c - Driving libcurl.
+
+```
+void curl_perform(uv_poll_t *req, int status, int events) {
+    uv_timer_stop(&timeout);
+    int running_handles;
+    int flags = 0;
+    if (status < 0)                      flags = CURL_CSELECT_ERR;
+    if (!status && events & UV_READABLE) flags |= CURL_CSELECT_IN;
+    if (!status && events & UV_WRITABLE) flags |= CURL_CSELECT_OUT;
+
+    curl_context_t *context;
+
+    context = (curl_context_t*)req;
+
+    curl_multi_socket_action(curl_handle, context->sockfd, flags, &running_handles);
+    check_multi_info();   
+}
+```
+
+首先我们要做的是停止定时器，因为内部还有其他要做的事。接下来我们我们依据触发回调函数的事件，来设置flag。然后，我们使用上述socket和flag作为参数，来调用`curl_multi_socket_action`。在此刻libcurl会在内部完成所有的工作，然后尽快地返回事件驱动程序在主线程中急需的数据。libcurl会在自己的队列中将传输进度的消息排队。对于我们来说，我们只关心是否传输完成，这类消息。所以我们将这类消息提取出来，并将传输完成的handle回收。  
+
+####uvwget/main.c - Reading transfer status.
+
+```
+void check_multi_info(void) {
+    char *done_url;
+    CURLMsg *message;
+    int pending;
+
+    while ((message = curl_multi_info_read(curl_handle, &pending))) {
+        switch (message->msg) {
+        case CURLMSG_DONE:
+            curl_easy_getinfo(message->easy_handle, CURLINFO_EFFECTIVE_URL,
+                            &done_url);
+            printf("%s DONE\n", done_url);
+
+            curl_multi_remove_handle(curl_handle, message->easy_handle);
+            curl_easy_cleanup(message->easy_handle);
+            break;
+
+        default:
+            fprintf(stderr, "CURLMSG default\n");
+            abort();
+        }
+    }
+}
+```
+
+###Loading libraries
+
+libuv提供了一个跨平台的API来加载[动态链接库shared libraries](https://en.wikipedia.org/wiki/Library_\(computing\)#Shared_libraries)。这就可以用来实现你自己的插件／扩展／模块系统，它们可以被nodejs通过`require()`调用。只要你的库输出的是正确的符号，用起来还是很简单的。在载入第三方库的时候，要注意错误和安全检查，否则你的程序就会表现出不可预测的行为。下面这个例子实现了一个简单的插件，它只是打印出了自己的名字。  
+
+首先看下提供给插件作者的接口。  
+
+####plugin/plugin.h
+
+```
+#ifndef UVBOOK_PLUGIN_SYSTEM
+#define UVBOOK_PLUGIN_SYSTEM
+
+// Plugin authors should use this to register their plugins with mfp.
+void mfp_register(const char *name);
+
+#endif
+```
+
+你可以在你的程序中给插件添加更多有用的功能（mfp is My Fancy Plugin）。使用了这个api的插件：  
+
+####plugin/hello.c
+
+```
+#include "plugin.h"
+
+void initialize() {
+    mfp_register("Hello World!");
+}
+```
+
