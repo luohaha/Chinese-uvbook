@@ -216,4 +216,38 @@ int main(int argc, char **argv) {
 }
 ```
 
-每种库整合进libuv的方式都是不同的。以libcurl的例子来说，我们注册了两个回调函数。socket回调函数`handle_socket`会在socket状态改变的时候被触发，因此我们不得不开始轮询它。`start_timeout`是用来
+每种库整合进libuv的方式都是不同的。以libcurl的例子来说，我们注册了两个回调函数。socket回调函数`handle_socket`会在socket状态改变的时候被触发，因此我们不得不开始轮询它。`start_timeout`是libcurl用来告知我们下一次的超时间隔的，之后我们就应该不管当前IO状态，驱动libcurl向前。这些也就是libcurl能处理错误或驱动下载进度向前的原因。  
+
+可以这么调用下载器：  
+
+```
+$ ./uvwget [url1] [url2] ...
+```
+
+我们可以把url当成参数传入程序。  
+
+####uvwget/main.c - Adding urls
+
+```
+void add_download(const char *url, int num) {
+    char filename[50];
+    sprintf(filename, "%d.download", num);
+    FILE *file;
+
+    file = fopen(filename, "w");
+    if (file == NULL) {
+        fprintf(stderr, "Error opening %s\n", filename);
+        return;
+    }
+
+    CURL *handle = curl_easy_init();
+    curl_easy_setopt(handle, CURLOPT_WRITEDATA, file);
+    curl_easy_setopt(handle, CURLOPT_URL, url);
+    curl_multi_add_handle(curl_handle, handle);
+    fprintf(stderr, "Added download %s -> %s\n", url, filename);
+}
+```
+
+我们允许libcurl直接向文件写入数据。  
+
+`start_timeout`会被libcurl立即调用。
