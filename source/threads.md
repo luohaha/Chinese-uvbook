@@ -17,7 +17,7 @@
 
 ####thread-create/main.c
 
-```
+```c
 int main() {
     int tracklen = 10;
     uv_thread_t hare_id;
