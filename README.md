@@ -1,6 +1,9 @@
 #libuv中文教程
 翻译自[《An Introduction to libuv》](https://github.com/nikhilm/uvbook).  
 
+##在线阅读
+使用gitbook制作，可以[在线阅读](http://luohaha.github.io/Chinese-uvbook/)。
+
 ##目录
 1. [简介](https://github.com/luohaha/Chinese-uvbook/blob/master/source/introduction.md)。
 2. [libuv基础](https://github.com/luohaha/Chinese-uvbook/blob/master/source/basics_of_libuv.md)。
