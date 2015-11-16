@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html lang="en" >
-    
+    <!-- Start book libuv中文教程 -->
     <head>
-        
+        <!-- head:start -->
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>文件系统 | libuv中文教程</title>
@@ -19,6 +19,10 @@
         <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
         
     <link rel="stylesheet" href="../gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-maxiang/maxiang.css">
+        
     
         
         <link rel="stylesheet" href="../gitbook/plugins/gitbook-plugin-highlight/website.css">
@@ -44,11 +48,12 @@
     
 
         <script>window["gitbook-plugin-github-buttons"] = {"repo":"luohaha/Chinese-uvbook","types":["star"]};</script>
+<!-- head:end -->
     </head>
     <body>
+        <!-- body:start -->
         
-        
-    <div class="book" data-level="3" data-chapter-title="文件系统" data-filepath="source/filesystem.md" data-basepath=".." data-revision="Mon Nov 16 2015 14:48:16 GMT+0800 (CST)">
+    <div class="book" data-level="3" data-chapter-title="文件系统" data-filepath="source/filesystem.md" data-basepath=".." data-revision="Mon Nov 16 2015 17:34:11 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -251,7 +256,7 @@
 </code></pre><p>&#x6240;&#x6709;&#x7684;&#x6587;&#x4EF6;&#x64CD;&#x4F5C;&#x51FD;&#x6570;&#x90FD;&#x6709;&#x4E24;&#x79CD;&#x5F62;&#x5F0F; - &#x540C;&#x6B65; synchronous &#x548C; asynchronous.</p>
 <p>&#x540C;&#x6B65; synchronous &#x5F62;&#x5F0F;&#x5982;&#x679C;&#x6CA1;&#x6709;&#x6307;&#x5B9A;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x5219;&#x4F1A;&#x88AB;&#x81EA;&#x52A8;&#x8C03;&#x7528;( &#x963B;&#x585E;&#x7684; ), &#x51FD;&#x6570;&#x7684;&#x8FD4;&#x56DE;&#x503C;&#x548C; Unix &#x7CFB;&#x7EDF;&#x7684;&#x51FD;&#x6570;&#x8C03;&#x7528;&#x8FD4;&#x56DE;&#x503C;&#x76F8;&#x540C;(&#x8C03;&#x7528;&#x6210;&#x529F;&#x901A;&#x5E38;&#x8FD4;&#x56DE; 0, &#x82E5;&#x51FA;&#x73B0;&#x9519;&#x8BEF;&#x5219;&#x8FD4;&#x56DE; -1).</p>
 <p>&#x800C;&#x5F02;&#x6B65; asynchronous &#x5F62;&#x5F0F;&#x5219;&#x4F1A;&#x5728;&#x4F20;&#x5165;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x65F6;&#x88AB;&#x8C03;&#x7528;, &#x5E76;&#x4E14;&#x8FD4;&#x56DE; 0.</p>
-<h1 id="readingwriting-files">Reading/Writing files</h1>
+<h2 id="readingwriting-files">Reading/Writing files</h2>
 <p>&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x53EF;&#x4EE5;&#x91C7;&#x7528;&#x5982;&#x4E0B;&#x65B9;&#x5F0F;&#x83B7;&#x5F97;:</p>
 <pre><code>int uv_fs_open(uv_loop_t* loop, uv_fs_t* req, const char* path, int flags, int mode, uv_fs_cb cb)
 </code></pre><p>&#x53C2;&#x6570;<code>flags</code>&#x4E0E;<code>mode</code>&#x548C;&#x6807;&#x51C6;&#x7684; Unix flags &#x76F8;&#x540C;. libuv &#x4F1A;&#x5C0F;&#x5FC3;&#x5730;&#x5904;&#x7406; Windows &#x73AF;&#x5883;&#x4E0B;&#x7684;&#x76F8;&#x5173;&#x6807;&#x5FD7;&#x4F4D;(flags)&#x7684;&#x8F6C;&#x6362;, &#x6240;&#x4EE5;&#x7F16;&#x5199;&#x8DE8;&#x5E73;&#x53F0;&#x7A0B;&#x5E8F;&#x65F6;&#x4F60;&#x4E0D;&#x7528;&#x62C5;&#x5FC3;&#x4E0D;&#x540C;&#x5E73;&#x53F0;&#x4E0A;&#x6587;&#x4EF6;&#x6253;&#x5F00;&#x7684;&#x6807;&#x5FD7;&#x4F4D;&#x4E0D;&#x540C;&#x3002;</p>
@@ -288,7 +293,9 @@
         uv_fs_write(uv_default_loop(), &amp;write_req, 1, &amp;iov, 1, -1, on_write);
     }
 }
-</code></pre><p>&#x5728;&#x8C03;&#x7528;&#x8BFB;&#x53D6;&#x51FD;&#x6570;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x4F60;&#x5FC5;&#x987B;&#x4F20;&#x9012;&#x4E00;&#x4E2A;&#x5DF2;&#x7ECF;&#x521D;&#x59CB;&#x5316;&#x7684;&#x7F13;&#x51B2;&#x533A;&#xFF0C;&#x5728;<code>on_read()</code>&#x88AB;&#x89E6;&#x53D1;&#x540E;&#xFF0C;&#x7F13;&#x51B2;&#x533A;&#x88AB;&#x88AB;&#x5199;&#x5165;&#x6570;&#x636E;&#x3002;<code>uv_fs_*</code>&#x7CFB;&#x5217;&#x7684;&#x51FD;&#x6570;&#x662F;&#x548C;POSIX&#x7684;&#x51FD;&#x6570;&#x5BF9;&#x5E94;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x5F53;&#x8BFB;&#x5230;&#x6587;&#x4EF6;&#x7684;&#x672B;&#x5C3E;&#x65F6;(EOF),result&#x8FD4;&#x56DE;0&#x3002;&#x5728;&#x4F7F;&#x7528;stream&#x6216;&#x8005;pipe&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x4F7F;&#x7528;&#x7684;&#x662F;libuv&#x81EA;&#x5B9A;&#x4E49;&#x7684;<code>UV_EOF</code>&#x3002;<br>&#x73B0;&#x5728;&#x4F60;&#x770B;&#x5230;&#x7C7B;&#x4F3C;&#x7684;&#x5F02;&#x6B65;&#x7F16;&#x7A0B;&#x7684;&#x6A21;&#x5F0F;&#x3002;&#x4F46;&#x662F;<code>uv_fs_close()</code>&#x662F;&#x540C;&#x6B65;&#x7684;&#xFF0C;&#x4E00;&#x822C;&#x6765;&#x8BF4;&#xFF0C;&#x4E00;&#x6B21;&#x6027;&#x7684;&#xFF0C;&#x5F00;&#x59CB;&#x7684;&#x6216;&#x8005;&#x5173;&#x95ED;&#x7684;&#x90E8;&#x5206;&#xFF0C;&#x90FD;&#x662F;&#x540C;&#x6B65;&#x7684;&#xFF0C;&#x56E0;&#x4E3A;&#x6211;&#x4EEC;&#x4E00;&#x822C;&#x5173;&#x5FC3;&#x4E3B;&#x8981;&#x4EFB;&#x52A1;&#x548C;&#x591A;&#x8DEF;I/O&#x7684;&#x5FEB;&#x901F;I/O&#x3002;&#x6240;&#x4EE5;&#x5728;&#x8FD9;&#x4E9B;&#x5BF9;&#x6027;&#x80FD;&#x5FAE;&#x4E0D;&#x8DB3;&#x9053;&#x7684;&#x5730;&#x65B9;&#xFF0C;&#x90FD;&#x662F;&#x4F7F;&#x7528;&#x540C;&#x6B65;&#x7684;&#xFF0C;&#x8FD9;&#x6837;&#x4EE3;&#x7801;&#x8FD8;&#x4F1A;&#x7B80;&#x5355;&#x4E00;&#x4E9B;&#x3002;<br>&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x7684;&#x5199;&#x5165;&#x4F7F;&#x7528; <code>uv_fs_write()</code>&#xFF0C;&#x5F53;&#x5199;&#x5165;&#x5B8C;&#x6210;&#x65F6;&#x4F1A;&#x51FA;&#x53D1;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x5728;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x4E2D;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F1A;&#x51FA;&#x53D1;&#x4E0B;&#x4E00;&#x6B21;&#x7684;&#x8BFB;&#x53D6;&#x3002;</p>
+</code></pre><p>&#x5728;&#x8C03;&#x7528;&#x8BFB;&#x53D6;&#x51FD;&#x6570;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x4F60;&#x5FC5;&#x987B;&#x4F20;&#x9012;&#x4E00;&#x4E2A;&#x5DF2;&#x7ECF;&#x521D;&#x59CB;&#x5316;&#x7684;&#x7F13;&#x51B2;&#x533A;&#xFF0C;&#x5728;<code>on_read()</code>&#x88AB;&#x89E6;&#x53D1;&#x540E;&#xFF0C;&#x7F13;&#x51B2;&#x533A;&#x88AB;&#x88AB;&#x5199;&#x5165;&#x6570;&#x636E;&#x3002;<code>uv_fs_*</code>&#x7CFB;&#x5217;&#x7684;&#x51FD;&#x6570;&#x662F;&#x548C;POSIX&#x7684;&#x51FD;&#x6570;&#x5BF9;&#x5E94;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x5F53;&#x8BFB;&#x5230;&#x6587;&#x4EF6;&#x7684;&#x672B;&#x5C3E;&#x65F6;(EOF)&#xFF0C;result&#x8FD4;&#x56DE;0&#x3002;&#x5728;&#x4F7F;&#x7528;stream&#x6216;&#x8005;pipe&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x4F7F;&#x7528;&#x7684;&#x662F;libuv&#x81EA;&#x5B9A;&#x4E49;&#x7684;<code>UV_EOF</code>&#x3002;   </p>
+<p>&#x73B0;&#x5728;&#x4F60;&#x770B;&#x5230;&#x7C7B;&#x4F3C;&#x7684;&#x5F02;&#x6B65;&#x7F16;&#x7A0B;&#x7684;&#x6A21;&#x5F0F;&#x3002;&#x4F46;&#x662F;<code>uv_fs_close()</code>&#x662F;&#x540C;&#x6B65;&#x7684;&#xFF0C;&#x4E00;&#x822C;&#x6765;&#x8BF4;&#xFF0C;&#x4E00;&#x6B21;&#x6027;&#x7684;&#xFF0C;&#x5F00;&#x59CB;&#x7684;&#x6216;&#x8005;&#x5173;&#x95ED;&#x7684;&#x90E8;&#x5206;&#xFF0C;&#x90FD;&#x662F;&#x540C;&#x6B65;&#x7684;&#xFF0C;&#x56E0;&#x4E3A;&#x6211;&#x4EEC;&#x4E00;&#x822C;&#x5173;&#x5FC3;&#x7684;&#x4E3B;&#x8981;&#x662F;&#x4EFB;&#x52A1;&#x548C;&#x591A;&#x8DEF;I/O&#x7684;&#x5FEB;&#x901F;I/O&#x3002;&#x6240;&#x4EE5;&#x5728;&#x8FD9;&#x4E9B;&#x5BF9;&#x6027;&#x80FD;&#x5FAE;&#x4E0D;&#x8DB3;&#x9053;&#x7684;&#x5730;&#x65B9;&#xFF0C;&#x90FD;&#x662F;&#x4F7F;&#x7528;&#x540C;&#x6B65;&#x7684;&#xFF0C;&#x8FD9;&#x6837;&#x4EE3;&#x7801;&#x8FD8;&#x4F1A;&#x7B80;&#x5355;&#x4E00;&#x4E9B;&#x3002;  </p>
+<p>&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x7684;&#x5199;&#x5165;&#x4F7F;&#x7528; <code>uv_fs_write()</code>&#xFF0C;&#x5F53;&#x5199;&#x5165;&#x5B8C;&#x6210;&#x65F6;&#x4F1A;&#x89E6;&#x53D1;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x5728;&#x8FD9;&#x4E2A;&#x4F8B;&#x5B50;&#x4E2D;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F1A;&#x89E6;&#x53D1;&#x4E0B;&#x4E00;&#x6B21;&#x7684;&#x8BFB;&#x53D6;&#x3002;</p>
 <h4 id="uvcatmainc--write-callback">uvcat/main.c - write callback</h4>
 <pre><code>void on_write(uv_fs_t *req) {
     if (req-&gt;result &lt; 0) {
@@ -313,7 +320,7 @@
 }
 </code></pre><h5 id="warning">Warning</h5>
 <pre><code>&#x51FD;&#x6570;uv_fs_req_cleanup()&#x5728;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x64CD;&#x4F5C;&#x7ED3;&#x675F;&#x540E;&#x5FC5;&#x987B;&#x8981;&#x88AB;&#x8C03;&#x7528;&#xFF0C;&#x7528;&#x6765;&#x56DE;&#x6536;&#x5728;&#x8BFB;&#x5199;&#x4E2D;&#x5206;&#x914D;&#x7684;&#x5185;&#x5B58;&#x3002;
-</code></pre><h1 id="filesystem-operations">Filesystem operations</h1>
+</code></pre><h2 id="filesystem-operations">Filesystem operations</h2>
 <p>&#x6240;&#x6709;&#x50CF; <code>unlink</code>, <code>rmdir</code>, <code>stat</code> &#x8FD9;&#x6837;&#x7684;&#x6807;&#x51C6;&#x6587;&#x4EF6;&#x64CD;&#x4F5C;&#x90FD;&#x662F;&#x652F;&#x6301;&#x5F02;&#x6B65;&#x7684;&#xFF0C;&#x5E76;&#x4E14;&#x4F7F;&#x7528;&#x65B9;&#x6CD5;&#x548C;&#x4E0A;&#x8FF0;&#x7C7B;&#x4F3C;&#x3002;&#x4E0B;&#x9762;&#x7684;&#x5404;&#x4E2A;&#x51FD;&#x6570;&#x7684;&#x4F7F;&#x7528;&#x65B9;&#x6CD5;&#x548C;read/write/open&#x7C7B;&#x4F3C;&#xFF0C;&#x5728;<code>uv_fs_t.result</code>&#x4E2D;&#x4FDD;&#x5B58;&#x8FD4;&#x56DE;&#x503C;.&#x6240;&#x6709;&#x7684;&#x51FD;&#x6570;&#x5982;&#x4E0B;&#x6240;&#x793A;&#xFF1A;</p>
 <pre><code>UV_EXTERN int uv_fs_close(uv_loop_t* loop,
                           uv_fs_t* req,
@@ -427,7 +434,7 @@ UV_EXTERN int uv_fs_link(uv_loop_t* loop,
                          const char* path,
                          const char* new_path,
                          uv_fs_cb cb);
-</code></pre><h1 id="buffers-and-streams">Buffers and Streams</h1>
+</code></pre><h2 id="buffers-and-streams">Buffers and Streams</h2>
 <p>&#x5728;libuv&#x4E2D;&#xFF0C;&#x6700;&#x57FA;&#x7840;&#x7684;I/O&#x64CD;&#x4F5C;&#x662F;&#x6D41;stream(<code>uv_stream_t</code>)&#x3002;TCP&#x5D4C;&#x5957;&#x5B57;&#xFF0C;UDP&#x5D4C;&#x5957;&#x5B57;&#xFF0C;&#x7BA1;&#x9053;&#x5BF9;&#x4E8E;&#x6587;&#x4EF6;I/O&#x548C;IPC&#x6765;&#x8BF4;&#xFF0C;&#x90FD;&#x53EF;&#x4EE5;&#x770B;&#x6210;&#x662F;&#x6D41;stream(<code>uv_stream_t</code>)&#x7684;&#x5B50;&#x7C7B;.<br>&#x4E0A;&#x9762;&#x63D0;&#x5230;&#x7684;&#x5404;&#x4E2A;&#x6D41;&#x7684;&#x5B50;&#x7C7B;&#x90FD;&#x6709;&#x5404;&#x81EA;&#x7684;&#x521D;&#x59CB;&#x5316;&#x51FD;&#x6570;&#xFF0C;&#x7136;&#x540E;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4E0B;&#x9762;&#x7684;&#x51FD;&#x6570;&#x64CD;&#x4F5C;:</p>
 <pre><code>int uv_read_start(uv_stream_t*, uv_alloc_cb alloc_cb, uv_read_cb read_cb);
 int uv_read_stop(uv_stream_t*);
@@ -460,7 +467,7 @@ int uv_write(uv_write_t* req, uv_stream_t* handle,
     uv_run(loop, UV_RUN_DEFAULT);
     return 0;
 }
-</code></pre><p><code>uv_pipe_init()</code>&#x7684;&#x7B2C;&#x4E09;&#x4E2A;&#x53C2;&#x6570;&#x5E94;&#x8BE5;&#x88AB;&#x8BBE;&#x7F6E;&#x4E3A;1&#xFF0C;&#x5F53;&#x9700;&#x8981;&#x4F7F;&#x7528;IPC&#x7684;&#x547D;&#x540D;&#x7BA1;&#x9053;&#x7684;&#x65F6;&#x5019;&#xFF08;<em>&#x65E0;&#x540D;&#x7BA1;&#x9053;&#x662F;Unix&#x6700;&#x521D;&#x7684;IPC&#x5F62;&#x5F0F;&#xFF0C;&#x4F46;&#x662F;&#x7531;&#x4E8E;&#x65E0;&#x540D;&#x7BA1;&#x9053;&#x7684;&#x5C40;&#x9650;&#x6027;&#xFF0C;&#x540E;&#x6765;&#x51FA;&#x73B0;&#x4E86;&#x6709;&#x540D;&#x7BA1;&#x9053;FIFO&#xFF0C;&#x8FD9;&#x79CD;&#x7BA1;&#x9053;&#x7531;&#x4E8E;&#x53EF;&#x4EE5;&#x5728;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x4E2D;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x540D;&#x5B57;&#xFF0C;&#x6240;&#x4EE5;&#x53EF;&#x4EE5;&#x88AB;&#x6CA1;&#x6709;&#x4EB2;&#x7F18;&#x5173;&#x7CFB;&#x7684;&#x8FDB;&#x7A0B;&#x8BBF;&#x95EE;</em>&#xFF09;&#x3002;&#x8FD9;&#x90E8;&#x5206;&#x4F1A;&#x5728;Process&#x8FDB;&#x7A0B;&#x7684;&#x8FD9;&#x4E00;&#x7AE0;&#x8282;&#x8BF4;&#x660E;&#x3002;<code>uv_pipe_open()</code>&#x9700;&#x8981;&#x4E24;&#x4E2A;&#x53C2;&#x6570;&#xFF0C;&#x7B2C;&#x4E00;&#x4E2A;&#x662F;&#x7BA1;&#x9053;&#x9700;&#x8981;&#x5173;&#x8054;&#x7684;&#x6587;&#x4EF6;&#x7684;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#xFF0C;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;<code>0</code>&#x4EE3;&#x8868;&#x6807;&#x51C6;&#x8F93;&#x5165;&#xFF08;<code>1</code>&#x4EE3;&#x8868;&#x6807;&#x51C6;&#x8F93;&#x51FA;&#xFF0C;<code>2</code>&#x4EE3;&#x8868;&#x6807;&#x51C6;&#x9519;&#x8BEF;&#x8F93;&#x51FA;&#xFF09;&#x3002;  </p>
+</code></pre><p>&#x5F53;&#x9700;&#x8981;&#x4F7F;&#x7528;IPC&#x7684;&#x547D;&#x540D;&#x7BA1;&#x9053;&#x7684;&#x65F6;&#x5019;&#xFF08;<em>&#x65E0;&#x540D;&#x7BA1;&#x9053;&#x662F;Unix&#x6700;&#x521D;&#x7684;IPC&#x5F62;&#x5F0F;&#xFF0C;&#x4F46;&#x662F;&#x7531;&#x4E8E;&#x65E0;&#x540D;&#x7BA1;&#x9053;&#x7684;&#x5C40;&#x9650;&#x6027;&#xFF0C;&#x540E;&#x6765;&#x51FA;&#x73B0;&#x4E86;&#x6709;&#x540D;&#x7BA1;&#x9053;FIFO&#xFF0C;&#x8FD9;&#x79CD;&#x7BA1;&#x9053;&#x7531;&#x4E8E;&#x53EF;&#x4EE5;&#x5728;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x4E2D;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x540D;&#x5B57;&#xFF0C;&#x6240;&#x4EE5;&#x53EF;&#x4EE5;&#x88AB;&#x6CA1;&#x6709;&#x4EB2;&#x7F18;&#x5173;&#x7CFB;&#x7684;&#x8FDB;&#x7A0B;&#x8BBF;&#x95EE;</em>&#xFF09;&#xFF0C;<code>uv_pipe_init()</code>&#x7684;&#x7B2C;&#x4E09;&#x4E2A;&#x53C2;&#x6570;&#x5E94;&#x8BE5;&#x88AB;&#x8BBE;&#x7F6E;&#x4E3A;1&#x3002;&#x8FD9;&#x90E8;&#x5206;&#x4F1A;&#x5728;Process&#x8FDB;&#x7A0B;&#x7684;&#x8FD9;&#x4E00;&#x7AE0;&#x8282;&#x8BF4;&#x660E;&#x3002;<code>uv_pipe_open()</code>&#x9700;&#x8981;&#x4E24;&#x4E2A;&#x53C2;&#x6570;&#xFF0C;&#x7B2C;&#x4E00;&#x4E2A;&#x662F;&#x7BA1;&#x9053;&#x9700;&#x8981;&#x5173;&#x8054;&#x7684;&#x6587;&#x4EF6;&#x7684;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#xFF0C;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;<code>0</code>&#x4EE3;&#x8868;&#x6807;&#x51C6;&#x8F93;&#x5165;&#xFF08;<code>1</code>&#x4EE3;&#x8868;&#x6807;&#x51C6;&#x8F93;&#x51FA;&#xFF0C;<code>2</code>&#x4EE3;&#x8868;&#x6807;&#x51C6;&#x9519;&#x8BEF;&#x8F93;&#x51FA;&#xFF09;&#x3002;  </p>
 <p>&#x5F53;&#x8C03;&#x7528;<code>uv_read_start()</code>&#x540E;&#xFF0C;&#x6211;&#x4EEC;&#x5F00;&#x59CB;&#x76D1;&#x542C;<code>stdin</code>&#xFF0C;&#x5F53;&#x9700;&#x8981;&#x65B0;&#x7684;&#x7F13;&#x51B2;&#x533A;&#x6765;&#x5B58;&#x50A8;&#x6570;&#x636E;&#x65F6;&#xFF0C;&#x8C03;&#x7528;alloc_buffer&#xFF0C;&#x5728;&#x51FD;&#x6570;<code>read_stdin()</code>&#x4E2D;&#x53EF;&#x4EE5;&#x5B9A;&#x4E49;&#x7F13;&#x51B2;&#x533A;&#x4E2D;&#x7684;&#x6570;&#x636E;&#x5904;&#x7406;&#x64CD;&#x4F5C;&#x3002;</p>
 <h4 id="uvteemainc--reading-buffers">uvtee/main.c - reading buffers</h4>
 <pre><code>void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
@@ -518,8 +525,8 @@ void write_data(uv_stream_t *dest, size_t size, uv_buf_t buf, uv_write_cb cb) {
 <pre><code>&#x4F60;&#x7684;&#x7A0B;&#x5E8F;&#x5728;&#x88AB;&#x5176;&#x4ED6;&#x7684;&#x7A0B;&#x5E8F;&#x8C03;&#x7528;&#x7684;&#x8FC7;&#x7A0B;&#x4E2D;&#xFF0C;&#x6709;&#x610F;&#x65E0;&#x610F;&#x5730;&#x4F1A;&#x5411;pipe&#x5199;&#x5165;&#x6570;&#x636E;&#xFF0C;&#x8FD9;&#x6837;&#x7684;&#x8BDD;&#x5B83;&#x4F1A;&#x5F88;&#x5BB9;&#x6613;&#x88AB;&#x4FE1;&#x53F7;SIGPIPE&#x7EC8;&#x6B62;&#x6389;&#xFF0C;&#x4F60;&#x6700;&#x597D;&#x52A0;&#x5165;&#x8FD9;&#x53E5;&#xFF1A;  
 signal(SIGPIPE, SIG_IGN)  
 &#x5728;&#x521D;&#x59CB;&#x5316;&#x7A0B;&#x5E8F;&#x7684;&#x65F6;&#x5019;&#x3002;
-</code></pre><h1 id="file-change-events">File change events</h1>
-<p>&#x6240;&#x6709;&#x7684;&#x73B0;&#x4EE3;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x90FD;&#x4F1A;&#x63D0;&#x4F9B;&#x76F8;&#x5E94;&#x7684;API&#x6765;&#x76D1;&#x89C6;&#x6587;&#x4EF6;&#x548C;&#x6587;&#x4EF6;&#x5939;&#x7684;&#x53D8;&#x5316;&#x3002;libuv&#x540C;&#x6837;&#x5305;&#x62EC;&#x4E86;&#x8FD9;&#x6837;&#x7684;&#x6587;&#x4EF6;&#x76D1;&#x89C6;&#x5E93;(<strong>&#x5982;Linux&#x7684;inotify&#xFF0C;Darwin&#x7684;FSEvents&#xFF0C;BSD&#x7684;kqueue&#xFF0C;Windows&#x7684;ReadDirectoryChangesW&#xFF0C; Solaris&#x7684;event ports</strong>)&#x3002;&#x8FD9;&#x662F;libuv&#x4E2D;&#x5F88;&#x4E0D;&#x534F;&#x8C03;&#x7684;&#x90E8;&#x5206;&#xFF0C;&#x56E0;&#x4E3A;&#x5728;&#x8DE8;&#x5E73;&#x53F0;&#x4E0A;&#x5B9E;&#x73B0;&#x8FD9;&#x4E2A;&#x529F;&#x80FD;&#x5F88;&#x96BE;&#x3002;&#x4E3A;&#x4E86;&#x66F4;&#x597D;&#x5730;&#x8BF4;&#x660E;&#xFF0C;&#x6211;&#x4EEC;&#x73B0;&#x5728;&#x6765;&#x5199;&#x4E00;&#x4E2A;&#x76D1;&#x89C6;&#x6587;&#x4EF6;&#x53D8;&#x5316;&#x7684;&#x547D;&#x4EE4;&#xFF1A; </p>
+</code></pre><h2 id="file-change-events">File change events</h2>
+<p>&#x6240;&#x6709;&#x7684;&#x73B0;&#x4EE3;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x90FD;&#x4F1A;&#x63D0;&#x4F9B;&#x76F8;&#x5E94;&#x7684;API&#x6765;&#x76D1;&#x89C6;&#x6587;&#x4EF6;&#x548C;&#x6587;&#x4EF6;&#x5939;&#x7684;&#x53D8;&#x5316;(<strong>&#x5982;Linux&#x7684;inotify&#xFF0C;Darwin&#x7684;FSEvents&#xFF0C;BSD&#x7684;kqueue&#xFF0C;Windows&#x7684;ReadDirectoryChangesW&#xFF0C; Solaris&#x7684;event ports</strong>)&#x3002;libuv&#x540C;&#x6837;&#x5305;&#x62EC;&#x4E86;&#x8FD9;&#x6837;&#x7684;&#x6587;&#x4EF6;&#x76D1;&#x89C6;&#x5E93;&#x3002;&#x8FD9;&#x662F;libuv&#x4E2D;&#x5F88;&#x4E0D;&#x534F;&#x8C03;&#x7684;&#x90E8;&#x5206;&#xFF0C;&#x56E0;&#x4E3A;&#x5728;&#x8DE8;&#x5E73;&#x53F0;&#x7684;&#x524D;&#x63D0;&#x4E0A;&#xFF0C;&#x5B9E;&#x73B0;&#x8FD9;&#x4E2A;&#x529F;&#x80FD;&#x5F88;&#x96BE;&#x3002;&#x4E3A;&#x4E86;&#x66F4;&#x597D;&#x5730;&#x8BF4;&#x660E;&#xFF0C;&#x6211;&#x4EEC;&#x73B0;&#x5728;&#x6765;&#x5199;&#x4E00;&#x4E2A;&#x76D1;&#x89C6;&#x6587;&#x4EF6;&#x53D8;&#x5316;&#x7684;&#x547D;&#x4EE4;&#xFF1A; </p>
 <pre><code>./onchange &lt;command&gt; &lt;file1&gt; [file2] ...
 </code></pre><p>&#x5B9E;&#x73B0;&#x8FD9;&#x4E2A;&#x76D1;&#x89C6;&#x5668;&#xFF0C;&#x8981;&#x4ECE;<code>uv_fs_event_init()</code>&#x5F00;&#x59CB;&#xFF1A;</p>
 <h4 id="onchangemainc--the-setup">onchange/main.c - The setup</h4>
@@ -596,6 +603,10 @@ signal(SIGPIPE, SIG_IGN)
     
 
     
+    <script src="../gitbook/plugins/gitbook-plugin-maxiang/maxiang.js"></script>
+    
+
+    
     <script src="../gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
     
 
@@ -611,14 +622,18 @@ signal(SIGPIPE, SIG_IGN)
     <script src="../gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
     
 
+    
+    <script src="../gitbook/plugins/gitbook-plugin-livereload/plugin.js"></script>
+    
+
 <script>
 require(["gitbook"], function(gitbook) {
-    var config = {"github":{"url":"https://github.com/luohaha/Chinese-uvbook"},"github-buttons":{"repo":"luohaha/Chinese-uvbook","types":["star"]},"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
+    var config = {"github":{"url":"https://github.com/luohaha/Chinese-uvbook"},"github-buttons":{"repo":"luohaha/Chinese-uvbook","types":["star"]},"maxiang":{},"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"livereload":{}};
     gitbook.start(config);
 });
 </script>
 
-        
+        <!-- body:end -->
     </body>
-    
+    <!-- End of book libuv中文教程 -->
 </html>
