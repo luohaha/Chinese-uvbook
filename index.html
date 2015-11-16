@@ -7,9 +7,9 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <title>Introduction | libuv中文教程</title>
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
-        <meta name="description" content="翻译自《An Introduction to libuv》.  ">
+        <meta name="description" content="_">
         <meta name="generator" content="GitBook 2.5.2">
-        
+        <meta name="author" content="luohaha">
         
         <meta name="HandheldFriendly" content="true"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -19,6 +19,14 @@
         <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
         
     <link rel="stylesheet" href="gitbook/style.css">
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-gtoc/gtoc.css">
+        
+    
+        
+        <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-codeblock-filename/block.css">
+        
     
         
         <link rel="stylesheet" href="gitbook/plugins/gitbook-plugin-highlight/website.css">
@@ -37,16 +45,16 @@
         
     
     
-    <link rel="next" href="./introduction.html" />
+    <link rel="next" href="./source/introduction.html" />
     
     
 
-        
+        <script>window["gitbook-plugin-github-buttons"] = {"repo":"luohaha/Chinese-uvbook","types":["star","fork"]};</script>
     </head>
     <body>
         
         
-    <div class="book" data-level="0" data-chapter-title="Introduction" data-filepath="README.md" data-basepath="." data-revision="Sun Nov 15 2015 21:59:08 GMT+0800 (CST)">
+    <div class="book" data-level="0" data-chapter-title="Introduction" data-filepath="README.md" data-basepath="." data-revision="Mon Nov 16 2015 09:28:47 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -74,10 +82,10 @@
             
         </li>
     
-        <li class="chapter " data-level="1" data-path="introduction.html">
+        <li class="chapter " data-level="1" data-path="source/introduction.html">
             
                 
-                    <a href="./introduction.html">
+                    <a href="./source/introduction.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -89,10 +97,10 @@
             
         </li>
     
-        <li class="chapter " data-level="2" data-path="basics_of_libuv.html">
+        <li class="chapter " data-level="2" data-path="source/basics_of_libuv.html">
             
                 
-                    <a href="./basics_of_libuv.html">
+                    <a href="./source/basics_of_libuv.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -104,10 +112,10 @@
             
         </li>
     
-        <li class="chapter " data-level="3" data-path="filesystem.html">
+        <li class="chapter " data-level="3" data-path="source/filesystem.html">
             
                 
-                    <a href="./filesystem.html">
+                    <a href="./source/filesystem.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -119,10 +127,10 @@
             
         </li>
     
-        <li class="chapter " data-level="4" data-path="networking.html">
+        <li class="chapter " data-level="4" data-path="source/networking.html">
             
                 
-                    <a href="./networking.html">
+                    <a href="./source/networking.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -134,10 +142,10 @@
             
         </li>
     
-        <li class="chapter " data-level="5" data-path="threads.html">
+        <li class="chapter " data-level="5" data-path="source/threads.html">
             
                 
-                    <a href="./threads.html">
+                    <a href="./source/threads.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -149,10 +157,10 @@
             
         </li>
     
-        <li class="chapter " data-level="6" data-path="processes.html">
+        <li class="chapter " data-level="6" data-path="source/processes.html">
             
                 
-                    <a href="./processes.html">
+                    <a href="./source/processes.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -164,10 +172,10 @@
             
         </li>
     
-        <li class="chapter " data-level="7" data-path="advanced_event_loops.html">
+        <li class="chapter " data-level="7" data-path="source/advanced-event-loops.html">
             
                 
-                    <a href="./advanced_event_loops.html">
+                    <a href="./source/advanced-event-loops.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -179,10 +187,10 @@
             
         </li>
     
-        <li class="chapter " data-level="8" data-path="utilities.html">
+        <li class="chapter " data-level="8" data-path="source/utilities.html">
             
                 
-                    <a href="./utilities.html">
+                    <a href="./source/utilities.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -194,10 +202,10 @@
             
         </li>
     
-        <li class="chapter " data-level="9" data-path="about.html">
+        <li class="chapter " data-level="9" data-path="source/about.html">
             
                 
-                    <a href="./about.html">
+                    <a href="./source/about.html">
                 
                         <i class="fa fa-check"></i>
                         
@@ -257,13 +265,25 @@
 
         
         
-        <a href="./introduction.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 简介"><i class="fa fa-angle-right"></i></a>
+        <a href="./source/introduction.html" class="navigation navigation-next navigation-unique" aria-label="Next page: 简介"><i class="fa fa-angle-right"></i></a>
         
     </div>
 </div>
 
         
 <script src="gitbook/app.js"></script>
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-gtoc/gtoc.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-github/plugin.js"></script>
+    
+
+    
+    <script src="gitbook/plugins/gitbook-plugin-github-buttons/plugin.js"></script>
+    
 
     
     <script src="gitbook/plugins/gitbook-plugin-search/lunr.min.js"></script>
@@ -283,7 +303,7 @@
 
 <script>
 require(["gitbook"], function(gitbook) {
-    var config = {"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
+    var config = {"github":{"url":"https://github.com/luohaha/Chinese-uvbook"},"github-buttons":{"repo":"luohaha/Chinese-uvbook","types":["star","fork"]},"fontSettings":{"theme":"night","family":"serif","size":3},"gtoc":{},"codeblock-filename":{},"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
     gitbook.start(config);
 });
 </script>

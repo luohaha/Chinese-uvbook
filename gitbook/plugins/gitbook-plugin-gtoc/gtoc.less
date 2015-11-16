@@ -1,0 +1,197 @@
+@import "lesshat";
+/* 文字不换行 */
+.no-breakline{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    &:hover{
+        overflow: visible;            
+    }
+}
+
+
+/* fixed垂直居中 */
+.fixed-common{
+	.opacity(1);
+	position: fixed;
+	top: 50%;
+	.translate3d(0,-50%,0);
+	.transition(1s);
+
+
+	// 动画状态
+	.state-min &{
+		.translate3d((@width_toc+@pos_offset),-50%,0);
+	}
+
+	// 隐藏状态，只更改透明度
+	.state-hide &{
+		.opacity(0);
+	}
+}
+
+
+@c-red:#E73828;
+@c-orange-1:#EA5414;
+@c-gray:#C9CACA;
+
+@color-theme-1:#f3eacb;
+@color-theme-2:#111;
+
+@width_toc:250px;
+@pos_offset:20px;
+.gitbook-table-of-contents{
+	padding:0 15px 15px 15px;
+	
+	background-color:rgba(255,255,255,1);
+	.color-theme-1 &{
+		background-color: lighten(@color-theme-1, 4%)
+	}
+
+	.color-theme-2 &{
+		background-color: lighten(@color-theme-2, 10%)
+	}
+
+	right: @pos_offset;
+	border: 1px solid @c-gray;
+	border-top:5px solid @c-orange-1;
+	width:@width_toc;
+	z-index:99;
+	
+
+	// 超过窗口就显示滚动条
+	max-height: 100%;
+
+	// 当高度超过时，显示滚动条
+	.state-scroll &{
+		overflow-y: scroll;
+	}
+
+
+	.fixed-common;
+
+
+	h2{
+		color:@c-red;
+		font-size:20px;
+		margin:10px 0;
+	}
+
+	ul{
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.levelNum{
+		font-style: normal;
+	}
+
+	@pd-step:15px;
+	.gtoc-level{
+		display: block;
+
+		&:extend(.no-breakline);// 文字不换行
+
+		// hover上去显示完整的文字
+	    &:hover{
+	        overflow: visible;            
+	    }
+
+	    // 背景
+	    &.state-current{
+	    	background-color: lighten(@c-gray, 15%)
+	    }
+
+	}
+	.gtoc-level-h2{
+		padding-left: @pd-step;
+
+		font-size: 16px;
+		margin-top:15px;
+		&,&:active{
+			color:@c-orange-1;
+		}
+	}
+	.gtoc-level-h3{
+		padding-left: @pd-step*2 + 9;
+		font-size:15px;
+		margin-top:5px;
+		&,&:active{
+			color:#2DA7E0;
+		}
+	}
+
+
+	// arrow img
+	.icon-shrink{
+		position: absolute;
+		cursor: pointer;
+		right: 10px;
+		top: 15px;
+
+		&:hover{
+			right:8px;
+		}
+	}
+}
+
+.gtoc-menu{
+	position: relative;
+}
+
+// 小导航栏
+.gtoc-menu-min{
+
+	@size:40px;
+	margin-bottom: -40px;
+	right: @size + @width_toc - @pos_offset;
+
+	.fixed-common;
+
+
+	a{
+		display: block;
+		text-align: center;
+		width:@size;
+		height:@size;
+		line-height: @size;
+		border:1px solid @c-gray;
+		background-color:@c-orange-1;
+		&,&:hover{
+			color:white;
+		}
+
+		&:hover{
+			background-color:darken(@c-orange-1, 10%);
+		}
+	}
+
+	.icon-top{
+		background:@c-orange-1 url(https://lh3.googleusercontent.com/-o86W7i9pt84/VJK1tQLDoLI/AAAAAAAACM0/tC4qyX9d08Y/s800/icon-up_03.png) no-repeat center center;
+	}
+
+
+	// hover 文字
+	.word{
+		display: inline-block;
+		float:left;
+		width:@size - 2;
+		height:@size - 3;
+	}
+
+	.word-hover{
+		display: none;
+	}
+
+	.state-hover{
+		.word-normal{
+			display: none;
+		}
+		.word-hover{
+			display: inline-block;
+			line-height: 18px;			
+		}
+	}
+
+}
