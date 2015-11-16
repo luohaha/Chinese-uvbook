@@ -8,57 +8,16 @@
     "links": {
         
     },
-    "output": null,
-    "pdf": {
-        "fontSize": 12,
-        "footerTemplate": null,
-        "headerTemplate": null,
-        "margin": {
-            "bottom": 36,
-            "left": 62,
-            "right": 62,
-            "top": 36
-        },
-        "pageNumbers": false,
-        "paperSize": "a4"
-    },
-    "mobi": {
-        "fontSize": 12,
-        "footerTemplate": null,
-        "headerTemplate": null,
-        "margin": {
-            "bottom": 36,
-            "left": 62,
-            "right": 62,
-            "top": 36
-        },
-        "pageNumbers": false,
-        "paperSize": "a4"
-    },
-    "styles": {
-        "website": "styles/website.css",
-        "ebook": "styles/ebook.css",
-        "pdf": "styles/pdf.css",
-        "mobi": "styles/mobi.css",
-        "epub": "styles/epub.css"
-    }, 
-    "plugins": ["gtoc", "codeblock-filename", "github", "github-buttons"],
+    "plugins": ["github", "github-buttons", "maxiang"],
     "pluginsConfig": {
-      "github": {
+       "github": {
             "url": "https://github.com/luohaha/Chinese-uvbook"
         },
        "github-buttons": {
             "repo": "luohaha/Chinese-uvbook",
             "types": [
-               "star",
-               "fork"
-            ]
-       },
-       "fontSettings": {
-            "theme": "night",
-            "family": "serif",
-            "size": 3
-        }
-    },
-    "variables": {}
+                "star"
+            ] 
+       }
+    }
 }

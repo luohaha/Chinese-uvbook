@@ -11,7 +11,7 @@
 
 最后要强调一句：只有一个主线程，主线程上只有一个event loop。不会有其他与主线程交互的线程了。（除非使用`uv_async_send`）。  
 
-###Core thread operations
+##Core thread operations
 
 下面这个例子不会很复杂，你可以使用`uv_thread_create()`开始一个线程，再使用`uv_thread_join()`等待其结束。  
 
@@ -53,7 +53,7 @@ void hare(void *arg) {
 
 uv_thread_join不像pthread_join那样，允许线线程通过第二个参数向父线程返回值。想要传递数值，必须使用线程间通信，不了解的可以看这节的最后部分。  
 
-###Synchronization Primitives
+##Synchronization Primitives
 
 因为本教程重点不在线程，因此我只罗列了libuv API中一些神奇的地方。剩下的你可以自行阅读pthread的手册。  
 
@@ -163,7 +163,7 @@ int main()
 
 ####Others
 
-libuv同样支持[信号量](https://en.wikipedia.org/wiki/Semaphore_\(programming\))，[条件变量](https://en.wikipedia.org/wiki/Monitor_\(synchronization\)#Waiting_and_signaling)和[屏障](https://en.wikipedia.org/wiki/Barrier_\(computer_science\))，而且API的使用方法和pthread中的用法很类似。（如果你对上面的三个名词还不是很熟，可以看[这里](http://www.wuzesheng.com/?p=1668)，[这里](http://name5566.com/4535.html)，[这里](http://www.cnblogs.com/panhao/p/4653623.html)）。 
+libuv同样支持[信号量](https://en.wikipedia.org/wiki/Semaphore_programming)，[条件变量](https://en.wikipedia.org/wiki/Monitor_synchronization#Waiting_and_signaling)和[屏障](https://en.wikipedia.org/wiki/Barrier_computer_science)，而且API的使用方法和pthread中的用法很类似。（如果你对上面的三个名词还不是很熟，可以看[这里](http://www.wuzesheng.com/?p=1668)，[这里](http://name5566.com/4535.html)，[这里](http://www.cnblogs.com/panhao/p/4653623.html)）。 
 
  还有，libuv提供了一个简单易用的函数`uv_once()`。多个线程调用这个函数，参数可以使用一个uv_once_t和一个指向特定函数的指针，最终只有一个线程能够执行这个特定函数。这个特定函数只会被调用一次：  
  
@@ -196,7 +196,7 @@ int main() {
 
 再libuv的v0.11.11版本里，推出了uv_key_t结构和操作[线程局部存储TLS](http://baike.baidu.com/view/598128.htm)的API，使用方法同样和pthread类似。  
 
-###libuv work queue
+##libuv work queue
 
 `uv_queue_work()`是一个便利的函数，它使得一个应用程序能够在不同的线程运行任务，当任务完成后，回调函数将会被触发。它看起来好像很简单，但是它真正吸引人的地方在于它能够使得任何第三方的库都能以event-loop的方式执行。当使用event-loop的时候，最重要的是不能让loop线程阻塞，或者是执行高cpu占用的程序，因为这样会使得loop慢下来，loop event的高效特性也不能得到很好地发挥。  
 
@@ -310,7 +310,7 @@ void after_fib(uv_work_t *req, int status) {
 一个良好设计的程序，应该能够终止一个已经开始运行的长耗时任务。要实现这种功能，任务应该周期性地检查一个
 ```
 
-###Inter-thread communication
+##Inter-thread communication
 
 很多时候，你希望正在运行的线程之间能够相互发送消息。例如你在运行一个持续时间长的任务（可能使用uv_queue_work），但是你需要在主线程中监视它的进度情况。下面有一个简单的例子，演示了一个下载管理程序向用户展示各个下载线程的进度。  
 

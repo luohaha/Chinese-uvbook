@@ -2,7 +2,7 @@
 
 libuv强制使用异步的，事件驱动的编程风格。它的核心工作是提供一个event-loop，还有基于I/O和其它事件通知的回调函数。libuv还提供了一些核心工具，例如定时器，非阻塞的网络支持，异步文件系统访问，子进程等。  
 
-###Event loops
+##Event loops
 
 在事件驱动编程中，程序会关注每一个事件，并且对每一个事件的发生做出反应。libuv会负责将来自操作系统的事件收集起来，或者监视其他来源的事件。这样，用户就可以注册回调函数，回调函数会在事件发生的时候被调用。event-loop会一直保持运行状态。用伪代码描述如下：  
 
@@ -29,13 +29,13 @@ event-loop最终会被`uv_run()`启动－当使用libuv时，最后都会调用�
 #####Note
 我们不需要关心I/O在后台是如何工作的，但是由于我们的计算机硬件的工作方式，线程是处理器最基本的执行单元，libuv和操作系统通常会运行后台/工作者线程, 或者采用非阻塞方式来轮流执行任务。  
 
-Bert Belder，一个libuv的核心开发者，通过一个短视频向我们解释了libuv的架构和它的后台工作方式。如果你之前没有接触过类似libuv，libev，这个视频会非常有用。视频的网址是(https://youtu.be/nGn60vDSxQ4)。
+Bert Belder，一个libuv的核心开发者，通过一个短视频向我们解释了libuv的架构和它的后台工作方式。如果你之前没有接触过类似libuv，libev，这个视频会非常有用。视频的网址是https://youtu.be/nGn60vDSxQ4 。
 
 包含了libuv的event-loop的更多详细信息的[文档](http://docs.libuv.org/en/v1.x/design.html#the-i-o-loop)。  
 
-###HELLO WORLD
+##HELLO WORLD
 
-让我们开始写第一个libuv程序吧！它什么都没做，只是开启了一个loop，然后很快地推出了。  
+让我们开始写第一个libuv程序吧！它什么都没做，只是开启了一个loop，然后很快地退出了。  
 
 ####helloworld/main.c
 
@@ -69,7 +69,7 @@ int main() {
 
 nodejs中使用了默认的loop作为自己的主loop。如果你在编写nodejs的绑定，你应该注意一下。  
 
-###Error handling
+##Error handling
 
 初始化函数或者是同步执行的函数，会在执行失败后返回代表错误的负数。但是对于异步执行的函数，会在执行失败的时候，给它们的回调函数传递一个状态参数。错误信息被定义为`UV_E`[常量](http://docs.libuv.org/en/v1.x/errors.html#error-constants)。  
 
@@ -77,7 +77,7 @@ nodejs中使用了默认的loop作为自己的主loop。如果你在编写nodejs
 
 I/O函数的回调函数（例如文件和socket等）会被传递一个`nread`参数。如果`nread`小于0，就代表出现了错误（当然，UV_EOF是读取到文件末端的错误，你要特殊处理）。  
 
-###Handles and Requests
+##Handles and Requests
 
 libuv的工作建立在用户表达对特定事件的兴趣。这通常通过创造对应I/O设备，定时器，进程等的handle来实现。handle是不透明的数据结构，其中对应的类型`uv_TYPE_t`中的type指定了handle的使用目的。  
 
@@ -132,7 +132,7 @@ uv_TYPE_init(uv_loop_t *, uv_TYPE_t *)
 
 ###Idling
 
-下面有一个使用空转handle的例子。回调函数在每一个循环中都会被调用。在Utilities这部分会讲到一些空转handle的使用场景。现在让我们使用一个空转监视器，然后来观察它的生命周期，接着看`uv_run`调用是否会造成阻塞。当达到事先规定好的计数后，空转监视器会退出，因为`uv_run`已经找不到活着的事件监视器了。  
+下面有一个使用空转handle的例子。回调函数在每一个循环中都会被调用。在Utilities这部分会讲到一些空转handle的使用场景。现在让我们使用一个空转监视器，然后来观察它的生命周期，接着看`uv_run`调用是否会造成阻塞。当达到事先规定好的计数后，空转监视器会退出。因为`uv_run`已经找不到活着的事件监视器了，所以`uv_run()`也退出。  
 
 ####idle-basic/main.c
 
@@ -166,5 +166,5 @@ int main() {
 
 ###Storing context
 
-在基于回调函数的编程风格中，你可能会需要在调用处和回调函数之间，传递一些上下文等特定的应用信息。所有的handle和request都有一个`data`域，可以用来存储信息并传递。这是一个c语言库中很常见的模式。即使`uv_loop_t`也有一个相似的`data`域。	  
+在基于回调函数的编程风格中，你可能会需要在调用处和回调函数之间，传递一些上下文等特定的应用信息。所有的handle和request都有一个`data`域，可以用来存储信息并传递。这是一个c语言库中很常见的模式。即使是`uv_loop_t`也有一个相似的`data`域。	  
 

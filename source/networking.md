@@ -1,10 +1,10 @@
 #Networking
 
-在libuv中使用网络编程接口不会像在BSD上使用socket接口那么的麻烦，所有的都是非阻塞的，但是原理都是一样的。可以这么说，libuv提供了覆盖了恼人的，啰嗦的和底层的任务的抽象函数，比如使用BSD的socket结构的来设置socket，还有DNS查找，libuv还调整了一些socket的参数。  
+在libuv中使用网络编程接口不会像在BSD上使用socket接口那么的麻烦，因为libuv上所有的都是非阻塞的，但是原理都是一样的。可以这么说，libuv提供了覆盖了恼人的，啰嗦的和底层的任务的抽象函数，比如使用BSD的socket结构的来设置socket，还有DNS查找，libuv还调整了一些socket的参数。  
 
 在网络I/O中会使用到```uv_tcp_t```和```uv_udp_t```。   
 
-###TCP
+##TCP
 TCP是面向连接的，字节流协议，因此基于libuv的stream实现。  
 
 ####server
@@ -84,7 +84,7 @@ uv_tcp_connect(connect, socket, dest, on_connect);
 
 当建立连接后，回调函数```on_connect```会被调用。回调函数会接收到一个uv_connect_t结构的数据，它的```handle```指向通信的socket。  
 
-###UDP
+##UDP
 用户数据报协议(User Datagram Protocol)提供无连接的，不可靠的网络通信。因此，libuv不会提供一个stream实现的形式，而是提供了一个```uv_udp_t```句柄（接收端），和一个```uv_udp_send_t```句柄（发送端），还有相关的函数。也就是说，实际的读写api与正常的流读取类似。下面的例子展示了一个从DCHP服务器获取ip的例子。  
 
 #####note
@@ -188,7 +188,7 @@ UV_EXTERN int uv_udp_set_membership(uv_udp_t* handle,
 可以使用`uv_udp_set_multicast_loop`修改本地的组播。  
 同样可以使用`uv_udp_set_multicast_ttl`修改组播数据报的生存时间。（设定生存时间可以防止数据报由于环路的原因，会出现无限循环的问题）。  
 
-###Querying DNS
+##Querying DNS
 libuv提供了一个异步的DNS解决方案。它提供了自己的`getaddrinfo`。在回调函数中你可以像使用正常的socket操作一样。让我们来看一下例子：
   
 ####dns/main.c
@@ -242,7 +242,7 @@ void on_resolved(uv_getaddrinfo_t *resolver, int status, struct addrinfo *res) {
 
 libuv同样提供了DNS逆解析的函数[uv_getnameinfo](http://docs.libuv.org/en/v1.x/dns.html#c.uv_getnameinfo])。  
 
-###Network interfaces
+##Network interfaces
 
 可以调用`uv_interface_addresses`获得系统的网络接口信息。下面这个简单的例子打印出所有可以获取的信息。这在服务器开始准备绑定IP地址的时候很有用。  
 

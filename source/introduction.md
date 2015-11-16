@@ -6,7 +6,7 @@
 
 本书依然在不断完善中，所以有些章节会不完整，但我希望你能喜欢它。  
 
-###Who this book is for
+##Who this book is for
 
 如果你正在读此书，你或许是：  
 
@@ -15,14 +15,14 @@
 
 本书假设你对c语言有一定的了解。  
 
-###Background
+##Background
 
 [node.js](https://nodejs.org/en/)最初开始于2009年，是一个可以让Javascript代码离开浏览器的执行环境也可以执行的项目。 node.js使用了Google的V8解析引擎和Marc Lehmann的libev。Node.js将事件驱动的I/O模型与适合该模型的编程语言(Javascript)融合在了一起。随着node.js的日益流行，node.js需要同时支持windows, 但是libev只能在Unix环境下运行。Windows 平台上与kqueue(FreeBSD)或者(e)poll(Linux)等内核事件通知相应的机制是IOCP。libuv提供了一个跨平台的抽象，由平台决定使用libev或IOCP。在node-v0.9.0版本中，libuv移除了libev的内容。  
 
-随着libuv的日益成熟，和成为了拥有卓越性能的系统编程库。除了node.js以外，包括Mozilla的[Rust](http://rust-lang.org)编程语言，和许多的语言都开始使用libuv。  
+随着libuv的日益成熟，它成为了拥有卓越性能的系统编程库。除了node.js以外，包括Mozilla的[Rust](http://rust-lang.org)编程语言，和许多的语言都开始使用libuv。  
 
 本书基于libuv的v1.3.0。  
 
-###Code
+##Code
 
 本书中的实例代码都可以在[Github](https://github.com/nikhilm/uvbook/tree/master/code)上找到。

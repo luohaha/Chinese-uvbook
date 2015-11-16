@@ -3,8 +3,9 @@
 简单的文件读写是通过```uv_fs_*```函数族和与之相关的```uv_fs_t```结构体完成的.
 
 ####note
+
 ```
-libuv 提供的文件操作和 socket operations 并不相同. 套接字操作使用了操作系统本身提供了非阻塞操作, 而文件操作内部使用了阻塞函数, 但是 libuv 是在线程池中调用这些函数, 并在应用程序需要交互时通知在事件循环中注册的监视器.
+libuv 提供的文件操作和 socket operations 并不相同. 套接字操作使用了操作系统本身提供了非阻塞操作, 而文件操作内部使用了阻塞函数, 但是 libuv 是在线程池中调用这些函数, 并在应用程序需要交互时通知在事件循环中注册的监视器. 
 ```
 
 所有的文件操作函数都有两种形式 - 同步 synchronous 和 asynchronous.
@@ -13,7 +14,7 @@ libuv 提供的文件操作和 socket operations 并不相同. 套接字操作�
 
 而异步 asynchronous 形式则会在传入回调函数时被调用, 并且返回 0.
 
-#Reading/Writing files
+##Reading/Writing files
 
 
 文件描述符可以采用如下方式获得:
@@ -74,9 +75,11 @@ void on_read(uv_fs_t *req) {
 }
 ```
 
-在调用读取函数的时候，你必须传递一个已经初始化的缓冲区，在```on_read()```被触发后，缓冲区被被写入数据。```uv_fs_*```系列的函数是和POSIX的函数对应的，所以当读到文件的末尾时(EOF),result返回0。在使用stream或者pipe的情况下，使用的是libuv自定义的```UV_EOF```。   
-现在你看到类似的异步编程的模式。但是```uv_fs_close()```是同步的，一般来说，一次性的，开始的或者关闭的部分，都是同步的，因为我们一般关心主要任务和多路I/O的快速I/O。所以在这些对性能微不足道的地方，都是使用同步的，这样代码还会简单一些。  
-文件系统的写入使用 ```uv_fs_write()```，当写入完成时会出发回调函数，在这个例子中回调函数会出发下一次的读取。
+在调用读取函数的时候，你必须传递一个已经初始化的缓冲区，在```on_read()```被触发后，缓冲区被被写入数据。```uv_fs_*```系列的函数是和POSIX的函数对应的，所以当读到文件的末尾时(EOF)，result返回0。在使用stream或者pipe的情况下，使用的是libuv自定义的```UV_EOF```。   
+
+现在你看到类似的异步编程的模式。但是```uv_fs_close()```是同步的，一般来说，一次性的，开始的或者关闭的部分，都是同步的，因为我们一般关心的主要是任务和多路I/O的快速I/O。所以在这些对性能微不足道的地方，都是使用同步的，这样代码还会简单一些。  
+
+文件系统的写入使用 ```uv_fs_write()```，当写入完成时会触发回调函数，在这个例子中回调函数会触发下一次的读取。
 ####uvcat/main.c - write callback
 
 ```
@@ -91,6 +94,7 @@ void on_write(uv_fs_t *req) {
 ```
 
 #####Warning
+
 ```
 由于文件系统和磁盘的调度策略，写入成功的数据不一定就存在磁盘上。 
 ``` 
@@ -117,7 +121,7 @@ int main(int argc, char **argv) {
 函数uv_fs_req_cleanup()在文件系统操作结束后必须要被调用，用来回收在读写中分配的内存。
 ```
 
-#Filesystem operations
+##Filesystem operations
 
 
 所有像 ``unlink``, ``rmdir``, ``stat`` 这样的标准文件操作都是支持异步的，并且使用方法和上述类似。下面的各个函数的使用方法和read/write/open类似，在``uv_fs_t.result``中保存返回值.所有的函数如下所示：
@@ -237,7 +241,7 @@ UV_EXTERN int uv_fs_link(uv_loop_t* loop,
                          uv_fs_cb cb);
 ```
 
-#Buffers and Streams
+##Buffers and Streams
 
 在libuv中，最基础的I/O操作是流stream(``uv_stream_t``)。TCP嵌套字，UDP嵌套字，管道对于文件I/O和IPC来说，都可以看成是流stream(``uv_stream_t``)的子类.  
 上面提到的各个流的子类都有各自的初始化函数，然后可以使用下面的函数操作:
@@ -290,7 +294,7 @@ int main(int argc, char **argv) {
 }	
 ```
 
-``uv_pipe_init()``的第三个参数应该被设置为1，当需要使用IPC的命名管道的时候（*无名管道是Unix最初的IPC形式，但是由于无名管道的局限性，后来出现了有名管道FIFO，这种管道由于可以在文件系统中创建一个名字，所以可以被没有亲缘关系的进程访问*）。这部分会在Process进程的这一章节说明。``uv_pipe_open()``需要两个参数，第一个是管道需要关联的文件的文件描述符，第二个参数``0``代表标准输入（``1``代表标准输出，``2``代表标准错误输出）。  
+当需要使用IPC的命名管道的时候（*无名管道是Unix最初的IPC形式，但是由于无名管道的局限性，后来出现了有名管道FIFO，这种管道由于可以在文件系统中创建一个名字，所以可以被没有亲缘关系的进程访问*），``uv_pipe_init()``的第三个参数应该被设置为1。这部分会在Process进程的这一章节说明。``uv_pipe_open()``需要两个参数，第一个是管道需要关联的文件的文件描述符，第二个参数``0``代表标准输入（``1``代表标准输出，``2``代表标准错误输出）。  
 
 当调用``uv_read_start()``后，我们开始监听``stdin``，当需要新的缓冲区来存储数据时，调用alloc_buffer，在函数``read_stdin()``中可以定义缓冲区中的数据处理操作。
 
@@ -368,9 +372,9 @@ signal(SIGPIPE, SIG_IGN)
 ```
 
 
-#File change events
+##File change events
 
-所有的现代操作系统都会提供相应的API来监视文件和文件夹的变化。libuv同样包括了这样的文件监视库(**如Linux的inotify，Darwin的FSEvents，BSD的kqueue，Windows的ReadDirectoryChangesW， Solaris的event ports**)。这是libuv中很不协调的部分，因为在跨平台上实现这个功能很难。为了更好地说明，我们现在来写一个监视文件变化的命令： 
+所有的现代操作系统都会提供相应的API来监视文件和文件夹的变化(**如Linux的inotify，Darwin的FSEvents，BSD的kqueue，Windows的ReadDirectoryChangesW， Solaris的event ports**)。libuv同样包括了这样的文件监视库。这是libuv中很不协调的部分，因为在跨平台的前提上，实现这个功能很难。为了更好地说明，我们现在来写一个监视文件变化的命令： 
 
 ```
 ./onchange <command> <file1> [file2] ...

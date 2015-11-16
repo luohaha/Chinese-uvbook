@@ -6,7 +6,7 @@ libuv提供了相当多的子进程管理函数，并且是跨平台的，还允
 
 当前一个比较常见的反对事件驱动编程的原因在于，其不能很好地利用现代多核计算机的优势。一个多线程的程序，内核可以将线程调度到不同的cpu核心中执行，以提高性能。但是一个event-loop的程序只有一个线程。实际上，工作区可以被分配到多进程上，每一个进程执行一个event-loop，然后每一个进程被分配到不同的cpu核心中执行。  
 
-###Spawning child processes
+##Spawning child processes
 
 一个最简单的用途是，你想要开始一个进程，然后知道它什么时候终止。需要使用`uv_spawn`完成任务：  
 
@@ -64,7 +64,7 @@ void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
 
 在进程关闭后，需要回收handler。  
 
-###Changing process parameters
+##Changing process parameters
 
 在子进程开始执行前，你可以通过使用`uv_process_options_t`设置运行环境。  
 
@@ -86,7 +86,7 @@ void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
 * `UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS`-在windows上，`uv_process_options_t.args`参数不要用引号包裹。此标记对unix无效。  
 * `UV_PROCESS_DETACHED`-使得子进程脱离父进程，这样子进程就可以在父进程退出后继续进行。请看下面的例子：  
 
-###Detaching processes
+##Detaching processes
 
 使用标识`UV_PROCESS_DETACHED`可以启动守护进程(daemon)，或者是使得子进程从父进程中独立出来，这样父进程的退出就不会影响到它。   
 
@@ -119,7 +119,7 @@ int main() {
 
 记住一点，就是handle会始终监视着子进程，所以你的程序不会退出。`uv_unref()`会解除handle。  
 
-###Sending signals to processes
+##Sending signals to processes
 
 libuv打包了unix标准的`kill(2)`系统调用，并且在windows上实现了一个类似用法的调用，但要注意：所有的`SIGTERM`，`SIGINT`和`SIGKILL`都会导致进程的中断。`uv_kill`函数如下所示：  
 
@@ -129,7 +129,7 @@ uv_err_t uv_kill(int pid, int signum);
 
 对于用libuv启动的进程，应该使用`uv_process_kill`终止，它会以`uv_process_t`作为第一个参数，而不是pid。当使用`uv_process_kill`后，记得使用`uv_close`关闭`uv_process_t`。  
 
-###Signals
+##Signals
 
 libuv对unix信号和一些[windows下类似的机制](http://docs.libuv.org/en/v1.x/signal.html#signal)，做了很好的打包。  
 
@@ -212,7 +212,7 @@ int main()
 
 当向进程发送`SIGUSR1`，你会发现signal_handler函数被激发了4次，每次都对应一个`uv_signal_t`。然后signal_handler调用uv_signal_stop终止了每一个`uv_signal_t`，最终程序退出。对每个handler函数来说，任务的分配很重要。一个使用了多个event-loop的服务器程序，只要简单地给每一个进程添加信号SIGINT监视器，就可以保证程序在中断退出前，数据能够安全地保存。  
 
-###Child Process I/O
+##Child Process I/O
 
 一个正常的新产生的进程都有自己的一套文件描述符映射表，例如0，1，2分别对应`stdin`，`stdout`和`stderr`。有时候父进程想要将自己的文件描述符映射表分享给子进程。例如，你的程序启动了一个子命令，并且把所有的错误信息输出到log文件中，但是不能使用`stdout`。因此，你想要使得你的子进程和父进程一样，拥有`stderr`。在这种情形下，libuv提供了继承文件描述符的功能。在下面的例子中，我们会调用这么一个测试程序：  
 
@@ -351,7 +351,7 @@ void on_new_connection(uv_stream_t *server, int status) {
 
 cgi的`stdout`被绑定到socket上，所以无论tick脚本程序打印什么，都会发送到client端。通过使用进程，我们能够很好地处理读写并发操作，而且用起来也很方便。但是要记得这么做，是很浪费资源的。  
 
-###Pipes
+##Pipes
 
 libuv的`uv_pipe_t`结构可能会让一些unix程序员产生困惑，因为它像魔术般变幻出`|`和[`pipe(7)`](http://man7.org/linux/man-pages/man7/pipe.7.html)。但这里的`uv_pipe_t`并不是IPC机制里的匿名管道（在IPC里，pipe是匿名管道，只允许父子进程之间通信。FIFO则允许没有亲戚关系的进程间通信，显然llibuv里的`uv_pipe_t`不是第一种）。`uv_pipe_t`背后有[unix本地socket](http://man7.org/linux/man-pages/man7/unix.7.html)或者[windows实名管道](https://msdn.microsoft.com/en-us/library/windows/desktop/aa365590\(v=vs.85\).aspx)的支持，可以实现多进程间的通信。下面会具体讨论。  
 
