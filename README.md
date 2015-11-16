@@ -15,7 +15,7 @@
 （文章源文件均在`source/`文件夹下）
 
 ##辅助阅读
-1. [libuv官方文档](http://docs.libuv.org/en/v1.x/)－由于教程有时所讲解的知识点不够升入，需要我们自行阅读官方文档，来加强理解。  
+1. [libuv官方文档](http://docs.libuv.org/en/v1.x/)－由于教程有些知识点讲解得不够深入，需要我们自行阅读官方文档，来加强理解。  
 2. [教程的完整代码](https://github.com/nikhilm/uvbook/tree/master/code)－教程中展示的代码并不完整，对于一些复杂的程序，需要阅读完整的实例代码。
 
 ##说明
