@@ -6,7 +6,7 @@
 
 当确定的时间到来时，定时器会启动回调函数。libuv的定时器还可以设定为，按时间间隔定时启动，而不是只启动一次。可以简单地使用超时时间timeout作为参数初始化一个定时器，还有一个可选参数repeat。定时器能在任何时间被终止。  
 
-```
+```c
 uv_timer_t timer_req;
 
 uv_timer_init(loop, &timer_req);
@@ -15,7 +15,7 @@ uv_timer_start(&timer_req, callback, 5000, 2000);
 
 上述操作会启动一个循环的定时器，它会在调用`uv_timer_start`后，5秒（timeout）启动回调函数，然后每隔2秒（repeat）循环启动回调函数。你可以使用：  
 
-```
+```c
 uv_timer_stop(&timer_req);
 ```
 
@@ -23,7 +23,7 @@ uv_timer_stop(&timer_req);
 
 循环的间隔也可以随时定义，使用：  
 
-```
+```c
 uv_timer_set_repeat(uv_timer_t *timer, int64_t repeat);
 ```
 
@@ -34,7 +34,7 @@ uv_timer_set_repeat(uv_timer_t *timer, int64_t repeat);
 
 函数：  
 
-```
+```c
 int uv_timer_again(uv_timer_t *)
 ```
 
@@ -46,7 +46,7 @@ int uv_timer_again(uv_timer_t *)
 
 event-loop在没有了活跃的handle之后，便会终止。整套系统的工作方式是：在handle增加时，event-loop的引用计数加1，在handle停止时，引用计数减少1。当然，libuv也允许手动地更改引用计数，通过使用：  
 
-```
+```c
 void uv_ref(uv_handle_t*);
 void uv_unref(uv_handle_t*);
 ```
@@ -59,7 +59,7 @@ void uv_unref(uv_handle_t*);
 
 ####ref-timer/main.c
 
-```
+```c
 uv_loop_t *loop;
 uv_timer_t gc_req;
 uv_timer_t fake_job_req;
@@ -87,7 +87,7 @@ int main() {
 
 ####idle-compute/main.c
 
-```
+```c
 uv_loop_t *loop;
 uv_fs_t stdin_watcher;
 uv_idle_t idler;
@@ -109,7 +109,7 @@ int main() {
 
 ####idle-compute/main.c
 
-```
+```c
 void crunch_away(uv_idle_t* handle) {
     // Compute extra-terrestrial life
     // fold proteins
@@ -125,7 +125,7 @@ void crunch_away(uv_idle_t* handle) {
 
 在使用`uv_queue_work`的时候，你通常需要给工作线程传递复杂的数据。解决方案是自定义struct，然后使用`uv_work_t.data`指向它。一个稍微的不同是必须让`uv_work_t`作为这个自定义struct的成员之一（把这叫做接力棒）。这么做就可以使得，同时回收数据和`uv_wortk_t`。  
 
-```
+```c
 struct ftp_baton {
     uv_work_t req;
     char *host;
@@ -135,7 +135,7 @@ struct ftp_baton {
 }
 ```
 
-```
+```c
 ftp_baton *baton = (ftp_baton*) malloc(sizeof(ftp_baton));
 baton->req.data = (void*) baton;
 baton->host = strdup("my.webhost.com");
@@ -149,7 +149,7 @@ uv_queue_work(loop, &baton->req, ftp_session, ftp_cleanup);
 
 现在就可以随性所欲地获取自己想要的数据啦。  
 
-```
+```c
 void ftp_session(uv_work_t *req) {
     ftp_baton *baton = (ftp_baton*) req->data;
 
@@ -177,7 +177,7 @@ libuv的`uv_poll`简单地监视了使用了操作系统的监控机制的文件
 
 ####uvwget/main.c - The setup
 
-```
+```c
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -228,7 +228,7 @@ $ ./uvwget [url1] [url2] ...
 
 ####uvwget/main.c - Adding urls
 
-```
+```c
 void add_download(const char *url, int num) {
     char filename[50];
     sprintf(filename, "%d.download", num);
@@ -254,7 +254,7 @@ void add_download(const char *url, int num) {
 
 ####uvwget/main.c - Setting up polling
 
-```
+```c
 void start_timeout(CURLM *multi, long timeout_ms, void *userp) {
     if (timeout_ms <= 0)
         timeout_ms = 1; /* 0 means directly call socket_action, but we'll do it in a bit */
@@ -303,7 +303,7 @@ int handle_socket(CURL *easy, curl_socket_t s, int action, void *userp, void *so
 
 ####uvwget/main.c - Driving libcurl.
 
-```
+```c
 void curl_perform(uv_poll_t *req, int status, int events) {
     uv_timer_stop(&timeout);
     int running_handles;
@@ -325,7 +325,7 @@ void curl_perform(uv_poll_t *req, int status, int events) {
 
 ####uvwget/main.c - Reading transfer status.
 
-```
+```c
 void check_multi_info(void) {
     char *done_url;
     CURLMsg *message;
@@ -358,7 +358,7 @@ libuv提供了一个跨平台的API来加载[共享库shared libraries](http://l
 
 ####plugin/plugin.h
 
-```
+```c
 #ifndef UVBOOK_PLUGIN_SYSTEM
 #define UVBOOK_PLUGIN_SYSTEM
 
@@ -372,7 +372,7 @@ void mfp_register(const char *name);
 
 ####plugin/hello.c
 
-```
+```c
 #include "plugin.h"
 
 void initialize() {
@@ -398,7 +398,7 @@ Registered plugin "Hello World!"
 
 ####plugin/main.c
 
-```
+```c
 #include "plugin.h"
 
 typedef void (*init_plugin_function)();
@@ -444,7 +444,7 @@ int main(int argc, char **argv) {
 
 首先要做的是，使用读／写文件描述符来初始化`uv_tty_t`。如下：  
 
-```
+```c
 int uv_tty_init(uv_loop_t*, uv_tty_t*, uv_file fd, int readable)
 ```
 
@@ -458,7 +458,7 @@ int uv_tty_init(uv_loop_t*, uv_tty_t*, uv_file fd, int readable)
 
 ####tty/main.c
 
-```
+```c
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -494,7 +494,7 @@ int main() {
 
 ####tty-gravity/main.c
 
-```
+```c
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

@@ -19,7 +19,7 @@ libuv 提供的文件操作和 socket operations 并不相同. 套接字操作�
 
 文件描述符可以采用如下方式获得:
 
-```
+```c
 int uv_fs_open(uv_loop_t* loop, uv_fs_t* req, const char* path, int flags, int mode, uv_fs_cb cb)
 ```
 
@@ -27,13 +27,13 @@ int uv_fs_open(uv_loop_t* loop, uv_fs_t* req, const char* path, int flags, int m
 
 关闭文件描述符可以使用:
 
-```
+```c
 int uv_fs_close(uv_loop_t* loop, uv_fs_t* req, uv_file file, uv_fs_cb cb)
 ```
 
 文件系统的回调函数有如下的形式：
 
-```
+```c
 void callback(uv_fs_t* req);
 ```
 
@@ -41,7 +41,7 @@ void callback(uv_fs_t* req);
 
 ####uvcat/main.c - opening a file
 
-```
+```c
     // The request passed to the callback is the same as the one the call setup
     // function was passed.
     assert(req == &open_req);
@@ -58,7 +58,7 @@ void callback(uv_fs_t* req);
 
 返回的```uv_fs_t```的result值保存了打开的文件的文件描述符。如果文件被正确地打开，我们可以开始读取了：  
 
-```
+```c
 void on_read(uv_fs_t *req) {
     if (req->result < 0) {
         fprintf(stderr, "Read error: %s\n", uv_strerror(req->result));
@@ -82,7 +82,7 @@ void on_read(uv_fs_t *req) {
 文件系统的写入使用 ```uv_fs_write()```，当写入完成时会触发回调函数，在这个例子中回调函数会触发下一次的读取。
 ####uvcat/main.c - write callback
 
-```
+```c
 void on_write(uv_fs_t *req) {
     if (req->result < 0) {
         fprintf(stderr, "Write error: %s\n", uv_strerror((int)req->result));
@@ -103,7 +103,7 @@ void on_write(uv_fs_t *req) {
 
 ####uvcat/main.c
 
-```
+```c
 int main(int argc, char **argv) {
     uv_fs_open(uv_default_loop(), &open_req, argv[1], O_RDONLY, 0, on_open);
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
 
 所有像 ``unlink``, ``rmdir``, ``stat`` 这样的标准文件操作都是支持异步的，并且使用方法和上述类似。下面的各个函数的使用方法和read/write/open类似，在``uv_fs_t.result``中保存返回值.所有的函数如下所示：
 
-```
+```c
 UV_EXTERN int uv_fs_close(uv_loop_t* loop,
                           uv_fs_t* req,
                           uv_file file,
@@ -246,7 +246,7 @@ UV_EXTERN int uv_fs_link(uv_loop_t* loop,
 在libuv中，最基础的I/O操作是流stream(``uv_stream_t``)。TCP嵌套字，UDP嵌套字，管道对于文件I/O和IPC来说，都可以看成是流stream(``uv_stream_t``)的子类.  
 上面提到的各个流的子类都有各自的初始化函数，然后可以使用下面的函数操作:
 
-```
+```c
 int uv_read_start(uv_stream_t*, uv_alloc_cb alloc_cb, uv_read_cb read_cb);
 int uv_read_stop(uv_stream_t*);
 int uv_write(uv_write_t* req, uv_stream_t* handle,
@@ -272,7 +272,7 @@ int uv_write(uv_write_t* req, uv_stream_t* handle,
 
 ####uvtee/main.c - read on pipes
 
-```
+```c
 int main(int argc, char **argv) {
     loop = uv_default_loop();
 
@@ -300,7 +300,7 @@ int main(int argc, char **argv) {
 
 ####uvtee/main.c - reading buffers
 
-```
+```c
 void alloc_buffer(uv_handle_t *handle, size_t suggested_size, uv_buf_t *buf) {
     *buf = uv_buf_init((char*) malloc(suggested_size), suggested_size);
 }
@@ -333,7 +333,7 @@ void read_stdin(uv_stream_t *stream, ssize_t nread, const uv_buf_t *buf) {
 
 ####uvtee/main.c - Write to pipe
 
-```
+```c
 typedef struct {
     uv_write_t req;
     uv_buf_t buf;
@@ -382,7 +382,7 @@ signal(SIGPIPE, SIG_IGN)
 实现这个监视器，要从```uv_fs_event_init()```开始：
 
 ####onchange/main.c - The setup
-```
+```c
 int main(int argc, char **argv) {
     if (argc <= 2) {
         fprintf(stderr, "Usage: %s <command> <file1> [file2 ...]\n", argv[0]);
@@ -422,7 +422,7 @@ int main(int argc, char **argv) {
 在我们的例子中，简单地打印参数和调用`system()`.
 
 ####onchange/main.c - file change notification callback
-```
+```c
 void run_command(uv_fs_event_t *handle, const char *filename, int events, int status) {
     char path[1024];
     size_t size = 1023;

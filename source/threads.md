@@ -39,7 +39,7 @@ uv_thread_t的第二个参数指向了要执行的函数的地址。最后一个
 
 ####thread-create/main.c
 
-```
+```c
 void hare(void *arg) {
     int tracklen = *((int *) arg);
     while (tracklen) {
@@ -63,7 +63,7 @@ libuv上的互斥量函数与pthread上存在一一映射。如果对pthread上�
 
 ####libuv mutex functions
 
-```
+```c
 UV_EXTERN int uv_mutex_init(uv_mutex_t* handle);
 UV_EXTERN void uv_mutex_destroy(uv_mutex_t* handle);
 UV_EXTERN void uv_mutex_lock(uv_mutex_t* handle);
@@ -77,7 +77,7 @@ UV_EXTERN void uv_mutex_unlock(uv_mutex_t* handle);
 
 递归地调用互斥量函数在某些系统平台上是支持的，但是你不能太过度依赖。因为例如在BSD上递归地调用互斥量函数会返回错误，比如你准备使用互斥量函数给一个已经上锁的临界区再次上锁的时候，就会出错。比如，像下面这个例子：  
 
-```
+```c
 uv_mutex_lock(a_mutex);
 uv_thread_create(thread_id, entry, (void *)a_mutex);
 uv_mutex_lock(a_mutex);
@@ -97,7 +97,7 @@ uv_mutex_lock(a_mutex);
 
 ####ocks/main.c - simple rwlocks
 
-```
+```c
 #include <stdio.h>
 #include <uv.h>
 
@@ -167,7 +167,7 @@ libuv同样支持[信号量](https://en.wikipedia.org/wiki/Semaphore_programming
 
  还有，libuv提供了一个简单易用的函数`uv_once()`。多个线程调用这个函数，参数可以使用一个uv_once_t和一个指向特定函数的指针，最终只有一个线程能够执行这个特定函数。这个特定函数只会被调用一次：  
  
- ```
+ ```c
  /* Initialize guard */
 static uv_once_t once_only = UV_ONCE_INIT;
 
@@ -206,7 +206,7 @@ int main() {
 
 ####queue-work/main.c - lazy fibonacci
 
-```
+```c
 void fib(uv_work_t *req) {
     int n = *(int *) req->data;
     if (random() % 2)
@@ -228,7 +228,7 @@ void after_fib(uv_work_t *req, int status) {
 
 ####queue-work/main.c
 
-```
+```c
 int main() {
     loop = uv_default_loop();
 
@@ -255,7 +255,7 @@ int main() {
 
 ####queue-cancel/main.c
 
-```
+```c
 int main() {
     loop = uv_default_loop();
 
@@ -279,7 +279,7 @@ int main() {
 
 ####queue-cancel/main.c  
 
-```
+```c
 void signal_handler(uv_signal_t *req, int signum)
 {
     printf("Signal received!\n");
@@ -295,7 +295,7 @@ void signal_handler(uv_signal_t *req, int signum)
 
 ####queue-cancel/main.c
 
-```
+```c
 void after_fib(uv_work_t *req, int status) {
     if (status == UV_ECANCELED)
         fprintf(stderr, "Calculation of %d cancelled.\n", *(int *) req->data);
@@ -317,7 +317,7 @@ Such a worker could periodically check for a variable that only the main process
 
 ####progress/main.c
 
-```
+```c
 uv_loop_t *loop;
 uv_async_t async;
 
@@ -347,7 +347,7 @@ libuv也有可能多次调用 uv_async_send，但只调用了一次回调函数�
 ```
 
 ####progress/main.c
-```
+```c
 void fake_download(uv_work_t *req) {
     int size = *((int*) req->data);
     int downloaded = 0;
@@ -369,7 +369,7 @@ void fake_download(uv_work_t *req) {
 
 ####progress/main.c
 
-```
+```c
 void print_progress(uv_async_t *handle) {
     double percentage = *((double*) handle->data);
     fprintf(stderr, "Downloaded %.2f%%\n", percentage);
@@ -381,7 +381,7 @@ void print_progress(uv_async_t *handle) {
 最后最重要的是把监视器回收。  
 
 ####progress/main.c
-```
+```c
 void after(uv_work_t *req, int status) {
     fprintf(stderr, "Download complete\n");
     uv_close((uv_handle_t*) &async, NULL);
@@ -400,7 +400,7 @@ void after(uv_work_t *req, int status) {
 
 1.在node中，第三方库会建立javascript的回调函数，以便回调函数被调用时，能够返回更多的信息。
   
-```
+```javascript
 var lib = require('lib');
 lib.on_progress(function() {
     console.log("Progress");

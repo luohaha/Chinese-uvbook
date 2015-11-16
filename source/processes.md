@@ -12,7 +12,7 @@ libuv提供了相当多的子进程管理函数，并且是跨平台的，还允
 
 ####spawn/main.c
 
-```
+```c
 uv_loop_t *loop;
 uv_process_t child_req;
 uv_process_options_t options;
@@ -44,7 +44,7 @@ int main() {
 
 由于上述的options是全局变量，因此被初始化为0。如果你在局部变量中定义options，请记得将所有没用的域设为0   
 
-```
+```c
 uv_process_options_t options = {0};
 ```
 
@@ -56,7 +56,7 @@ uv_process_options_t options = {0};
 
 ####spawn/main.c
 
-```
+```c
 void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
     fprintf(stderr, "Process exited with status %" PRId64 ", signal %d\n", exit_status, term_signal);
     uv_close((uv_handle_t*) req, NULL);
@@ -92,7 +92,7 @@ void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
 
 ####detach/main.c
 
-```
+```c
 int main() {
     loop = uv_default_loop();
 
@@ -123,7 +123,7 @@ int main() {
 
 libuv打包了unix标准的`kill(2)`系统调用，并且在windows上实现了一个类似用法的调用，但要注意：所有的`SIGTERM`，`SIGINT`和`SIGKILL`都会导致进程的中断。`uv_kill`函数如下所示：  
 
-```
+```c
 uv_err_t uv_kill(int pid, int signum);
 ```
 
@@ -137,7 +137,7 @@ libuv对unix信号和一些[windows下类似的机制](http://docs.libuv.org/en/
 
 ####signal/main.c
 
-```
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -218,7 +218,7 @@ int main()
 
 ####proc-streams/test.c
 
-```
+```c
 #include <stdio.h>
 
 int main()
@@ -231,7 +231,7 @@ int main()
 
 实际的执行程序` proc-streams`在运行的时候，只向子进程分享stderr。在`stdio`域中的`uv_process_options_t`设置了子进程的文件描述符。首先设置`stdio_count`，定义文件描述符的个数。再使用`uv_stdio_container_t`队列来设置`uv_process_options_t.stdio`。  
 
-```
+```c
 typedef struct uv_stdio_container_s {
   uv_stdio_flags flags;
 
@@ -248,7 +248,7 @@ typedef struct uv_stdio_container_s {
 
 ####proc-streams/main.c
 
-```
+```c
 int main() {
     loop = uv_default_loop();
 
@@ -284,7 +284,7 @@ int main() {
 
 ####cgi/tick.c
 
-```
+```c
 #include <stdio.h>
 #include <unistd.h>
 
@@ -304,7 +304,7 @@ CGI服务器用到了这章和网络那章的知识，所以每一个client在�
 
 ####cgi/main.c
 
-```
+```c
 void on_new_connection(uv_stream_t *server, int status) {
     if (status == -1) {
         // error!
@@ -325,7 +325,7 @@ void on_new_connection(uv_stream_t *server, int status) {
 
 ####cgi/main.c
 
-```
+```c
   args[1] = NULL;
 
     /* ... finding the executable path and setting up arguments ... */
@@ -367,7 +367,7 @@ libuv的`uv_pipe_t`结构可能会让一些unix程序员产生困惑，因为它
 
 ####pipe-echo-server/main.c
 
-```
+```c
 int main() {
     loop = uv_default_loop();
 
@@ -397,7 +397,7 @@ $ socat - /path/to/socket
 
 客户端如果想要和服务器端连接的话，应该使用：  
 
-```
+```c
 void uv_pipe_connect(uv_connect_t *req, uv_pipe_t *handle, const char *name, uv_connect_cb cb);
 ```
 
@@ -413,7 +413,7 @@ void uv_pipe_connect(uv_connect_t *req, uv_pipe_t *handle, const char *name, uv_
 
 ####multi-echo-server/worker.c
 
-```
+```c
 uv_loop_t *loop;
 uv_pipe_t queue;
 int main() {
@@ -430,7 +430,7 @@ int main() {
 
 ####multi-echo-server/worker.c
 
-```
+```c
 void on_new_connection(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf) {
     if (nread < 0) {
         if (nread != UV_EOF)
@@ -468,7 +468,7 @@ void on_new_connection(uv_stream_t *q, ssize_t nread, const uv_buf_t *buf) {
 
 ####multi-echo-server/main.c
 
-```
+```c
 struct child_worker {
     uv_process_t req;
     uv_process_options_t options;
@@ -480,7 +480,7 @@ struct child_worker {
 
 ####multi-echo-server/main.c
 
-```
+```c
 void setup_workers() {
     round_robin_counter = 0;
 
@@ -525,7 +525,7 @@ void setup_workers() {
 
 ####multi-echo-server/main.c
 
-```
+```c
 void on_new_connection(uv_stream_t *server, int status) {
     if (status == -1) {
         // error!

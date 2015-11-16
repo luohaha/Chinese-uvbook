@@ -8,7 +8,7 @@ libuv提供了非常多的控制event-loop的方法，你能通过使用多loop�
 
 ####src/unix/core.c - uv_run
 
-```
+```c
 int uv_run(uv_loop_t* loop, uv_run_mode mode) {
   int timeout;
   int r;
@@ -40,7 +40,7 @@ int uv_run(uv_loop_t* loop, uv_run_mode mode) {
 
 ####uvstop/main.c
 
-```
+```c
 #include <stdio.h>
 #include <uv.h>
 

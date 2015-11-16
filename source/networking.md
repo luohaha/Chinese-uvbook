@@ -16,7 +16,7 @@ TCP是面向连接的，字节流协议，因此基于libuv的stream实现。
 5.使用stream处理来和客户端通信。  
 
 ####tcp-echo-server/main.c - The listen socket
-```
+```c
 int main() {
     loop = uv_default_loop();
 
@@ -46,7 +46,7 @@ int main() {
 当客户端开始建立连接的时候，回调函数```on_new_connection```需要使用```uv_accept```去建立一个与客户端socket通信的句柄。同时，我们也要开始从流中读取数据。  
 
 ####tcp-echo-server/main.c - Accepting the client
-```
+```c
 void on_new_connection(uv_stream_t *server, int status) {
     if (status < 0) {
         fprintf(stderr, "New connection error %s\n", uv_strerror(status));
@@ -70,7 +70,7 @@ void on_new_connection(uv_stream_t *server, int status) {
 ####client
 当你在服务器端完成绑定／监听／接收的操作后，在客户端只要简单地调用```uv_tcp_connect```，它的回调函数和上面类似，具体例子如下：  
 
-```
+```c
 uv_tcp_t* socket = (uv_tcp_t*)malloc(sizeof(uv_tcp_t));
 uv_tcp_init(loop, socket);
 
@@ -93,7 +93,7 @@ uv_tcp_connect(connect, socket, dest, on_connect);
 ```
 
 ####udp-dhcp/main.c - Setup and send UDP packets
-```
+```c
 uv_loop_t *loop;
 uv_udp_t send_socket;
 uv_udp_t recv_socket;
@@ -138,7 +138,7 @@ ip地址为0.0.0.0，用来绑定所有的接口。255.255.255.255是一个广�
 当没有可读数据后，nread等于0。如果`addr`是`null`，它代表了没有可读数据（回调函数不会做任何处理）。如果不为null，则说明了从addr中接收到一个空的数据报。如果flag为```UV_UDP_PARTIAL```，则代表了内存分配的空间不够存放接收到的数据了，在这种情形下，操作系统会丢弃存不下的数据。  
 
 ####udp-dhcp/main.c - Reading packets
-```
+```c
 void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t *buf, const struct sockaddr *addr, unsigned flags) {
     if (nread < 0) {
         fprintf(stderr, "Read error %s\n", uv_err_name(nread));
@@ -176,7 +176,7 @@ void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t *buf, const struct soc
 组播  
 socket也支持组播，可以这么使用：  
 
-```
+```c
 UV_EXTERN int uv_udp_set_membership(uv_udp_t* handle,
                                     const char* multicast_addr,
                                     const char* interface_addr,
@@ -192,7 +192,7 @@ UV_EXTERN int uv_udp_set_membership(uv_udp_t* handle,
 libuv提供了一个异步的DNS解决方案。它提供了自己的`getaddrinfo`。在回调函数中你可以像使用正常的socket操作一样。让我们来看一下例子：
   
 ####dns/main.c
-```
+```c
 int main() {
     loop = uv_default_loop();
 
@@ -219,7 +219,7 @@ int main() {
 在回调函数on_resolved中，你可以从`struct addrinfo(s)`链表中获取返回的IP，最后需要调用`uv_freeaddrinfo`回收掉链表。下面的例子演示了回调函数的内容。  
 
 ####dns/main.c
-```
+```c
 void on_resolved(uv_getaddrinfo_t *resolver, int status, struct addrinfo *res) {
     if (status < 0) {
         fprintf(stderr, "getaddrinfo callback error %s\n", uv_err_name(status));
@@ -248,7 +248,7 @@ libuv同样提供了DNS逆解析的函数[uv_getnameinfo](http://docs.libuv.org/
 
 ####interfaces/main.c
 
-```
+```c
 #include <stdio.h>
 #include <uv.h>
 

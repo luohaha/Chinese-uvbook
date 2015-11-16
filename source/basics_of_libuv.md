@@ -6,7 +6,7 @@ libuv强制使用异步的，事件驱动的编程风格。它的核心工作是
 
 在事件驱动编程中，程序会关注每一个事件，并且对每一个事件的发生做出反应。libuv会负责将来自操作系统的事件收集起来，或者监视其他来源的事件。这样，用户就可以注册回调函数，回调函数会在事件发生的时候被调用。event-loop会一直保持运行状态。用伪代码描述如下：  
 
-```
+```c
 while there are still events to process:
     e = get the next event
     if there is a callback associated with e:
@@ -39,7 +39,7 @@ Bert Belder，一个libuv的核心开发者，通过一个短视频向我们解�
 
 ####helloworld/main.c
 
-```
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <uv.h>
@@ -83,7 +83,7 @@ libuv的工作建立在用户表达对特定事件的兴趣。这通常通过创
 
 ####libuv watchers
 
-```
+```c
 /* Handle types. */
 typedef struct uv_loop_s uv_loop_t;
 typedef struct uv_handle_s uv_handle_t;
@@ -124,7 +124,7 @@ handle代表了持久性对象。在异步的操作中，相应的handle上有�
 
 handle可以通过下面的函数设置：  
 
-```
+```c
 uv_TYPE_init(uv_loop_t *, uv_TYPE_t *)
 ```
 
@@ -136,7 +136,7 @@ uv_TYPE_init(uv_loop_t *, uv_TYPE_t *)
 
 ####idle-basic/main.c
 
-```
+```c
 #include <stdio.h>
 #include <uv.h>
 
