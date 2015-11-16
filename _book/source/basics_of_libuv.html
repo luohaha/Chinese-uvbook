@@ -53,7 +53,7 @@
     <body>
         <!-- body:start -->
         
-    <div class="book" data-level="2" data-chapter-title="libuv基础" data-filepath="source/basics_of_libuv.md" data-basepath=".." data-revision="Mon Nov 16 2015 20:40:45 GMT+0800 (CST)">
+    <div class="book" data-level="2" data-chapter-title="libuv基础" data-filepath="source/basics_of_libuv.md" data-basepath=".." data-revision="Mon Nov 16 2015 21:24:14 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -253,11 +253,12 @@
 <p>libuv&#x5F3A;&#x5236;&#x4F7F;&#x7528;&#x5F02;&#x6B65;&#x7684;&#xFF0C;&#x4E8B;&#x4EF6;&#x9A71;&#x52A8;&#x7684;&#x7F16;&#x7A0B;&#x98CE;&#x683C;&#x3002;&#x5B83;&#x7684;&#x6838;&#x5FC3;&#x5DE5;&#x4F5C;&#x662F;&#x63D0;&#x4F9B;&#x4E00;&#x4E2A;event-loop&#xFF0C;&#x8FD8;&#x6709;&#x57FA;&#x4E8E;I/O&#x548C;&#x5176;&#x5B83;&#x4E8B;&#x4EF6;&#x901A;&#x77E5;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x3002;libuv&#x8FD8;&#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x4E9B;&#x6838;&#x5FC3;&#x5DE5;&#x5177;&#xFF0C;&#x4F8B;&#x5982;&#x5B9A;&#x65F6;&#x5668;&#xFF0C;&#x975E;&#x963B;&#x585E;&#x7684;&#x7F51;&#x7EDC;&#x652F;&#x6301;&#xFF0C;&#x5F02;&#x6B65;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x8BBF;&#x95EE;&#xFF0C;&#x5B50;&#x8FDB;&#x7A0B;&#x7B49;&#x3002;  </p>
 <h2 id="event-loops">Event loops</h2>
 <p>&#x5728;&#x4E8B;&#x4EF6;&#x9A71;&#x52A8;&#x7F16;&#x7A0B;&#x4E2D;&#xFF0C;&#x7A0B;&#x5E8F;&#x4F1A;&#x5173;&#x6CE8;&#x6BCF;&#x4E00;&#x4E2A;&#x4E8B;&#x4EF6;&#xFF0C;&#x5E76;&#x4E14;&#x5BF9;&#x6BCF;&#x4E00;&#x4E2A;&#x4E8B;&#x4EF6;&#x7684;&#x53D1;&#x751F;&#x505A;&#x51FA;&#x53CD;&#x5E94;&#x3002;libuv&#x4F1A;&#x8D1F;&#x8D23;&#x5C06;&#x6765;&#x81EA;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x7684;&#x4E8B;&#x4EF6;&#x6536;&#x96C6;&#x8D77;&#x6765;&#xFF0C;&#x6216;&#x8005;&#x76D1;&#x89C6;&#x5176;&#x4ED6;&#x6765;&#x6E90;&#x7684;&#x4E8B;&#x4EF6;&#x3002;&#x8FD9;&#x6837;&#xFF0C;&#x7528;&#x6237;&#x5C31;&#x53EF;&#x4EE5;&#x6CE8;&#x518C;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F1A;&#x5728;&#x4E8B;&#x4EF6;&#x53D1;&#x751F;&#x7684;&#x65F6;&#x5019;&#x88AB;&#x8C03;&#x7528;&#x3002;event-loop&#x4F1A;&#x4E00;&#x76F4;&#x4FDD;&#x6301;&#x8FD0;&#x884C;&#x72B6;&#x6001;&#x3002;&#x7528;&#x4F2A;&#x4EE3;&#x7801;&#x63CF;&#x8FF0;&#x5982;&#x4E0B;&#xFF1A;  </p>
-<pre><code>while there are still events to process:
+<pre><code class="lang-c"><span class="hljs-keyword">while</span> there are still events to process:
     e = get the next event
-    if there is a callback associated with e:
+    <span class="hljs-keyword">if</span> there is a callback associated with e:
         call the callback
-</code></pre><p>&#x4E3E;&#x51E0;&#x4E2A;&#x4E8B;&#x4EF6;&#x7684;&#x4F8B;&#x5B50;&#xFF1A;  </p>
+</code></pre>
+<p>&#x4E3E;&#x51E0;&#x4E2A;&#x4E8B;&#x4EF6;&#x7684;&#x4F8B;&#x5B50;&#xFF1A;  </p>
 <ul>
 <li>&#x51C6;&#x5907;&#x597D;&#x88AB;&#x5199;&#x5165;&#x7684;&#x6587;&#x4EF6;&#x3002;  </li>
 <li>&#x5305;&#x542B;&#x51C6;&#x5907;&#x88AB;&#x8BFB;&#x53D6;&#x7684;&#x6570;&#x636E;&#x7684;socket&#x3002;  </li>
@@ -274,22 +275,23 @@
 <h2 id="hello-world">HELLO WORLD</h2>
 <p>&#x8BA9;&#x6211;&#x4EEC;&#x5F00;&#x59CB;&#x5199;&#x7B2C;&#x4E00;&#x4E2A;libuv&#x7A0B;&#x5E8F;&#x5427;&#xFF01;&#x5B83;&#x4EC0;&#x4E48;&#x90FD;&#x6CA1;&#x505A;&#xFF0C;&#x53EA;&#x662F;&#x5F00;&#x542F;&#x4E86;&#x4E00;&#x4E2A;loop&#xFF0C;&#x7136;&#x540E;&#x5F88;&#x5FEB;&#x5730;&#x9000;&#x51FA;&#x4E86;&#x3002;  </p>
 <h4 id="helloworldmainc">helloworld/main.c</h4>
-<pre><code>#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;uv.h&gt;
+<pre><code class="lang-c"><span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdlib.h&gt;</span></span>
+<span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;uv.h&gt;</span></span>
 
-int main() {
-    uv_loop_t *loop = malloc(sizeof(uv_loop_t));
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">uv_loop_t</span> *loop = <span class="hljs-built_in">malloc</span>(<span class="hljs-keyword">sizeof</span>(<span class="hljs-keyword">uv_loop_t</span>));
     uv_loop_init(loop);
 
-    printf(&quot;Now quitting.\n&quot;);
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Now quitting.\n&quot;</span>);
     uv_run(loop, UV_RUN_DEFAULT);
 
     uv_loop_close(loop);
-    free(loop);
-    return 0;
+    <span class="hljs-built_in">free</span>(loop);
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
 }
-</code></pre><p>&#x8FD9;&#x4E2A;&#x7A0B;&#x5E8F;&#x4F1A;&#x5F88;&#x5FEB;&#x5C31;&#x9000;&#x51FA;&#x4E86;&#xFF0C;&#x56E0;&#x4E3A;&#x6CA1;&#x6709;&#x53EF;&#x4EE5;&#x5F88;&#x5904;&#x7406;&#x7684;&#x4E8B;&#x4EF6;&#x3002;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x5404;&#x79CD;API&#x51FD;&#x6570;&#x6765;&#x544A;&#x8BC9;event-loop&#x6211;&#x4EEC;&#x8981;&#x76D1;&#x89C6;&#x7684;&#x4E8B;&#x4EF6;&#x3002;  </p>
+</code></pre>
+<p>&#x8FD9;&#x4E2A;&#x7A0B;&#x5E8F;&#x4F1A;&#x5F88;&#x5FEB;&#x5C31;&#x9000;&#x51FA;&#x4E86;&#xFF0C;&#x56E0;&#x4E3A;&#x6CA1;&#x6709;&#x53EF;&#x4EE5;&#x5F88;&#x5904;&#x7406;&#x7684;&#x4E8B;&#x4EF6;&#x3002;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x5404;&#x79CD;API&#x51FD;&#x6570;&#x6765;&#x544A;&#x8BC9;event-loop&#x6211;&#x4EEC;&#x8981;&#x76D1;&#x89C6;&#x7684;&#x4E8B;&#x4EF6;&#x3002;  </p>
 <p>&#x4ECE;libuv&#x7684;1.0&#x7248;&#x672C;&#x5F00;&#x59CB;&#xFF0C;&#x7528;&#x6237;&#x5C31;&#x53EF;&#x4EE5;&#x5728;&#x4F7F;&#x7528;<code>uv_loop_init</code>&#x521D;&#x59CB;&#x5316;loop&#x4E4B;&#x524D;&#xFF0C;&#x7ED9;&#x5176;&#x5206;&#x914D;&#x76F8;&#x5E94;&#x7684;&#x5185;&#x5B58;&#x3002;&#x8FD9;&#x5C31;&#x5141;&#x8BB8;&#x4F60;&#x690D;&#x5165;&#x81EA;&#x5B9A;&#x4E49;&#x7684;&#x5185;&#x5B58;&#x7BA1;&#x7406;&#x65B9;&#x6CD5;&#x3002;&#x8BB0;&#x4F4F;&#x8981;&#x4F7F;&#x7528;<code>uv_loop_close(uv_loop_t *)</code>&#x5173;&#x95ED;loop&#xFF0C;&#x7136;&#x540E;&#x518D;&#x56DE;&#x6536;&#x5185;&#x5B58;&#x7A7A;&#x95F4;&#x3002;&#x5728;&#x4F8B;&#x5B50;&#x4E2D;&#xFF0C;&#x7A0B;&#x5E8F;&#x9000;&#x51FA;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x5173;&#x95ED;loop&#xFF0C;&#x7CFB;&#x7EDF;&#x4E5F;&#x4F1A;&#x81EA;&#x52A8;&#x56DE;&#x6536;&#x5185;&#x5B58;&#x3002;&#x5BF9;&#x4E8E;&#x957F;&#x65F6;&#x95F4;&#x8FD0;&#x884C;&#x7684;&#x7A0B;&#x5E8F;&#x6765;&#x8BF4;&#xFF0C;&#x5408;&#x7406;&#x91CA;&#x653E;&#x5185;&#x5B58;&#x5F88;&#x91CD;&#x8981;&#x3002;   </p>
 <h3 id="default-loop">Default loop</h3>
 <p>&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<code>uv_default_loop</code>&#x83B7;&#x53D6;libuv&#x63D0;&#x4F9B;&#x7684;&#x9ED8;&#x8BA4;loop&#x3002;&#x5982;&#x679C;&#x4F60;&#x53EA;&#x9700;&#x8981;&#x4E00;&#x4E2A;loop&#x7684;&#x8BDD;&#xFF0C;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x3002;  </p>
@@ -302,72 +304,75 @@ int main() {
 <h2 id="handles-and-requests">Handles and Requests</h2>
 <p>libuv&#x7684;&#x5DE5;&#x4F5C;&#x5EFA;&#x7ACB;&#x5728;&#x7528;&#x6237;&#x8868;&#x8FBE;&#x5BF9;&#x7279;&#x5B9A;&#x4E8B;&#x4EF6;&#x7684;&#x5174;&#x8DA3;&#x3002;&#x8FD9;&#x901A;&#x5E38;&#x901A;&#x8FC7;&#x521B;&#x9020;&#x5BF9;&#x5E94;I/O&#x8BBE;&#x5907;&#xFF0C;&#x5B9A;&#x65F6;&#x5668;&#xFF0C;&#x8FDB;&#x7A0B;&#x7B49;&#x7684;handle&#x6765;&#x5B9E;&#x73B0;&#x3002;handle&#x662F;&#x4E0D;&#x900F;&#x660E;&#x7684;&#x6570;&#x636E;&#x7ED3;&#x6784;&#xFF0C;&#x5176;&#x4E2D;&#x5BF9;&#x5E94;&#x7684;&#x7C7B;&#x578B;<code>uv_TYPE_t</code>&#x4E2D;&#x7684;type&#x6307;&#x5B9A;&#x4E86;handle&#x7684;&#x4F7F;&#x7528;&#x76EE;&#x7684;&#x3002;  </p>
 <h4 id="libuv-watchers">libuv watchers</h4>
-<pre><code>/* Handle types. */
-typedef struct uv_loop_s uv_loop_t;
-typedef struct uv_handle_s uv_handle_t;
-typedef struct uv_stream_s uv_stream_t;
-typedef struct uv_tcp_s uv_tcp_t;
-typedef struct uv_udp_s uv_udp_t;
-typedef struct uv_pipe_s uv_pipe_t;
-typedef struct uv_tty_s uv_tty_t;
-typedef struct uv_poll_s uv_poll_t;
-typedef struct uv_timer_s uv_timer_t;
-typedef struct uv_prepare_s uv_prepare_t;
-typedef struct uv_check_s uv_check_t;
-typedef struct uv_idle_s uv_idle_t;
-typedef struct uv_async_s uv_async_t;
-typedef struct uv_process_s uv_process_t;
-typedef struct uv_fs_event_s uv_fs_event_t;
-typedef struct uv_fs_poll_s uv_fs_poll_t;
-typedef struct uv_signal_s uv_signal_t;
+<pre><code class="lang-c"><span class="hljs-comment">/* Handle types. */</span>
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_loop_s <span class="hljs-keyword">uv_loop_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_handle_s <span class="hljs-keyword">uv_handle_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_stream_s <span class="hljs-keyword">uv_stream_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_tcp_s <span class="hljs-keyword">uv_tcp_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_udp_s <span class="hljs-keyword">uv_udp_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_pipe_s <span class="hljs-keyword">uv_pipe_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_tty_s <span class="hljs-keyword">uv_tty_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_poll_s <span class="hljs-keyword">uv_poll_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_timer_s <span class="hljs-keyword">uv_timer_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_prepare_s <span class="hljs-keyword">uv_prepare_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_check_s <span class="hljs-keyword">uv_check_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_idle_s <span class="hljs-keyword">uv_idle_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_async_s <span class="hljs-keyword">uv_async_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_process_s <span class="hljs-keyword">uv_process_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_fs_event_s <span class="hljs-keyword">uv_fs_event_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_fs_poll_s <span class="hljs-keyword">uv_fs_poll_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_signal_s <span class="hljs-keyword">uv_signal_t</span>;
 
-/* Request types. */
-typedef struct uv_req_s uv_req_t;
-typedef struct uv_getaddrinfo_s uv_getaddrinfo_t;
-typedef struct uv_getnameinfo_s uv_getnameinfo_t;
-typedef struct uv_shutdown_s uv_shutdown_t;
-typedef struct uv_write_s uv_write_t;
-typedef struct uv_connect_s uv_connect_t;
-typedef struct uv_udp_send_s uv_udp_send_t;
-typedef struct uv_fs_s uv_fs_t;
-typedef struct uv_work_s uv_work_t;
+<span class="hljs-comment">/* Request types. */</span>
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_req_s <span class="hljs-keyword">uv_req_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_getaddrinfo_s <span class="hljs-keyword">uv_getaddrinfo_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_getnameinfo_s <span class="hljs-keyword">uv_getnameinfo_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_shutdown_s <span class="hljs-keyword">uv_shutdown_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_write_s <span class="hljs-keyword">uv_write_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_connect_s <span class="hljs-keyword">uv_connect_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_udp_send_s <span class="hljs-keyword">uv_udp_send_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_fs_s <span class="hljs-keyword">uv_fs_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_work_s <span class="hljs-keyword">uv_work_t</span>;
 
-/* None of the above. */
-typedef struct uv_cpu_info_s uv_cpu_info_t;
-typedef struct uv_interface_address_s uv_interface_address_t;
-typedef struct uv_dirent_s uv_dirent_t;
-</code></pre><p>handle&#x4EE3;&#x8868;&#x4E86;&#x6301;&#x4E45;&#x6027;&#x5BF9;&#x8C61;&#x3002;&#x5728;&#x5F02;&#x6B65;&#x7684;&#x64CD;&#x4F5C;&#x4E2D;&#xFF0C;&#x76F8;&#x5E94;&#x7684;handle&#x4E0A;&#x6709;&#x8BB8;&#x591A;&#x4E0E;&#x4E4B;&#x5173;&#x8054;&#x7684;request&#x3002;request&#x662F;&#x77ED;&#x6682;&#x6027;&#x5BF9;&#x8C61;&#xFF08;&#x901A;&#x5E38;&#x53EA;&#x7EF4;&#x6301;&#x5728;&#x4E00;&#x4E2A;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x7684;&#x65F6;&#x95F4;&#xFF09;&#xFF0C;&#x901A;&#x5E38;&#x5BF9;&#x6620;&#x7740;handle&#x4E0A;&#x7684;&#x4E00;&#x4E2A;I/O&#x64CD;&#x4F5C;&#x3002;request&#x7528;&#x6765;&#x5728;&#x521D;&#x59CB;&#x51FD;&#x6570;&#x548C;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E4B;&#x95F4;&#xFF0C;&#x4F20;&#x9012;&#x4E0A;&#x4E0B;&#x6587;&#x3002;&#x4F8B;&#x5982;uv_udp_t&#x4EE3;&#x8868;&#x4E86;&#x4E00;&#x4E2A;udp&#x7684;socket&#xFF0C;&#x7136;&#x800C;&#xFF0C;&#x5BF9;&#x4E8E;&#x6BCF;&#x4E00;&#x4E2A;&#x5411;socket&#x7684;&#x5199;&#x5165;&#x7684;&#x5B8C;&#x6210;&#x540E;&#xFF0C;&#x90FD;&#x4F1A;&#x5411;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F20;&#x9012;&#x4E00;&#x4E2A;<code>uv_udp_send_t</code>&#x3002;  </p>
+<span class="hljs-comment">/* None of the above. */</span>
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_cpu_info_s <span class="hljs-keyword">uv_cpu_info_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_interface_address_s <span class="hljs-keyword">uv_interface_address_t</span>;
+<span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> uv_dirent_s <span class="hljs-keyword">uv_dirent_t</span>;
+</code></pre>
+<p>handle&#x4EE3;&#x8868;&#x4E86;&#x6301;&#x4E45;&#x6027;&#x5BF9;&#x8C61;&#x3002;&#x5728;&#x5F02;&#x6B65;&#x7684;&#x64CD;&#x4F5C;&#x4E2D;&#xFF0C;&#x76F8;&#x5E94;&#x7684;handle&#x4E0A;&#x6709;&#x8BB8;&#x591A;&#x4E0E;&#x4E4B;&#x5173;&#x8054;&#x7684;request&#x3002;request&#x662F;&#x77ED;&#x6682;&#x6027;&#x5BF9;&#x8C61;&#xFF08;&#x901A;&#x5E38;&#x53EA;&#x7EF4;&#x6301;&#x5728;&#x4E00;&#x4E2A;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x7684;&#x65F6;&#x95F4;&#xFF09;&#xFF0C;&#x901A;&#x5E38;&#x5BF9;&#x6620;&#x7740;handle&#x4E0A;&#x7684;&#x4E00;&#x4E2A;I/O&#x64CD;&#x4F5C;&#x3002;request&#x7528;&#x6765;&#x5728;&#x521D;&#x59CB;&#x51FD;&#x6570;&#x548C;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E4B;&#x95F4;&#xFF0C;&#x4F20;&#x9012;&#x4E0A;&#x4E0B;&#x6587;&#x3002;&#x4F8B;&#x5982;uv_udp_t&#x4EE3;&#x8868;&#x4E86;&#x4E00;&#x4E2A;udp&#x7684;socket&#xFF0C;&#x7136;&#x800C;&#xFF0C;&#x5BF9;&#x4E8E;&#x6BCF;&#x4E00;&#x4E2A;&#x5411;socket&#x7684;&#x5199;&#x5165;&#x7684;&#x5B8C;&#x6210;&#x540E;&#xFF0C;&#x90FD;&#x4F1A;&#x5411;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F20;&#x9012;&#x4E00;&#x4E2A;<code>uv_udp_send_t</code>&#x3002;  </p>
 <p>handle&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x4E0B;&#x9762;&#x7684;&#x51FD;&#x6570;&#x8BBE;&#x7F6E;&#xFF1A;  </p>
-<pre><code>uv_TYPE_init(uv_loop_t *, uv_TYPE_t *)
-</code></pre><p>&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x662F;libuv&#x6240;&#x5173;&#x6CE8;&#x7684;&#x4E8B;&#x4EF6;&#x53D1;&#x751F;&#x540E;&#xFF0C;&#x6240;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x3002;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x7279;&#x5B9A;&#x903B;&#x8F91;&#x4F1A;&#x5728;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E2D;&#x5B9E;&#x73B0;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4E00;&#x4E2A;IO&#x76D1;&#x89C6;&#x5668;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F1A;&#x63A5;&#x6536;&#x5230;&#x4ECE;&#x6587;&#x4EF6;&#x8BFB;&#x53D6;&#x5230;&#x7684;&#x6570;&#x636E;&#xFF0C;&#x4E00;&#x4E2A;&#x5B9A;&#x65F6;&#x5668;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F1A;&#x5728;&#x8D85;&#x65F6;&#x540E;&#x88AB;&#x89E6;&#x53D1;&#x7B49;&#x7B49;&#x3002;  </p>
+<pre><code class="lang-c">uv_TYPE_init(<span class="hljs-keyword">uv_loop_t</span> *, uv_TYPE_t *)
+</code></pre>
+<p>&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x662F;libuv&#x6240;&#x5173;&#x6CE8;&#x7684;&#x4E8B;&#x4EF6;&#x53D1;&#x751F;&#x540E;&#xFF0C;&#x6240;&#x8C03;&#x7528;&#x7684;&#x51FD;&#x6570;&#x3002;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x7279;&#x5B9A;&#x903B;&#x8F91;&#x4F1A;&#x5728;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E2D;&#x5B9E;&#x73B0;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4E00;&#x4E2A;IO&#x76D1;&#x89C6;&#x5668;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F1A;&#x63A5;&#x6536;&#x5230;&#x4ECE;&#x6587;&#x4EF6;&#x8BFB;&#x53D6;&#x5230;&#x7684;&#x6570;&#x636E;&#xFF0C;&#x4E00;&#x4E2A;&#x5B9A;&#x65F6;&#x5668;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F1A;&#x5728;&#x8D85;&#x65F6;&#x540E;&#x88AB;&#x89E6;&#x53D1;&#x7B49;&#x7B49;&#x3002;  </p>
 <h3 id="idling">Idling</h3>
 <p>&#x4E0B;&#x9762;&#x6709;&#x4E00;&#x4E2A;&#x4F7F;&#x7528;&#x7A7A;&#x8F6C;handle&#x7684;&#x4F8B;&#x5B50;&#x3002;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x5728;&#x6BCF;&#x4E00;&#x4E2A;&#x5FAA;&#x73AF;&#x4E2D;&#x90FD;&#x4F1A;&#x88AB;&#x8C03;&#x7528;&#x3002;&#x5728;Utilities&#x8FD9;&#x90E8;&#x5206;&#x4F1A;&#x8BB2;&#x5230;&#x4E00;&#x4E9B;&#x7A7A;&#x8F6C;handle&#x7684;&#x4F7F;&#x7528;&#x573A;&#x666F;&#x3002;&#x73B0;&#x5728;&#x8BA9;&#x6211;&#x4EEC;&#x4F7F;&#x7528;&#x4E00;&#x4E2A;&#x7A7A;&#x8F6C;&#x76D1;&#x89C6;&#x5668;&#xFF0C;&#x7136;&#x540E;&#x6765;&#x89C2;&#x5BDF;&#x5B83;&#x7684;&#x751F;&#x547D;&#x5468;&#x671F;&#xFF0C;&#x63A5;&#x7740;&#x770B;<code>uv_run</code>&#x8C03;&#x7528;&#x662F;&#x5426;&#x4F1A;&#x9020;&#x6210;&#x963B;&#x585E;&#x3002;&#x5F53;&#x8FBE;&#x5230;&#x4E8B;&#x5148;&#x89C4;&#x5B9A;&#x597D;&#x7684;&#x8BA1;&#x6570;&#x540E;&#xFF0C;&#x7A7A;&#x8F6C;&#x76D1;&#x89C6;&#x5668;&#x4F1A;&#x9000;&#x51FA;&#x3002;&#x56E0;&#x4E3A;<code>uv_run</code>&#x5DF2;&#x7ECF;&#x627E;&#x4E0D;&#x5230;&#x6D3B;&#x7740;&#x7684;&#x4E8B;&#x4EF6;&#x76D1;&#x89C6;&#x5668;&#x4E86;&#xFF0C;&#x6240;&#x4EE5;<code>uv_run()</code>&#x4E5F;&#x9000;&#x51FA;&#x3002;  </p>
 <h4 id="idlebasicmainc">idle-basic/main.c</h4>
-<pre><code>#include &lt;stdio.h&gt;
-#include &lt;uv.h&gt;
+<pre><code class="lang-c"><span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;uv.h&gt;</span></span>
 
-int64_t counter = 0;
+<span class="hljs-keyword">int64_t</span> counter = <span class="hljs-number">0</span>;
 
-void wait_for_a_while(uv_idle_t* handle) {
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">wait_for_a_while</span><span class="hljs-params">(uv_idle_t* handle)</span> </span>{
     counter++;
 
-    if (counter &gt;= 10e6)
+    <span class="hljs-keyword">if</span> (counter &gt;= <span class="hljs-number">10e6</span>)
         uv_idle_stop(handle);
 }
 
-int main() {
-    uv_idle_t idler;
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">uv_idle_t</span> idler;
 
     uv_idle_init(uv_default_loop(), &amp;idler);
     uv_idle_start(&amp;idler, wait_for_a_while);
 
-    printf(&quot;Idling...\n&quot;);
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Idling...\n&quot;</span>);
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 
     uv_loop_close(uv_default_loop());
-    return 0;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
 }
-</code></pre><h3 id="storing-context">Storing context</h3>
+</code></pre>
+<h3 id="storing-context">Storing context</h3>
 <p>&#x5728;&#x57FA;&#x4E8E;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x7684;&#x7F16;&#x7A0B;&#x98CE;&#x683C;&#x4E2D;&#xFF0C;&#x4F60;&#x53EF;&#x80FD;&#x4F1A;&#x9700;&#x8981;&#x5728;&#x8C03;&#x7528;&#x5904;&#x548C;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E4B;&#x95F4;&#xFF0C;&#x4F20;&#x9012;&#x4E00;&#x4E9B;&#x4E0A;&#x4E0B;&#x6587;&#x7B49;&#x7279;&#x5B9A;&#x7684;&#x5E94;&#x7528;&#x4FE1;&#x606F;&#x3002;&#x6240;&#x6709;&#x7684;handle&#x548C;request&#x90FD;&#x6709;&#x4E00;&#x4E2A;<code>data</code>&#x57DF;&#xFF0C;&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x5B58;&#x50A8;&#x4FE1;&#x606F;&#x5E76;&#x4F20;&#x9012;&#x3002;&#x8FD9;&#x662F;&#x4E00;&#x4E2A;c&#x8BED;&#x8A00;&#x5E93;&#x4E2D;&#x5F88;&#x5E38;&#x89C1;&#x7684;&#x6A21;&#x5F0F;&#x3002;&#x5373;&#x4F7F;&#x662F;<code>uv_loop_t</code>&#x4E5F;&#x6709;&#x4E00;&#x4E2A;&#x76F8;&#x4F3C;&#x7684;<code>data</code>&#x57DF;&#x3002;      </p>
 
                     

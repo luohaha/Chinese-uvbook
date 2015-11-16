@@ -53,7 +53,7 @@
     <body>
         <!-- body:start -->
         
-    <div class="book" data-level="7" data-chapter-title="高级事件循环" data-filepath="source/advanced-event-loops.md" data-basepath=".." data-revision="Mon Nov 16 2015 20:40:45 GMT+0800 (CST)">
+    <div class="book" data-level="7" data-chapter-title="高级事件循环" data-filepath="source/advanced-event-loops.md" data-basepath=".." data-revision="Mon Nov 16 2015 21:24:14 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -254,53 +254,54 @@
 <h2 id="stopping-an-event-loop">Stopping an event loop</h2>
 <p><code>uv_stop()</code>&#x7528;&#x6765;&#x7EC8;&#x6B62;event loop&#x3002;loop&#x4F1A;&#x505C;&#x6B62;&#x7684;&#x6700;&#x65E9;&#x65F6;&#x95F4;&#x70B9;&#x662F;&#x5728;&#x4E0B;&#x6B21;&#x5FAA;&#x73AF;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x6216;&#x8005;&#x7A0D;&#x665A;&#x4E9B;&#x7684;&#x65F6;&#x5019;&#x3002;&#x8FD9;&#x4E5F;&#x5C31;&#x610F;&#x5473;&#x7740;&#x5728;&#x672C;&#x6B21;&#x5FAA;&#x73AF;&#x4E2D;&#x5DF2;&#x7ECF;&#x51C6;&#x5907;&#x88AB;&#x5904;&#x7406;&#x7684;&#x4E8B;&#x4EF6;&#xFF0C;&#x4F9D;&#x7136;&#x4F1A;&#x88AB;&#x5904;&#x7406;&#xFF0C;<code>uv_stop</code>&#x4E0D;&#x4F1A;&#x8D77;&#x5230;&#x4F5C;&#x7528;&#x3002;&#x5F53;<code>uv_stop</code>&#x88AB;&#x8C03;&#x7528;&#xFF0C;&#x5728;&#x5F53;&#x524D;&#x7684;&#x5FAA;&#x73AF;&#x4E2D;&#xFF0C;loop&#x4E0D;&#x4F1A;&#x88AB;IO&#x64CD;&#x4F5C;&#x963B;&#x585E;&#x3002;&#x4E0A;&#x9762;&#x8FD9;&#x4E9B;&#x8BF4;&#x5F97;&#x6709;&#x70B9;&#x7384;&#x4E4E;&#xFF0C;&#x8FD8;&#x662F;&#x8BA9;&#x6211;&#x4EEC;&#x770B;&#x4E0B;<code>uv_run()</code>&#x7684;&#x4EE3;&#x7801;&#xFF1A;  </p>
 <h4 id="srcunixcorec--uvrun">src/unix/core.c - uv_run</h4>
-<pre><code>int uv_run(uv_loop_t* loop, uv_run_mode mode) {
-  int timeout;
-  int r;
-  int ran_pending;
+<pre><code class="lang-c"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">uv_run</span><span class="hljs-params">(uv_loop_t* loop, uv_run_mode mode)</span> </span>{
+  <span class="hljs-keyword">int</span> timeout;
+  <span class="hljs-keyword">int</span> r;
+  <span class="hljs-keyword">int</span> ran_pending;
 
   r = uv__loop_alive(loop);
-  if (!r)
+  <span class="hljs-keyword">if</span> (!r)
     uv__update_time(loop);
 
-  while (r != 0 &amp;&amp; loop-&gt;stop_flag == 0) {
+  <span class="hljs-keyword">while</span> (r != <span class="hljs-number">0</span> &amp;&amp; loop-&gt;stop_flag == <span class="hljs-number">0</span>) {
     uv__update_time(loop);
     uv__run_timers(loop);
     ran_pending = uv__run_pending(loop);
     uv__run_idle(loop);
     uv__run_prepare(loop);
 
-    timeout = 0;
-    if ((mode == UV_RUN_ONCE &amp;&amp; !ran_pending) || mode == UV_RUN_DEFAULT)
+    timeout = <span class="hljs-number">0</span>;
+    <span class="hljs-keyword">if</span> ((mode == UV_RUN_ONCE &amp;&amp; !ran_pending) || mode == UV_RUN_DEFAULT)
       timeout = uv_backend_timeout(loop);
 
     uv__io_poll(loop, timeout);
-</code></pre><p><code>stop_flag</code>&#x7531;<code>uv_stop</code>&#x8BBE;&#x7F6E;&#x3002;&#x73B0;&#x5728;&#x6240;&#x6709;&#x7684;libuv&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x90FD;&#x662F;&#x5728;&#x4E00;&#x6B21;loop&#x5FAA;&#x73AF;&#x4E2D;&#x88AB;&#x8C03;&#x7528;&#x7684;&#xFF0C;&#x56E0;&#x6B64;&#x8C03;&#x7528;<code>uv_stop</code>&#x5E76;&#x4E0D;&#x80FD;&#x4E2D;&#x6B62;&#x672C;&#x6B21;&#x5FAA;&#x73AF;&#x3002;&#x9996;&#x5148;&#xFF0C;libuv&#x4F1A;&#x66F4;&#x65B0;&#x5B9A;&#x65F6;&#x5668;&#xFF0C;&#x7136;&#x540E;&#x8FD0;&#x884C;&#x63A5;&#x4E0B;&#x6765;&#x7684;&#x5B9A;&#x65F6;&#x5668;&#xFF0C;&#x7A7A;&#x8F6C;&#x548C;&#x51C6;&#x5907;&#x56DE;&#x8C03;&#xFF0C;&#x8C03;&#x7528;&#x4EFB;&#x4F55;&#x51C6;&#x5907;&#x597D;&#x7684;IO&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x3002;&#x5982;&#x679C;&#x4F60;&#x5728;&#x5B83;&#x4EEC;&#x4E4B;&#x95F4;&#x7684;&#x4EFB;&#x4F55;&#x4E00;&#x4E2A;&#x65F6;&#x95F4;&#x91CC;&#xFF0C;&#x8C03;&#x7528;<code>uv_stop()</code>&#xFF0C;<code>stop_flag</code>&#x4F1A;&#x88AB;&#x8BBE;&#x7F6E;&#x4E3A;1&#x3002;&#x8FD9;&#x4F1A;&#x5BFC;&#x81F4;<code>uv_backend_timeout()</code>&#x8FD4;&#x56DE;0&#xFF0C;&#x8FD9;&#x4E5F;&#x5C31;&#x662F;&#x4E3A;&#x4EC0;&#x4E48;loop&#x4E0D;&#x4F1A;&#x963B;&#x585E;&#x5728;I&#xFF0F;O&#x4E0A;&#x3002;&#x4ECE;&#x53E6;&#x5916;&#x7684;&#x89D2;&#x5EA6;&#x6765;&#x8BF4;&#xFF0C;&#x4F60;&#x5728;&#x4EFB;&#x4F55;&#x4E00;&#x4E2A;&#x68C0;&#x67E5;handler&#x4E2D;&#x8C03;&#x7528;<code>uv_stop</code>&#xFF0C;&#x6B64;&#x65F6;I/O&#x5DF2;&#x7ECF;&#x5B8C;&#x6210;&#xFF0C;&#x6240;&#x4EE5;&#x4E5F;&#x6CA1;&#x6709;&#x5F71;&#x54CD;&#x3002; </p>
+</code></pre>
+<p><code>stop_flag</code>&#x7531;<code>uv_stop</code>&#x8BBE;&#x7F6E;&#x3002;&#x73B0;&#x5728;&#x6240;&#x6709;&#x7684;libuv&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x90FD;&#x662F;&#x5728;&#x4E00;&#x6B21;loop&#x5FAA;&#x73AF;&#x4E2D;&#x88AB;&#x8C03;&#x7528;&#x7684;&#xFF0C;&#x56E0;&#x6B64;&#x8C03;&#x7528;<code>uv_stop</code>&#x5E76;&#x4E0D;&#x80FD;&#x4E2D;&#x6B62;&#x672C;&#x6B21;&#x5FAA;&#x73AF;&#x3002;&#x9996;&#x5148;&#xFF0C;libuv&#x4F1A;&#x66F4;&#x65B0;&#x5B9A;&#x65F6;&#x5668;&#xFF0C;&#x7136;&#x540E;&#x8FD0;&#x884C;&#x63A5;&#x4E0B;&#x6765;&#x7684;&#x5B9A;&#x65F6;&#x5668;&#xFF0C;&#x7A7A;&#x8F6C;&#x548C;&#x51C6;&#x5907;&#x56DE;&#x8C03;&#xFF0C;&#x8C03;&#x7528;&#x4EFB;&#x4F55;&#x51C6;&#x5907;&#x597D;&#x7684;IO&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x3002;&#x5982;&#x679C;&#x4F60;&#x5728;&#x5B83;&#x4EEC;&#x4E4B;&#x95F4;&#x7684;&#x4EFB;&#x4F55;&#x4E00;&#x4E2A;&#x65F6;&#x95F4;&#x91CC;&#xFF0C;&#x8C03;&#x7528;<code>uv_stop()</code>&#xFF0C;<code>stop_flag</code>&#x4F1A;&#x88AB;&#x8BBE;&#x7F6E;&#x4E3A;1&#x3002;&#x8FD9;&#x4F1A;&#x5BFC;&#x81F4;<code>uv_backend_timeout()</code>&#x8FD4;&#x56DE;0&#xFF0C;&#x8FD9;&#x4E5F;&#x5C31;&#x662F;&#x4E3A;&#x4EC0;&#x4E48;loop&#x4E0D;&#x4F1A;&#x963B;&#x585E;&#x5728;I&#xFF0F;O&#x4E0A;&#x3002;&#x4ECE;&#x53E6;&#x5916;&#x7684;&#x89D2;&#x5EA6;&#x6765;&#x8BF4;&#xFF0C;&#x4F60;&#x5728;&#x4EFB;&#x4F55;&#x4E00;&#x4E2A;&#x68C0;&#x67E5;handler&#x4E2D;&#x8C03;&#x7528;<code>uv_stop</code>&#xFF0C;&#x6B64;&#x65F6;I/O&#x5DF2;&#x7ECF;&#x5B8C;&#x6210;&#xFF0C;&#x6240;&#x4EE5;&#x4E5F;&#x6CA1;&#x6709;&#x5F71;&#x54CD;&#x3002; </p>
 <p>&#x5728;&#x5DF2;&#x7ECF;&#x5F97;&#x5230;&#x7ED3;&#x679C;&#xFF0C;&#x6216;&#x662F;&#x53D1;&#x751F;&#x9519;&#x8BEF;&#x7684;&#x65F6;&#x5019;&#xFF0C;<code>uv_stop()</code>&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x5173;&#x95ED;&#x4E00;&#x4E2A;loop&#xFF0C;&#x800C;&#x4E14;&#x4E0D;&#x9700;&#x8981;&#x4FDD;&#x8BC1;handler&#x505C;&#x6B62;&#x7684;&#x987A;&#x5E8F;&#x3002;  </p>
 <p>&#x4E0B;&#x9762;&#x662F;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;&#x5B83;&#x6F14;&#x793A;&#x4E86;loop&#x7684;&#x505C;&#x6B62;&#xFF0C;&#x4EE5;&#x53CA;&#x5F53;&#x524D;&#x7684;&#x5FAA;&#x73AF;&#x4F9D;&#x65E7;&#x5728;&#x6267;&#x884C;&#x3002;  </p>
 <h4 id="uvstopmainc">uvstop/main.c</h4>
-<pre><code>#include &lt;stdio.h&gt;
-#include &lt;uv.h&gt;
+<pre><code class="lang-c"><span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
+<span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;uv.h&gt;</span></span>
 
-int64_t counter = 0;
+<span class="hljs-keyword">int64_t</span> counter = <span class="hljs-number">0</span>;
 
-void idle_cb(uv_idle_t *handle) {
-    printf(&quot;Idle callback\n&quot;);
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">idle_cb</span><span class="hljs-params">(uv_idle_t *handle)</span> </span>{
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Idle callback\n&quot;</span>);
     counter++;
 
-    if (counter &gt;= 5) {
+    <span class="hljs-keyword">if</span> (counter &gt;= <span class="hljs-number">5</span>) {
         uv_stop(uv_default_loop());
-        printf(&quot;uv_stop() called\n&quot;);
+        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;uv_stop() called\n&quot;</span>);
     }
 }
 
-void prep_cb(uv_prepare_t *handle) {
-    printf(&quot;Prep callback\n&quot;);
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">prep_cb</span><span class="hljs-params">(uv_prepare_t *handle)</span> </span>{
+    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Prep callback\n&quot;</span>);
 }
 
-int main() {
-    uv_idle_t idler;
-    uv_prepare_t prep;
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">uv_idle_t</span> idler;
+    <span class="hljs-keyword">uv_prepare_t</span> prep;
 
     uv_idle_init(uv_default_loop(), &amp;idler);
     uv_idle_start(&amp;idler, idle_cb);
@@ -310,9 +311,10 @@ int main() {
 
     uv_run(uv_default_loop(), UV_RUN_DEFAULT);
 
-    return 0;
+    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
 }
 </code></pre>
+
                     
                     </section>
                 
