@@ -1,7 +1,7 @@
 #Threads
 等一下！为什么我们要聊线程？事件循环（event loop）不应该是用来做web编程的方法吗？(如果你对event loop, 不是很了解，可以看[这里](http://www.ruanyifeng.com/blog/2014/10/event-loop.html))。哦，不不。线程依旧是处理器完成任务的重要手段。线程因此有可能会派上用场，虽然会使得你不得不艰难地应对各种原始的同步问题。  
 
-线程会在内部使用，用来在执行系统调用时伪造异步的假象。libuv通过线程还可以使得你，或者程序，异步地执行一个阻塞的任务。方法就是大量地生成新线程，然后收集线程执行返回的结果。  
+线程会在内部使用，用来在执行系统调用时伪造异步的假象。libuv通过线程还可以使得程序异步地执行一个阻塞的任务。方法就是大量地生成新线程，然后收集线程执行返回的结果。  
 
 当下有两个占主导地位的线程库：windows下的线程实现和POSIX的[pthread](http://man7.org/linux/man-pages/man7/pthreads.7.html)。libuv的线程API与pthread的API在使用方法和语义上很接近。  
 
@@ -33,7 +33,7 @@ int main() {
 
 #####TIP
 ```
-uv_thread_t和unix下的pthread_t是对应的，但是多加了一个实现细节，
+uv_thread_t is just an alias for pthread_t on Unix, but this is an implementation detail, avoid depending on it to always be true.
 ```
 uv_thread_t的第二个参数指向了要执行的函数的地址。最后一个参数用来传递自定义的参数。最终，函数hare将在新的线程中执行，由操作系统调度。  
 
@@ -307,7 +307,8 @@ void after_fib(uv_work_t *req, int status) {
 #####Tip
 
 ```
-一个良好设计的程序，应该能够终止一个已经开始运行的长耗时任务。要实现这种功能，任务应该周期性地检查一个
+一个良好设计的程序，应该能够终止一个已经开始运行的长耗时任务。  
+Such a worker could periodically check for a variable that only the main process sets to signal termination.
 ```
 
 ##Inter-thread communication
@@ -339,7 +340,10 @@ int main() {
 #####WARNING
 
 ```
-应该注意: 消息的发送是异步的,回调函数应该在另外一个线程调用了uv_async_send后立即被调用, 或者在稍后的某个时刻被调用.   libuv也有可能多次调用 uv_async_send，但只调用了一次回调函数.   唯一可以保证的是: 线程在调用uv_async_send之后回调函数可至少被调用一次.   如果你没有未调用的 uv_async_send, 那么回调函数也不会被调用.   如果你调用了两次(以上)的 uv_async_send, 而 libuv 暂时还没有机会运行回调函数, 则libuv可能会在多次调用 uv_async_send 后只调用一次回调函数,   你的回调函数绝对不会在一次事件中被调用两次(或多次)。
+应该注意: 消息的发送是异步的,回调函数应该在另外一个线程调用了uv_async_send后立即被调用, 或者在稍后的某个时刻被调用。  
+libuv也有可能多次调用 uv_async_send，但只调用了一次回调函数。唯一可以保证的是: 线程在调用uv_async_send之后回调函数可至少被调用一次。  
+如果你没有未调用的 uv_async_send, 那么回调函数也不会被调用。  
+如果你调用了两次(以上)的 uv_async_send, 而 libuv 暂时还没有机会运行回调函数, 则libuv可能会在多次调用 uv_async_send 后只调用一次回调函数，你的回调函数绝对不会在一次事件中被调用两次(或多次)。
 ```
 
 ####progress/main.c

@@ -53,7 +53,7 @@
     <body>
         <!-- body:start -->
         
-    <div class="book" data-level="6" data-chapter-title="进程" data-filepath="source/processes.md" data-basepath=".." data-revision="Mon Nov 16 2015 17:34:11 GMT+0800 (CST)">
+    <div class="book" data-level="6" data-chapter-title="进程" data-filepath="source/processes.md" data-basepath=".." data-revision="Mon Nov 16 2015 20:16:04 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -515,7 +515,7 @@ int main() {
         fprintf(stderr, &quot;%s\n&quot;, uv_strerror(r));
 </code></pre><p>cgi&#x7684;<code>stdout</code>&#x88AB;&#x7ED1;&#x5B9A;&#x5230;socket&#x4E0A;&#xFF0C;&#x6240;&#x4EE5;&#x65E0;&#x8BBA;tick&#x811A;&#x672C;&#x7A0B;&#x5E8F;&#x6253;&#x5370;&#x4EC0;&#x4E48;&#xFF0C;&#x90FD;&#x4F1A;&#x53D1;&#x9001;&#x5230;client&#x7AEF;&#x3002;&#x901A;&#x8FC7;&#x4F7F;&#x7528;&#x8FDB;&#x7A0B;&#xFF0C;&#x6211;&#x4EEC;&#x80FD;&#x591F;&#x5F88;&#x597D;&#x5730;&#x5904;&#x7406;&#x8BFB;&#x5199;&#x5E76;&#x53D1;&#x64CD;&#x4F5C;&#xFF0C;&#x800C;&#x4E14;&#x7528;&#x8D77;&#x6765;&#x4E5F;&#x5F88;&#x65B9;&#x4FBF;&#x3002;&#x4F46;&#x662F;&#x8981;&#x8BB0;&#x5F97;&#x8FD9;&#x4E48;&#x505A;&#xFF0C;&#x662F;&#x5F88;&#x6D6A;&#x8D39;&#x8D44;&#x6E90;&#x7684;&#x3002;  </p>
 <h2 id="pipes">Pipes</h2>
-<p>libuv&#x7684;<code>uv_pipe_t</code>&#x7ED3;&#x6784;&#x53EF;&#x80FD;&#x4F1A;&#x8BA9;&#x4E00;&#x4E9B;unix&#x7A0B;&#x5E8F;&#x5458;&#x4EA7;&#x751F;&#x56F0;&#x60D1;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x50CF;&#x9B54;&#x672F;&#x822C;&#x53D8;&#x5E7B;&#x51FA;<code>|</code>&#x548C;<a href="http://man7.org/linux/man-pages/man7/pipe.7.html" target="_blank"><code>pipe(7)</code></a>&#x3002;&#x4F46;&#x8FD9;&#x91CC;&#x7684;<code>uv_pipe_t</code>&#x5E76;&#x4E0D;&#x662F;IPC&#x673A;&#x5236;&#x91CC;&#x7684;&#x533F;&#x540D;&#x7BA1;&#x9053;&#xFF08;&#x5728;IPC&#x91CC;&#xFF0C;pipe&#x662F;&#x533F;&#x540D;&#x7BA1;&#x9053;&#xFF0C;&#x53EA;&#x5141;&#x8BB8;&#x7236;&#x5B50;&#x8FDB;&#x7A0B;&#x4E4B;&#x95F4;&#x901A;&#x4FE1;&#x3002;FIFO&#x5219;&#x5141;&#x8BB8;&#x6CA1;&#x6709;&#x4EB2;&#x621A;&#x5173;&#x7CFB;&#x7684;&#x8FDB;&#x7A0B;&#x95F4;&#x901A;&#x4FE1;&#xFF0C;&#x663E;&#x7136;llibuv&#x91CC;&#x7684;<code>uv_pipe_t</code>&#x4E0D;&#x662F;&#x7B2C;&#x4E00;&#x79CD;&#xFF09;&#x3002;<code>uv_pipe_t</code>&#x80CC;&#x540E;&#x6709;<a href="http://man7.org/linux/man-pages/man7/unix.7.html" target="_blank">unix&#x672C;&#x5730;socket</a>&#x6216;&#x8005;<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa365590\(v=vs.85\" target="_blank">windows&#x5B9E;&#x540D;&#x7BA1;&#x9053;</a>.aspx)&#x7684;&#x652F;&#x6301;&#xFF0C;&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x591A;&#x8FDB;&#x7A0B;&#x95F4;&#x7684;&#x901A;&#x4FE1;&#x3002;&#x4E0B;&#x9762;&#x4F1A;&#x5177;&#x4F53;&#x8BA8;&#x8BBA;&#x3002;  </p>
+<p>libuv&#x7684;<code>uv_pipe_t</code>&#x7ED3;&#x6784;&#x53EF;&#x80FD;&#x4F1A;&#x8BA9;&#x4E00;&#x4E9B;unix&#x7A0B;&#x5E8F;&#x5458;&#x4EA7;&#x751F;&#x56F0;&#x60D1;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x50CF;&#x9B54;&#x672F;&#x822C;&#x53D8;&#x5E7B;&#x51FA;<code>|</code>&#x548C;<a href="http://man7.org/linux/man-pages/man7/pipe.7.html" target="_blank"><code>pipe(7)</code></a>&#x3002;&#x4F46;&#x8FD9;&#x91CC;&#x7684;<code>uv_pipe_t</code>&#x5E76;&#x4E0D;&#x662F;IPC&#x673A;&#x5236;&#x91CC;&#x7684;&#x533F;&#x540D;&#x7BA1;&#x9053;&#xFF08;&#x5728;IPC&#x91CC;&#xFF0C;pipe&#x662F;&#x533F;&#x540D;&#x7BA1;&#x9053;&#xFF0C;&#x53EA;&#x5141;&#x8BB8;&#x7236;&#x5B50;&#x8FDB;&#x7A0B;&#x4E4B;&#x95F4;&#x901A;&#x4FE1;&#x3002;FIFO&#x5219;&#x5141;&#x8BB8;&#x6CA1;&#x6709;&#x4EB2;&#x621A;&#x5173;&#x7CFB;&#x7684;&#x8FDB;&#x7A0B;&#x95F4;&#x901A;&#x4FE1;&#xFF0C;&#x663E;&#x7136;llibuv&#x91CC;&#x7684;<code>uv_pipe_t</code>&#x4E0D;&#x662F;&#x7B2C;&#x4E00;&#x79CD;&#xFF09;&#x3002;<code>uv_pipe_t</code>&#x80CC;&#x540E;&#x6709;<a href="http://man7.org/linux/man-pages/man7/unix.7.html" target="_blank">unix&#x672C;&#x5730;socket</a>&#x6216;&#x8005;<a href="https://msdn.microsoft.com/en-us/library/windows/desktop/aa365590.aspx" target="_blank">windows&#x5B9E;&#x540D;&#x7BA1;&#x9053;</a>&#x7684;&#x652F;&#x6301;&#xFF0C;&#x53EF;&#x4EE5;&#x5B9E;&#x73B0;&#x591A;&#x8FDB;&#x7A0B;&#x95F4;&#x7684;&#x901A;&#x4FE1;&#x3002;&#x4E0B;&#x9762;&#x4F1A;&#x5177;&#x4F53;&#x8BA8;&#x8BBA;&#x3002;  </p>
 <h4 id="parentchild-ipc">Parent-child IPC</h4>
 <p>&#x7236;&#x8FDB;&#x7A0B;&#x4E0E;&#x5B50;&#x8FDB;&#x7A0B;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5355;&#x5DE5;&#x6216;&#x8005;&#x53CC;&#x5DE5;&#x7BA1;&#x9053;&#x901A;&#x4FE1;&#xFF0C;&#x83B7;&#x5F97;&#x7BA1;&#x9053;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x8BBE;&#x7F6E;<code>uv_stdio_container_t.flags</code>&#x4E3A;<code>UV_CREATE_PIPE</code>&#xFF0C;<code>UV_READABLE_PIPE</code>&#x6216;&#x8005;<code>UV_WRITABLE_PIPE</code>&#x7684;&#x6309;&#x4F4D;&#x6216;&#x7684;&#x503C;&#x3002;&#x4E0A;&#x8FF0;&#x7684;&#x8BFB;&#xFF0F;&#x5199;&#x6807;&#x8BB0;&#x662F;&#x5BF9;&#x4E8E;&#x5B50;&#x8FDB;&#x7A0B;&#x800C;&#x8A00;&#x7684;&#x3002;  </p>
 <h4 id="arbitrary-process-ipc">Arbitrary process IPC</h4>
@@ -711,13 +711,9 @@ int main() {
     <script src="../gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
     
 
-    
-    <script src="../gitbook/plugins/gitbook-plugin-livereload/plugin.js"></script>
-    
-
 <script>
 require(["gitbook"], function(gitbook) {
-    var config = {"github":{"url":"https://github.com/luohaha/Chinese-uvbook"},"github-buttons":{"repo":"luohaha/Chinese-uvbook","types":["star"]},"maxiang":{},"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"livereload":{}};
+    var config = {"github":{"url":"https://github.com/luohaha/Chinese-uvbook"},"github-buttons":{"repo":"luohaha/Chinese-uvbook","types":["star"]},"maxiang":{},"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
     gitbook.start(config);
 });
 </script>

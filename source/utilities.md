@@ -352,7 +352,7 @@ void check_multi_info(void) {
 
 ##Loading libraries
 
-libuv提供了一个跨平台的API来加载[动态共享链接库shared libraries](https://en.wikipedia.org/wiki/Library_\(computing\)#Shared_libraries)（后面都翻译为动态链接库）。这就可以用来实现你自己的插件／扩展／模块系统，它们可以被nodejs通过`require()`调用。只要你的库输出的是正确的符号，用起来还是很简单的。在载入第三方库的时候，要注意错误和安全检查，否则你的程序就会表现出不可预测的行为。下面这个例子实现了一个简单的插件，它只是打印出了自己的名字。  
+libuv提供了一个跨平台的API来加载[共享库shared libraries](http://liaoph.com/linux-shared-libary/)。这就可以用来实现你自己的插件／扩展／模块系统，它们可以被nodejs通过`require()`调用。只要你的库输出的是正确的符号，用起来还是很简单的。在载入第三方库的时候，要注意错误和安全检查，否则你的程序就会表现出不可预测的行为。下面这个例子实现了一个简单的插件，它只是打印出了自己的名字。  
 
 首先看下提供给插件作者的接口。  
 
@@ -380,7 +380,7 @@ void initialize() {
 }
 ```
 
-我们的接口定义了，所有的插件都应该有一个能被程序调用的`initialize`函数。这个插件被编译成了动态链接库，因此可以被我们的程序在运行的时候载入。  
+我们的接口定义了，所有的插件都应该有一个能被程序调用的`initialize`函数。这个插件被编译成了共享库，因此可以被我们的程序在运行的时候载入。  
 
 ```
 $ ./plugin libhello.dylib
@@ -391,10 +391,10 @@ Registered plugin "Hello World!"
 #####Note
 
 ```
-动态链接库的后缀名在不同平台上是不一样的。在Linux上是libhello.so。
+共享库的后缀名在不同平台上是不一样的。在Linux上是libhello.so。
 ```
 
-使用`uv_dlopen`首先载入了动态链接库`libhello.dylib`。再使用`uv_dlsym`获取了该插件的`initialize`函数，最后在调用它。  
+使用`uv_dlopen`首先载入了共享库`libhello.dylib`。再使用`uv_dlsym`获取了该插件的`initialize`函数，最后在调用它。  
 
 ####plugin/main.c
 
@@ -434,7 +434,7 @@ int main(int argc, char **argv) {
 }
 ```
 
-函数`uv_dlopen`需要传入一个动态链接库的路径作为参数。当它成功时返回0，出错时返回－1。使用`uv_dlerror`可以获取出错的消息。  
+函数`uv_dlopen`需要传入一个共享库的路径作为参数。当它成功时返回0，出错时返回－1。使用`uv_dlerror`可以获取出错的消息。  
 
 `uv_dlsym`的第三个参数保存了一个指向第二个参数所保存的函数的指针。`init_plugin_function`是一个函数的指针，它指向了我们所需要的程序插件的函数。  
 

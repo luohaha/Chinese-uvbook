@@ -353,7 +353,7 @@ cgi的`stdout`被绑定到socket上，所以无论tick脚本程序打印什么�
 
 ##Pipes
 
-libuv的`uv_pipe_t`结构可能会让一些unix程序员产生困惑，因为它像魔术般变幻出`|`和[`pipe(7)`](http://man7.org/linux/man-pages/man7/pipe.7.html)。但这里的`uv_pipe_t`并不是IPC机制里的匿名管道（在IPC里，pipe是匿名管道，只允许父子进程之间通信。FIFO则允许没有亲戚关系的进程间通信，显然llibuv里的`uv_pipe_t`不是第一种）。`uv_pipe_t`背后有[unix本地socket](http://man7.org/linux/man-pages/man7/unix.7.html)或者[windows实名管道](https://msdn.microsoft.com/en-us/library/windows/desktop/aa365590\(v=vs.85\).aspx)的支持，可以实现多进程间的通信。下面会具体讨论。  
+libuv的`uv_pipe_t`结构可能会让一些unix程序员产生困惑，因为它像魔术般变幻出`|`和[`pipe(7)`](http://man7.org/linux/man-pages/man7/pipe.7.html)。但这里的`uv_pipe_t`并不是IPC机制里的匿名管道（在IPC里，pipe是匿名管道，只允许父子进程之间通信。FIFO则允许没有亲戚关系的进程间通信，显然llibuv里的`uv_pipe_t`不是第一种）。`uv_pipe_t`背后有[unix本地socket](http://man7.org/linux/man-pages/man7/unix.7.html)或者[windows实名管道](https://msdn.microsoft.com/en-us/library/windows/desktop/aa365590.aspx)的支持，可以实现多进程间的通信。下面会具体讨论。  
 
 ####Parent-child IPC
 
