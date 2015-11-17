@@ -243,7 +243,7 @@ UV_EXTERN int uv_fs_link(uv_loop_t* loop,
 
 ##Buffers and Streams
 
-在libuv中，最基础的I/O操作是流stream(``uv_stream_t``)。TCP嵌套字，UDP嵌套字，管道对于文件I/O和IPC来说，都可以看成是流stream(``uv_stream_t``)的子类.  
+在libuv中，最基础的I/O操作是流stream(``uv_stream_t``)。TCP套接字，UDP套接字，管道对于文件I/O和IPC来说，都可以看成是流stream(``uv_stream_t``)的子类.  
 上面提到的各个流的子类都有各自的初始化函数，然后可以使用下面的函数操作:
 
 ```c
