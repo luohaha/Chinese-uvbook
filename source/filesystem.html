@@ -53,7 +53,7 @@
     <body>
         <!-- body:start -->
         
-    <div class="book" data-level="3" data-chapter-title="文件系统" data-filepath="source/filesystem.md" data-basepath=".." data-revision="Mon Nov 16 2015 21:44:10 GMT+0800 (CST)">
+    <div class="book" data-level="3" data-chapter-title="文件系统" data-filepath="source/filesystem.md" data-basepath=".." data-revision="Wed Nov 18 2015 08:19:54 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -443,7 +443,7 @@
                          uv_fs_cb cb)</span></span>;
 </code></pre>
 <h2 id="buffers-and-streams">Buffers and Streams</h2>
-<p>&#x5728;libuv&#x4E2D;&#xFF0C;&#x6700;&#x57FA;&#x7840;&#x7684;I/O&#x64CD;&#x4F5C;&#x662F;&#x6D41;stream(<code>uv_stream_t</code>)&#x3002;TCP&#x5D4C;&#x5957;&#x5B57;&#xFF0C;UDP&#x5D4C;&#x5957;&#x5B57;&#xFF0C;&#x7BA1;&#x9053;&#x5BF9;&#x4E8E;&#x6587;&#x4EF6;I/O&#x548C;IPC&#x6765;&#x8BF4;&#xFF0C;&#x90FD;&#x53EF;&#x4EE5;&#x770B;&#x6210;&#x662F;&#x6D41;stream(<code>uv_stream_t</code>)&#x7684;&#x5B50;&#x7C7B;.<br>&#x4E0A;&#x9762;&#x63D0;&#x5230;&#x7684;&#x5404;&#x4E2A;&#x6D41;&#x7684;&#x5B50;&#x7C7B;&#x90FD;&#x6709;&#x5404;&#x81EA;&#x7684;&#x521D;&#x59CB;&#x5316;&#x51FD;&#x6570;&#xFF0C;&#x7136;&#x540E;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4E0B;&#x9762;&#x7684;&#x51FD;&#x6570;&#x64CD;&#x4F5C;:</p>
+<p>&#x5728;libuv&#x4E2D;&#xFF0C;&#x6700;&#x57FA;&#x7840;&#x7684;I/O&#x64CD;&#x4F5C;&#x662F;&#x6D41;stream(<code>uv_stream_t</code>)&#x3002;TCP&#x5957;&#x63A5;&#x5B57;&#xFF0C;UDP&#x5957;&#x63A5;&#x5B57;&#xFF0C;&#x7BA1;&#x9053;&#x5BF9;&#x4E8E;&#x6587;&#x4EF6;I/O&#x548C;IPC&#x6765;&#x8BF4;&#xFF0C;&#x90FD;&#x53EF;&#x4EE5;&#x770B;&#x6210;&#x662F;&#x6D41;stream(<code>uv_stream_t</code>)&#x7684;&#x5B50;&#x7C7B;.<br>&#x4E0A;&#x9762;&#x63D0;&#x5230;&#x7684;&#x5404;&#x4E2A;&#x6D41;&#x7684;&#x5B50;&#x7C7B;&#x90FD;&#x6709;&#x5404;&#x81EA;&#x7684;&#x521D;&#x59CB;&#x5316;&#x51FD;&#x6570;&#xFF0C;&#x7136;&#x540E;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4E0B;&#x9762;&#x7684;&#x51FD;&#x6570;&#x64CD;&#x4F5C;:</p>
 <pre><code class="lang-c"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">uv_read_start</span><span class="hljs-params">(uv_stream_t*, uv_alloc_cb alloc_cb, uv_read_cb read_cb)</span></span>;
 <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">uv_read_stop</span><span class="hljs-params">(uv_stream_t*)</span></span>;
 <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">uv_write</span><span class="hljs-params">(uv_write_t* req, uv_stream_t* handle,
