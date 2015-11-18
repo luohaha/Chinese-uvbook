@@ -4,7 +4,7 @@
 
 Nikhil从Marc Lehmann的关于libev的[手册](http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod)中讲解libev和libuv的不同点的部分，获取了不少的灵感。  
 
-本书的中文翻译者为：[Luohaha](https://github.com/luohaha)。同样欢迎您的Pull requests来改进本书的翻译工作。  
+本书的中文翻译者为：[luohaha](https://github.com/luohaha)，[byronhe](https://github.com/byronhe)。同样欢迎您的Pull requests来改进本书的翻译工作。  
 
 ###Licensing
 
