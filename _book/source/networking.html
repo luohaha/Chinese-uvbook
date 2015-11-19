@@ -53,7 +53,7 @@
     <body>
         <!-- body:start -->
         
-    <div class="book" data-level="4" data-chapter-title="网络" data-filepath="source/networking.md" data-basepath=".." data-revision="Wed Nov 18 2015 08:19:54 GMT+0800 (CST)">
+    <div class="book" data-level="4" data-chapter-title="网络" data-filepath="source/networking.md" data-basepath=".." data-revision="Thu Nov 19 2015 15:11:02 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -255,7 +255,10 @@
 <h2 id="tcp">TCP</h2>
 <p>TCP&#x662F;&#x9762;&#x5411;&#x8FDE;&#x63A5;&#x7684;&#xFF0C;&#x5B57;&#x8282;&#x6D41;&#x534F;&#x8BAE;&#xFF0C;&#x56E0;&#x6B64;&#x57FA;&#x4E8E;libuv&#x7684;stream&#x5B9E;&#x73B0;&#x3002;  </p>
 <h4 id="server">server</h4>
-<p>&#x670D;&#x52A1;&#x5668;&#x7AEF;&#x7684;&#x5EFA;&#x7ACB;&#x6D41;&#x7A0B;&#x5982;&#x4E0B;&#xFF1A;<br>1.<code>uv_tcp_init</code>&#x5EFA;&#x7ACB;tcp&#x53E5;&#x67C4;&#x3002;<br>2.<code>uv_tcp_bind</code>&#x7ED1;&#x5B9A;&#x3002;<br>3.<code>uv_listen</code>&#x5EFA;&#x7ACB;&#x76D1;&#x542C;&#xFF0C;&#x5F53;&#x6709;&#x65B0;&#x7684;&#x8FDE;&#x63A5;&#x5230;&#x6765;&#x65F6;&#xFF0C;&#x6FC0;&#x6D3B;&#x8C03;&#x7528;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x3002;<br>4.<code>uv_accept</code>&#x63A5;&#x6536;&#x94FE;&#x63A5;&#x3002;<br>5.&#x4F7F;&#x7528;stream&#x5904;&#x7406;&#x6765;&#x548C;&#x5BA2;&#x6237;&#x7AEF;&#x901A;&#x4FE1;&#x3002;  </p>
+<p>&#x670D;&#x52A1;&#x5668;&#x7AEF;&#x7684;&#x5EFA;&#x7ACB;&#x6D41;&#x7A0B;&#x5982;&#x4E0B;&#xFF1A;  </p>
+<blockquote>
+<p>1.<code>uv_tcp_init</code>&#x5EFA;&#x7ACB;tcp&#x53E5;&#x67C4;&#x3002;<br>2.<code>uv_tcp_bind</code>&#x7ED1;&#x5B9A;&#x3002;<br>3.<code>uv_listen</code>&#x5EFA;&#x7ACB;&#x76D1;&#x542C;&#xFF0C;&#x5F53;&#x6709;&#x65B0;&#x7684;&#x8FDE;&#x63A5;&#x5230;&#x6765;&#x65F6;&#xFF0C;&#x6FC0;&#x6D3B;&#x8C03;&#x7528;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x3002;<br>4.<code>uv_accept</code>&#x63A5;&#x6536;&#x94FE;&#x63A5;&#x3002;<br>5.&#x4F7F;&#x7528;stream&#x5904;&#x7406;&#x6765;&#x548C;&#x5BA2;&#x6237;&#x7AEF;&#x901A;&#x4FE1;&#x3002;  </p>
+</blockquote>
 <h4 id="tcpechoservermainc--the-listen-socket">tcp-echo-server/main.c - The listen socket</h4>
 <pre><code class="lang-c"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>{
     loop = uv_default_loop();
@@ -276,8 +279,10 @@
 </code></pre>
 <p>&#x4F60;&#x53EF;&#x4EE5;&#x8C03;&#x7528;<code>uv_ip4_addr()</code>&#x51FD;&#x6570;&#x6765;&#x5C06;ip&#x5730;&#x5740;&#x548C;&#x7AEF;&#x53E3;&#x53F7;&#x8F6C;&#x6362;&#x4E3A;sockaddr_in&#x7ED3;&#x6784;&#xFF0C;&#x8FD9;&#x6837;&#x5C31;&#x53EF;&#x4EE5;&#x88AB;BSD&#x7684;socket&#x4F7F;&#x7528;&#x4E86;&#x3002;&#x8981;&#x60F3;&#x5B8C;&#x6210;&#x9006;&#x8F6C;&#x6362;&#x7684;&#x8BDD;&#x53EF;&#x4EE5;&#x8C03;&#x7528;<code>uv_ip4_name()</code>&#x3002;   </p>
 <h5 id="note">note</h5>
-<pre><code>&#x5BF9;&#x5E94;ipv6&#x6709;&#x7C7B;&#x4F3C;&#x7684;uv_ip6_*
-</code></pre><p>&#x5927;&#x591A;&#x6570;&#x7684;&#x8BBE;&#x7F6E;&#x51FD;&#x6570;&#x662F;&#x540C;&#x6B65;&#x7684;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x4EEC;&#x4E0D;&#x4F1A;&#x6D88;&#x8017;&#x592A;&#x591A;cpu&#x8D44;&#x6E90;&#x3002;&#x5230;&#x4E86;<code>uv_listen</code>&#x8FD9;&#x53E5;&#xFF0C;&#x6211;&#x4EEC;&#x518D;&#x6B21;&#x56DE;&#x5230;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x7684;&#x98CE;&#x683C;&#x4E0A;&#x6765;&#x3002;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x5F85;&#x5904;&#x7406;&#x7684;&#x8FDE;&#x63A5;&#x8BF7;&#x6C42;&#x961F;&#x5217;&#xFF0D;&#x6700;&#x5927;&#x957F;&#x5EA6;&#x7684;&#x8BF7;&#x6C42;&#x8FDE;&#x63A5;&#x961F;&#x5217;&#x3002;  </p>
+<blockquote>
+<p>&#x5BF9;&#x5E94;ipv6&#x6709;&#x7C7B;&#x4F3C;&#x7684;uv<em>ip6</em>*</p>
+</blockquote>
+<p>&#x5927;&#x591A;&#x6570;&#x7684;&#x8BBE;&#x7F6E;&#x51FD;&#x6570;&#x662F;&#x540C;&#x6B65;&#x7684;&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x4EEC;&#x4E0D;&#x4F1A;&#x6D88;&#x8017;&#x592A;&#x591A;cpu&#x8D44;&#x6E90;&#x3002;&#x5230;&#x4E86;<code>uv_listen</code>&#x8FD9;&#x53E5;&#xFF0C;&#x6211;&#x4EEC;&#x518D;&#x6B21;&#x56DE;&#x5230;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x7684;&#x98CE;&#x683C;&#x4E0A;&#x6765;&#x3002;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x5F85;&#x5904;&#x7406;&#x7684;&#x8FDE;&#x63A5;&#x8BF7;&#x6C42;&#x961F;&#x5217;&#xFF0D;&#x6700;&#x5927;&#x957F;&#x5EA6;&#x7684;&#x8BF7;&#x6C42;&#x8FDE;&#x63A5;&#x961F;&#x5217;&#x3002;  </p>
 <p>&#x5F53;&#x5BA2;&#x6237;&#x7AEF;&#x5F00;&#x59CB;&#x5EFA;&#x7ACB;&#x8FDE;&#x63A5;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x56DE;&#x8C03;&#x51FD;&#x6570;<code>on_new_connection</code>&#x9700;&#x8981;&#x4F7F;&#x7528;<code>uv_accept</code>&#x53BB;&#x5EFA;&#x7ACB;&#x4E00;&#x4E2A;&#x4E0E;&#x5BA2;&#x6237;&#x7AEF;socket&#x901A;&#x4FE1;&#x7684;&#x53E5;&#x67C4;&#x3002;&#x540C;&#x65F6;&#xFF0C;&#x6211;&#x4EEC;&#x4E5F;&#x8981;&#x5F00;&#x59CB;&#x4ECE;&#x6D41;&#x4E2D;&#x8BFB;&#x53D6;&#x6570;&#x636E;&#x3002;  </p>
 <h4 id="tcpechoservermainc--accepting-the-client">tcp-echo-server/main.c - Accepting the client</h4>
 <pre><code class="lang-c"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">on_new_connection</span><span class="hljs-params">(uv_stream_t *server, <span class="hljs-keyword">int</span> status)</span> </span>{
@@ -314,8 +319,10 @@ uv_tcp_connect(connect, socket, dest, on_connect);
 <h2 id="udp">UDP</h2>
 <p>&#x7528;&#x6237;&#x6570;&#x636E;&#x62A5;&#x534F;&#x8BAE;(User Datagram Protocol)&#x63D0;&#x4F9B;&#x65E0;&#x8FDE;&#x63A5;&#x7684;&#xFF0C;&#x4E0D;&#x53EF;&#x9760;&#x7684;&#x7F51;&#x7EDC;&#x901A;&#x4FE1;&#x3002;&#x56E0;&#x6B64;&#xFF0C;libuv&#x4E0D;&#x4F1A;&#x63D0;&#x4F9B;&#x4E00;&#x4E2A;stream&#x5B9E;&#x73B0;&#x7684;&#x5F62;&#x5F0F;&#xFF0C;&#x800C;&#x662F;&#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x4E2A;<code>uv_udp_t</code>&#x53E5;&#x67C4;&#xFF08;&#x63A5;&#x6536;&#x7AEF;&#xFF09;&#xFF0C;&#x548C;&#x4E00;&#x4E2A;<code>uv_udp_send_t</code>&#x53E5;&#x67C4;&#xFF08;&#x53D1;&#x9001;&#x7AEF;&#xFF09;&#xFF0C;&#x8FD8;&#x6709;&#x76F8;&#x5173;&#x7684;&#x51FD;&#x6570;&#x3002;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x5B9E;&#x9645;&#x7684;&#x8BFB;&#x5199;api&#x4E0E;&#x6B63;&#x5E38;&#x7684;&#x6D41;&#x8BFB;&#x53D6;&#x7C7B;&#x4F3C;&#x3002;&#x4E0B;&#x9762;&#x7684;&#x4F8B;&#x5B50;&#x5C55;&#x793A;&#x4E86;&#x4E00;&#x4E2A;&#x4ECE;DCHP&#x670D;&#x52A1;&#x5668;&#x83B7;&#x53D6;ip&#x7684;&#x4F8B;&#x5B50;&#x3002;  </p>
 <h5 id="note">note</h5>
-<pre><code>&#x4F60;&#x5FC5;&#x987B;&#x4EE5;&#x7BA1;&#x7406;&#x5458;&#x7684;&#x6743;&#x9650;&#x8FD0;&#x884C;udp-dhcp&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x7684;&#x7AEF;&#x53E3;&#x53F7;&#x4F4E;&#x4E8E;1024
-</code></pre><h4 id="udpdhcpmainc--setup-and-send-udp-packets">udp-dhcp/main.c - Setup and send UDP packets</h4>
+<blockquote>
+<p>&#x4F60;&#x5FC5;&#x987B;&#x4EE5;&#x7BA1;&#x7406;&#x5458;&#x7684;&#x6743;&#x9650;&#x8FD0;&#x884C;udp-dhcp&#xFF0C;&#x56E0;&#x4E3A;&#x5B83;&#x7684;&#x7AEF;&#x53E3;&#x53F7;&#x4F4E;&#x4E8E;1024</p>
+</blockquote>
+<h4 id="udpdhcpmainc--setup-and-send-udp-packets">udp-dhcp/main.c - Setup and send UDP packets</h4>
 <pre><code class="lang-c"><span class="hljs-keyword">uv_loop_t</span> *loop;
 <span class="hljs-keyword">uv_udp_t</span> send_socket;
 <span class="hljs-keyword">uv_udp_t</span> recv_socket;
@@ -346,8 +353,10 @@ uv_tcp_connect(connect, socket, dest, on_connect);
 }
 </code></pre>
 <h5 id="note">note</h5>
-<pre><code>ip&#x5730;&#x5740;&#x4E3A;0.0.0.0&#xFF0C;&#x7528;&#x6765;&#x7ED1;&#x5B9A;&#x6240;&#x6709;&#x7684;&#x63A5;&#x53E3;&#x3002;255.255.255.255&#x662F;&#x4E00;&#x4E2A;&#x5E7F;&#x64AD;&#x5730;&#x5740;&#xFF0C;&#x8FD9;&#x4E5F;&#x610F;&#x5473;&#x7740;&#x6570;&#x636E;&#x62A5;&#x5C06;&#x5F80;&#x6240;&#x6709;&#x7684;&#x5B50;&#x7F51;&#x63A5;&#x53E3;&#x4E2D;&#x53D1;&#x9001;&#x3002;&#x7AEF;&#x53E3;&#x53F7;&#x4E3A;0&#x4EE3;&#x8868;&#x7740;&#x7531;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x968F;&#x673A;&#x5206;&#x914D;&#x4E00;&#x4E2A;&#x7AEF;&#x53E3;&#x3002;
-</code></pre><p>&#x9996;&#x5148;&#xFF0C;&#x6211;&#x4EEC;&#x8BBE;&#x7F6E;&#x4E86;&#x4E00;&#x4E2A;&#x63A5;&#x6536;&#x7684;socket&#xFF0C;&#x7AEF;&#x53E3;&#x53F7;&#x4E3A;68&#xFF0C;&#x4F5C;&#x4E3A;DHCP&#x5BA2;&#x6237;&#x7AEF;&#xFF0C;&#x7136;&#x540E;&#x5F00;&#x59CB;&#x4ECE;&#x4E2D;&#x8BFB;&#x53D6;&#x6570;&#x636E;&#x3002;&#x5B83;&#x4F1A;&#x63A5;&#x6536;&#x6240;&#x6709;&#x6765;&#x81EA;DHCP&#x670D;&#x52A1;&#x5668;&#x7684;&#x8FD4;&#x56DE;&#x6570;&#x636E;&#x3002;&#x6211;&#x4EEC;&#x8BBE;&#x7F6E;&#x4E86;<code>UV_UDP_REUSEADDR</code>&#x6807;&#x8BB0;&#xFF0C;&#x7528;&#x6765;&#x548C;&#x5176;&#x4ED6;&#x5171;&#x4EAB;&#x7AEF;&#x53E3;&#x7684; DHCP&#x5BA2;&#x6237;&#x7AEF;&#x548C;&#x5E73;&#x5171;&#x5904;&#x3002;&#x63A5;&#x7740;&#xFF0C;&#x6211;&#x4EEC;&#x8BBE;&#x7F6E;&#x4E86;&#x4E00;&#x4E2A;&#x7C7B;&#x4F3C;&#x7684;&#x53D1;&#x9001;socket&#xFF0C;&#x7136;&#x540E;&#x4F7F;&#x7528;<code>uv_udp_send</code>&#x5411;DHCP&#x670D;&#x52A1;&#x5668;&#xFF08;&#x5728;67&#x7AEF;&#x53E3;&#xFF09;&#x53D1;&#x9001;&#x5E7F;&#x64AD;&#x3002;  </p>
+<blockquote>
+<p>ip&#x5730;&#x5740;&#x4E3A;0.0.0.0&#xFF0C;&#x7528;&#x6765;&#x7ED1;&#x5B9A;&#x6240;&#x6709;&#x7684;&#x63A5;&#x53E3;&#x3002;255.255.255.255&#x662F;&#x4E00;&#x4E2A;&#x5E7F;&#x64AD;&#x5730;&#x5740;&#xFF0C;&#x8FD9;&#x4E5F;&#x610F;&#x5473;&#x7740;&#x6570;&#x636E;&#x62A5;&#x5C06;&#x5F80;&#x6240;&#x6709;&#x7684;&#x5B50;&#x7F51;&#x63A5;&#x53E3;&#x4E2D;&#x53D1;&#x9001;&#x3002;&#x7AEF;&#x53E3;&#x53F7;&#x4E3A;0&#x4EE3;&#x8868;&#x7740;&#x7531;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x968F;&#x673A;&#x5206;&#x914D;&#x4E00;&#x4E2A;&#x7AEF;&#x53E3;&#x3002;</p>
+</blockquote>
+<p>&#x9996;&#x5148;&#xFF0C;&#x6211;&#x4EEC;&#x8BBE;&#x7F6E;&#x4E86;&#x4E00;&#x4E2A;&#x63A5;&#x6536;&#x7684;socket&#xFF0C;&#x7AEF;&#x53E3;&#x53F7;&#x4E3A;68&#xFF0C;&#x4F5C;&#x4E3A;DHCP&#x5BA2;&#x6237;&#x7AEF;&#xFF0C;&#x7136;&#x540E;&#x5F00;&#x59CB;&#x4ECE;&#x4E2D;&#x8BFB;&#x53D6;&#x6570;&#x636E;&#x3002;&#x5B83;&#x4F1A;&#x63A5;&#x6536;&#x6240;&#x6709;&#x6765;&#x81EA;DHCP&#x670D;&#x52A1;&#x5668;&#x7684;&#x8FD4;&#x56DE;&#x6570;&#x636E;&#x3002;&#x6211;&#x4EEC;&#x8BBE;&#x7F6E;&#x4E86;<code>UV_UDP_REUSEADDR</code>&#x6807;&#x8BB0;&#xFF0C;&#x7528;&#x6765;&#x548C;&#x5176;&#x4ED6;&#x5171;&#x4EAB;&#x7AEF;&#x53E3;&#x7684; DHCP&#x5BA2;&#x6237;&#x7AEF;&#x548C;&#x5E73;&#x5171;&#x5904;&#x3002;&#x63A5;&#x7740;&#xFF0C;&#x6211;&#x4EEC;&#x8BBE;&#x7F6E;&#x4E86;&#x4E00;&#x4E2A;&#x7C7B;&#x4F3C;&#x7684;&#x53D1;&#x9001;socket&#xFF0C;&#x7136;&#x540E;&#x4F7F;&#x7528;<code>uv_udp_send</code>&#x5411;DHCP&#x670D;&#x52A1;&#x5668;&#xFF08;&#x5728;67&#x7AEF;&#x53E3;&#xFF09;&#x53D1;&#x9001;&#x5E7F;&#x64AD;&#x3002;  </p>
 <p>&#x8BBE;&#x7F6E;&#x5E7F;&#x64AD;&#x53D1;&#x9001;&#x662F;&#x975E;&#x5E38;&#x5FC5;&#x8981;&#x7684;&#xFF0C;&#x5426;&#x5219;&#x4F60;&#x4F1A;&#x63A5;&#x6536;&#x5230;<code>EACCES</code><a href="http://beej.us/guide/bgnet/output/html/multipage/advanced.html#broadcast" target="_blank">&#x9519;&#x8BEF;</a>&#x3002;&#x548C;&#x6B64;&#x524D;&#x4E00;&#x6837;&#xFF0C;&#x5982;&#x679C;&#x5728;&#x8BFB;&#x5199;&#x4E2D;&#x51FA;&#x9519;&#xFF0C;&#x8FD4;&#x56DE;&#x7801;&lt;0&#x3002;  </p>
 <p>&#x56E0;&#x4E3A;UDP&#x4E0D;&#x4F1A;&#x5EFA;&#x7ACB;&#x8FDE;&#x63A5;&#xFF0C;&#x56E0;&#x6B64;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4F1A;&#x63A5;&#x6536;&#x5230;&#x5173;&#x4E8E;&#x53D1;&#x9001;&#x8005;&#x7684;&#x989D;&#x5916;&#x7684;&#x4FE1;&#x606F;&#x3002;  </p>
 <p>&#x5F53;&#x6CA1;&#x6709;&#x53EF;&#x8BFB;&#x6570;&#x636E;&#x540E;&#xFF0C;nread&#x7B49;&#x4E8E;0&#x3002;&#x5982;&#x679C;<code>addr</code>&#x662F;<code>null</code>&#xFF0C;&#x5B83;&#x4EE3;&#x8868;&#x4E86;&#x6CA1;&#x6709;&#x53EF;&#x8BFB;&#x6570;&#x636E;&#xFF08;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E0D;&#x4F1A;&#x505A;&#x4EFB;&#x4F55;&#x5904;&#x7406;&#xFF09;&#x3002;&#x5982;&#x679C;&#x4E0D;&#x4E3A;null&#xFF0C;&#x5219;&#x8BF4;&#x660E;&#x4E86;&#x4ECE;addr&#x4E2D;&#x63A5;&#x6536;&#x5230;&#x4E00;&#x4E2A;&#x7A7A;&#x7684;&#x6570;&#x636E;&#x62A5;&#x3002;&#x5982;&#x679C;flag&#x4E3A;<code>UV_UDP_PARTIAL</code>&#xFF0C;&#x5219;&#x4EE3;&#x8868;&#x4E86;&#x5185;&#x5B58;&#x5206;&#x914D;&#x7684;&#x7A7A;&#x95F4;&#x4E0D;&#x591F;&#x5B58;&#x653E;&#x63A5;&#x6536;&#x5230;&#x7684;&#x6570;&#x636E;&#x4E86;&#xFF0C;&#x5728;&#x8FD9;&#x79CD;&#x60C5;&#x5F62;&#x4E0B;&#xFF0C;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x4F1A;&#x4E22;&#x5F03;&#x5B58;&#x4E0D;&#x4E0B;&#x7684;&#x6570;&#x636E;&#x3002;  </p>
@@ -378,9 +387,18 @@ uv_tcp_connect(connect, socket, dest, on_connect);
 }
 </code></pre>
 <h4 id="udp-options">UDP Options</h4>
-<p>&#x751F;&#x5B58;&#x65F6;&#x95F4;&#xFF08;Time-to-live&#xFF09;<br>&#x53EF;&#x4EE5;&#x901A;&#x8FC7;<code>uv_udp_set_ttl</code>&#x66F4;&#x6539;&#x751F;&#x5B58;&#x65F6;&#x95F4;&#x3002;  </p>
-<p>&#x53EA;&#x5141;&#x8BB8;IPV6&#x534F;&#x8BAE;&#x6808;<br>&#x5728;&#x8C03;&#x7528;<code>uv_udp_bind</code>&#x65F6;&#xFF0C;&#x8BBE;&#x7F6E;<code>UV_UDP_IPV6ONLY</code>&#x6807;&#x793A;&#xFF0C;&#x53EF;&#x4EE5;&#x5F3A;&#x5236;&#x53EA;&#x4F7F;&#x7528;ipv6&#x3002;  </p>
-<p>&#x7EC4;&#x64AD;<br>socket&#x4E5F;&#x652F;&#x6301;&#x7EC4;&#x64AD;&#xFF0C;&#x53EF;&#x4EE5;&#x8FD9;&#x4E48;&#x4F7F;&#x7528;&#xFF1A;  </p>
+<p>&#x751F;&#x5B58;&#x65F6;&#x95F4;&#xFF08;Time-to-live&#xFF09;  </p>
+<blockquote>
+<p>&#x53EF;&#x4EE5;&#x901A;&#x8FC7;<code>uv_udp_set_ttl</code>&#x66F4;&#x6539;&#x751F;&#x5B58;&#x65F6;&#x95F4;&#x3002;  </p>
+</blockquote>
+<p>&#x53EA;&#x5141;&#x8BB8;IPV6&#x534F;&#x8BAE;&#x6808;  </p>
+<blockquote>
+<p>&#x5728;&#x8C03;&#x7528;<code>uv_udp_bind</code>&#x65F6;&#xFF0C;&#x8BBE;&#x7F6E;<code>UV_UDP_IPV6ONLY</code>&#x6807;&#x793A;&#xFF0C;&#x53EF;&#x4EE5;&#x5F3A;&#x5236;&#x53EA;&#x4F7F;&#x7528;ipv6&#x3002;  </p>
+</blockquote>
+<p>&#x7EC4;&#x64AD;  </p>
+<blockquote>
+<p>socket&#x4E5F;&#x652F;&#x6301;&#x7EC4;&#x64AD;&#xFF0C;&#x53EF;&#x4EE5;&#x8FD9;&#x4E48;&#x4F7F;&#x7528;&#xFF1A;  </p>
+</blockquote>
 <pre><code class="lang-c"><span class="hljs-function">UV_EXTERN <span class="hljs-keyword">int</span> <span class="hljs-title">uv_udp_set_membership</span><span class="hljs-params">(uv_udp_t* handle,
                                     <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>* multicast_addr,
                                     <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>* interface_addr,

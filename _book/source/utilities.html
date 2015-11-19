@@ -53,7 +53,7 @@
     <body>
         <!-- body:start -->
         
-    <div class="book" data-level="8" data-chapter-title="实用工具" data-filepath="source/utilities.md" data-basepath=".." data-revision="Wed Nov 18 2015 08:19:54 GMT+0800 (CST)">
+    <div class="book" data-level="8" data-chapter-title="实用工具" data-filepath="source/utilities.md" data-basepath=".." data-revision="Thu Nov 19 2015 15:11:02 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -266,10 +266,12 @@ uv_timer_start(&amp;timer_req, callback, <span class="hljs-number">5000</span>, 
 <pre><code class="lang-c">uv_timer_set_repeat(<span class="hljs-keyword">uv_timer_t</span> *timer, <span class="hljs-keyword">int64_t</span> repeat);
 </code></pre>
 <p>&#x5B83;&#x4F1A;&#x5728;&#x53EF;&#x80FD;&#x7684;&#x65F6;&#x5019;&#x53D1;&#x6325;&#x4F5C;&#x7528;&#x3002;&#x5982;&#x679C;&#x4E0A;&#x8FF0;&#x51FD;&#x6570;&#x662F;&#x5728;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E2D;&#x8C03;&#x7528;&#x7684;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x7740;&#xFF1A;  </p>
+<blockquote>
 <ul>
 <li>&#x5982;&#x679C;&#x5B9A;&#x65F6;&#x5668;&#x672A;&#x8BBE;&#x7F6E;&#x4E3A;&#x5FAA;&#x73AF;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x7740;&#x5B9A;&#x65F6;&#x5668;&#x5DF2;&#x7ECF;&#x505C;&#x6B62;&#x3002;&#x9700;&#x8981;&#x5148;&#x7528;<code>uv_timer_start</code>&#x91CD;&#x65B0;&#x542F;&#x52A8;&#x3002;  </li>
 <li>&#x5982;&#x679C;&#x5B9A;&#x65F6;&#x5668;&#x88AB;&#x8BBE;&#x7F6E;&#x4E3A;&#x5FAA;&#x73AF;&#xFF0C;&#x90A3;&#x4E48;&#x4E0B;&#x4E00;&#x6B21;&#x8D85;&#x65F6;&#x7684;&#x65F6;&#x95F4;&#x5DF2;&#x7ECF;&#x88AB;&#x89C4;&#x5212;&#x597D;&#x4E86;&#xFF0C;&#x6240;&#x4EE5;&#x5728;&#x5207;&#x6362;&#x5230;&#x65B0;&#x7684;&#x95F4;&#x9694;&#x4E4B;&#x524D;&#xFF0C;&#x65E7;&#x7684;&#x95F4;&#x9694;&#x8FD8;&#x4F1A;&#x53D1;&#x6325;&#x4E00;&#x6B21;&#x4F5C;&#x7528;&#x3002;  </li>
 </ul>
+</blockquote>
 <p>&#x51FD;&#x6570;&#xFF1A;  </p>
 <pre><code class="lang-c"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">uv_timer_again</span><span class="hljs-params">(uv_timer_t *)</span>
 </span></code></pre>
@@ -546,8 +548,10 @@ CURLM *curl_handle;
 Loading libhello.dylib
 Registered plugin &quot;Hello World!&quot;
 </code></pre><h5 id="note">Note</h5>
-<pre><code>&#x5171;&#x4EAB;&#x5E93;&#x7684;&#x540E;&#x7F00;&#x540D;&#x5728;&#x4E0D;&#x540C;&#x5E73;&#x53F0;&#x4E0A;&#x662F;&#x4E0D;&#x4E00;&#x6837;&#x7684;&#x3002;&#x5728;Linux&#x4E0A;&#x662F;libhello.so&#x3002;
-</code></pre><p>&#x4F7F;&#x7528;<code>uv_dlopen</code>&#x9996;&#x5148;&#x8F7D;&#x5165;&#x4E86;&#x5171;&#x4EAB;&#x5E93;<code>libhello.dylib</code>&#x3002;&#x518D;&#x4F7F;&#x7528;<code>uv_dlsym</code>&#x83B7;&#x53D6;&#x4E86;&#x8BE5;&#x63D2;&#x4EF6;&#x7684;<code>initialize</code>&#x51FD;&#x6570;&#xFF0C;&#x6700;&#x540E;&#x5728;&#x8C03;&#x7528;&#x5B83;&#x3002;  </p>
+<blockquote>
+<p>&#x5171;&#x4EAB;&#x5E93;&#x7684;&#x540E;&#x7F00;&#x540D;&#x5728;&#x4E0D;&#x540C;&#x5E73;&#x53F0;&#x4E0A;&#x662F;&#x4E0D;&#x4E00;&#x6837;&#x7684;&#x3002;&#x5728;Linux&#x4E0A;&#x662F;libhello.so&#x3002;</p>
+</blockquote>
+<p>&#x4F7F;&#x7528;<code>uv_dlopen</code>&#x9996;&#x5148;&#x8F7D;&#x5165;&#x4E86;&#x5171;&#x4EAB;&#x5E93;<code>libhello.dylib</code>&#x3002;&#x518D;&#x4F7F;&#x7528;<code>uv_dlsym</code>&#x83B7;&#x53D6;&#x4E86;&#x8BE5;&#x63D2;&#x4EF6;&#x7684;<code>initialize</code>&#x51FD;&#x6570;&#xFF0C;&#x6700;&#x540E;&#x5728;&#x8C03;&#x7528;&#x5B83;&#x3002;  </p>
 <h4 id="pluginmainc">plugin/main.c</h4>
 <pre><code class="lang-c"><span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;plugin.h&quot;</span></span>
 
