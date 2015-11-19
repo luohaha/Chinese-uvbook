@@ -53,7 +53,7 @@
     <body>
         <!-- body:start -->
         
-    <div class="book" data-level="5" data-chapter-title="线程" data-filepath="source/threads.md" data-basepath=".." data-revision="Wed Nov 18 2015 08:19:54 GMT+0800 (CST)">
+    <div class="book" data-level="5" data-chapter-title="线程" data-filepath="source/threads.md" data-basepath=".." data-revision="Thu Nov 19 2015 15:11:02 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -272,8 +272,10 @@
 }
 </code></pre>
 <h5 id="tip">TIP</h5>
-<pre><code>uv_thread_t is just an alias for pthread_t on Unix, but this is an implementation detail, avoid depending on it to always be true.
-</code></pre><p>uv_thread_t&#x7684;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x6307;&#x5411;&#x4E86;&#x8981;&#x6267;&#x884C;&#x7684;&#x51FD;&#x6570;&#x7684;&#x5730;&#x5740;&#x3002;&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x7528;&#x6765;&#x4F20;&#x9012;&#x81EA;&#x5B9A;&#x4E49;&#x7684;&#x53C2;&#x6570;&#x3002;&#x6700;&#x7EC8;&#xFF0C;&#x51FD;&#x6570;hare&#x5C06;&#x5728;&#x65B0;&#x7684;&#x7EBF;&#x7A0B;&#x4E2D;&#x6267;&#x884C;&#xFF0C;&#x7531;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x8C03;&#x5EA6;&#x3002;  </p>
+<blockquote>
+<p>uv_thread_t is just an alias for pthread_t on Unix, but this is an implementation detail, avoid depending on it to always be true.</p>
+</blockquote>
+<p>uv_thread_t&#x7684;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x6307;&#x5411;&#x4E86;&#x8981;&#x6267;&#x884C;&#x7684;&#x51FD;&#x6570;&#x7684;&#x5730;&#x5740;&#x3002;&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x7528;&#x6765;&#x4F20;&#x9012;&#x81EA;&#x5B9A;&#x4E49;&#x7684;&#x53C2;&#x6570;&#x3002;&#x6700;&#x7EC8;&#xFF0C;&#x51FD;&#x6570;hare&#x5C06;&#x5728;&#x65B0;&#x7684;&#x7EBF;&#x7A0B;&#x4E2D;&#x6267;&#x884C;&#xFF0C;&#x7531;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x8C03;&#x5EA6;&#x3002;  </p>
 <h4 id="threadcreatemainc">thread-create/main.c</h4>
 <pre><code class="lang-c"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">hare</span><span class="hljs-params">(<span class="hljs-keyword">void</span> *arg)</span> </span>{
     <span class="hljs-keyword">int</span> tracklen = *((<span class="hljs-keyword">int</span> *) arg);
@@ -307,8 +309,10 @@ uv_mutex_lock(a_mutex);
 </code></pre>
 <p>&#x5728;&#x8C03;&#x8BD5;&#x6A21;&#x5F0F;&#x4E0B;&#xFF0C;&#x7B2C;&#x4E8C;&#x6B21;&#x8C03;&#x7528;<code>uv_mutex_lock()</code>&#x4F1A;&#x5BFC;&#x81F4;&#x7A0B;&#x5E8F;&#x5D29;&#x6E83;&#xFF0C;&#x6216;&#x8005;&#x662F;&#x8FD4;&#x56DE;&#x9519;&#x8BEF;&#x3002;  </p>
 <h5 id="note">NOTE</h5>
-<pre><code>&#x5728;linux&#x4E2D;&#x662F;&#x652F;&#x6301;&#x9012;&#x5F52;&#x4E0A;&#x9501;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x5728;libuv&#x7684;API&#x4E2D;&#x5E76;&#x672A;&#x5B9E;&#x73B0;&#x3002;
-</code></pre><h4 id="lock">Lock</h4>
+<blockquote>
+<p>&#x5728;linux&#x4E2D;&#x662F;&#x652F;&#x6301;&#x9012;&#x5F52;&#x4E0A;&#x9501;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x5728;libuv&#x7684;API&#x4E2D;&#x5E76;&#x672A;&#x5B9E;&#x73B0;&#x3002;</p>
+</blockquote>
+<h4 id="lock">Lock</h4>
 <p>&#x8BFB;&#x5199;&#x9501;&#x662F;&#x66F4;&#x9897;&#x7C92;&#x5316;&#x7684;&#x5B9E;&#x73B0;&#x673A;&#x5236;&#x3002;&#x4E24;&#x4E2A;&#x8BFB;&#x8005;&#x7EBF;&#x7A0B;&#x53EF;&#x4EE5;&#x540C;&#x65F6;&#x4ECE;&#x5171;&#x4EAB;&#x533A;&#x4E2D;&#x8BFB;&#x53D6;&#x6570;&#x636E;&#x3002;&#x5F53;&#x8BFB;&#x8005;&#x5728;&#x8BFB;&#x53D6;&#x6570;&#x636E;&#x65F6;&#xFF0C;&#x5199;&#x8005;&#x4E0D;&#x80FD;&#x83B7;&#x53D6;&#x5199;&#x5165;&#x3002;&#x5F53;&#x5199;&#x8005;&#x5728;&#x5199;&#x5165;&#x6570;&#x636E;&#x65F6;&#xFF0C;&#x5176;&#x4ED6;&#x7684;&#x5199;&#x8005;&#x6216;&#x8005;&#x8BFB;&#x8005;&#x90FD;&#x4E0D;&#x80FD;&#xFF0C;&#x5199;&#x5165;&#x6216;&#x8005;&#x8BFB;&#x53D6;&#x5171;&#x4EAB;&#x533A;&#x3002;&#x8BFB;&#x5199;&#x9501;&#x5728;&#x6570;&#x636E;&#x5E93;&#x64CD;&#x4F5C;&#x4E2D;&#x975E;&#x5E38;&#x5E38;&#x89C1;&#xFF0C;&#x4E0B;&#x9762;&#x662F;&#x4E00;&#x4E2A;&#x73A9;&#x5177;&#x5F0F;&#x7684;&#x4F8B;&#x5B50;&#xFF1A;  </p>
 <h4 id="ocksmainc--simple-rwlocks">ocks/main.c - simple rwlocks</h4>
 <pre><code class="lang-c"><span class="hljs-preprocessor">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span>
@@ -480,9 +484,10 @@ uv_mutex_lock(a_mutex);
 </code></pre>
 <p><code>uv_cancel()</code>&#x51FD;&#x6570;&#x540C;&#x6837;&#x53EF;&#x4EE5;&#x7528;&#x5728;<code>uv_fs_t</code>&#x548C;<code>uv_getaddrinfo_t</code>&#x8BF7;&#x6C42;&#x4E0A;&#x3002;&#x5BF9;&#x4E8E;&#x4E00;&#x7CFB;&#x5217;&#x7684;&#x6587;&#x4EF6;&#x7CFB;&#x7EDF;&#x64CD;&#x4F5C;&#x51FD;&#x6570;&#x6765;&#x8BF4;&#xFF0C;<code>uv_fs_t.errorno</code>&#x4F1A;&#x540C;&#x6837;&#x88AB;&#x8BBE;&#x7F6E;&#x4E3A;<code>UV_ECANCELED</code>&#x3002;  </p>
 <h5 id="tip">Tip</h5>
-<pre><code>&#x4E00;&#x4E2A;&#x826F;&#x597D;&#x8BBE;&#x8BA1;&#x7684;&#x7A0B;&#x5E8F;&#xFF0C;&#x5E94;&#x8BE5;&#x80FD;&#x591F;&#x7EC8;&#x6B62;&#x4E00;&#x4E2A;&#x5DF2;&#x7ECF;&#x5F00;&#x59CB;&#x8FD0;&#x884C;&#x7684;&#x957F;&#x8017;&#x65F6;&#x4EFB;&#x52A1;&#x3002;  
-Such a worker could periodically check for a variable that only the main process sets to signal termination.
-</code></pre><h2 id="interthread-communication">Inter-thread communication</h2>
+<blockquote>
+<p>&#x4E00;&#x4E2A;&#x826F;&#x597D;&#x8BBE;&#x8BA1;&#x7684;&#x7A0B;&#x5E8F;&#xFF0C;&#x5E94;&#x8BE5;&#x80FD;&#x591F;&#x7EC8;&#x6B62;&#x4E00;&#x4E2A;&#x5DF2;&#x7ECF;&#x5F00;&#x59CB;&#x8FD0;&#x884C;&#x7684;&#x957F;&#x8017;&#x65F6;&#x4EFB;&#x52A1;&#x3002;<br>Such a worker could periodically check for a variable that only the main process sets to signal termination.</p>
+</blockquote>
+<h2 id="interthread-communication">Inter-thread communication</h2>
 <p>&#x5F88;&#x591A;&#x65F6;&#x5019;&#xFF0C;&#x4F60;&#x5E0C;&#x671B;&#x6B63;&#x5728;&#x8FD0;&#x884C;&#x7684;&#x7EBF;&#x7A0B;&#x4E4B;&#x95F4;&#x80FD;&#x591F;&#x76F8;&#x4E92;&#x53D1;&#x9001;&#x6D88;&#x606F;&#x3002;&#x4F8B;&#x5982;&#x4F60;&#x5728;&#x8FD0;&#x884C;&#x4E00;&#x4E2A;&#x6301;&#x7EED;&#x65F6;&#x95F4;&#x957F;&#x7684;&#x4EFB;&#x52A1;&#xFF08;&#x53EF;&#x80FD;&#x4F7F;&#x7528;uv_queue_work&#xFF09;&#xFF0C;&#x4F46;&#x662F;&#x4F60;&#x9700;&#x8981;&#x5728;&#x4E3B;&#x7EBF;&#x7A0B;&#x4E2D;&#x76D1;&#x89C6;&#x5B83;&#x7684;&#x8FDB;&#x5EA6;&#x60C5;&#x51B5;&#x3002;&#x4E0B;&#x9762;&#x6709;&#x4E00;&#x4E2A;&#x7B80;&#x5355;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;&#x6F14;&#x793A;&#x4E86;&#x4E00;&#x4E2A;&#x4E0B;&#x8F7D;&#x7BA1;&#x7406;&#x7A0B;&#x5E8F;&#x5411;&#x7528;&#x6237;&#x5C55;&#x793A;&#x5404;&#x4E2A;&#x4E0B;&#x8F7D;&#x7EBF;&#x7A0B;&#x7684;&#x8FDB;&#x5EA6;&#x3002;  </p>
 <h4 id="progressmainc">progress/main.c</h4>
 <pre><code class="lang-c"><span class="hljs-keyword">uv_loop_t</span> *loop;
@@ -503,11 +508,10 @@ Such a worker could periodically check for a variable that only the main process
 </code></pre>
 <p>&#x56E0;&#x4E3A;&#x5F02;&#x6B65;&#x7684;&#x7EBF;&#x7A0B;&#x901A;&#x4FE1;&#x662F;&#x57FA;&#x4E8E;event-loop&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x6240;&#x6709;&#x7684;&#x7EBF;&#x7A0B;&#x90FD;&#x53EF;&#x4EE5;&#x662F;&#x53D1;&#x9001;&#x65B9;&#xFF0C;&#x4F46;&#x662F;&#x53EA;&#x6709;&#x5728;event-loop&#x4E0A;&#x7684;&#x7EBF;&#x7A0B;&#x53EF;&#x4EE5;&#x662F;&#x63A5;&#x6536;&#x65B9;&#xFF08;&#x6216;&#x8005;&#x8BF4;event-loop&#x662F;&#x63A5;&#x6536;&#x65B9;&#xFF09;&#x3002;&#x5728;&#x4E0A;&#x8FF0;&#x7684;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;&#x5F53;&#x5F02;&#x6B65;&#x76D1;&#x89C6;&#x8005;&#x63A5;&#x6536;&#x5230;&#x4FE1;&#x53F7;&#x7684;&#x65F6;&#x5019;&#xFF0C;libuv&#x4F1A;&#x6FC0;&#x53D1;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF08;print_progress&#xFF09;&#x3002;  </p>
 <h5 id="warning">WARNING</h5>
-<pre><code>&#x5E94;&#x8BE5;&#x6CE8;&#x610F;: &#x6D88;&#x606F;&#x7684;&#x53D1;&#x9001;&#x662F;&#x5F02;&#x6B65;&#x7684;,&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x5E94;&#x8BE5;&#x5728;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x8C03;&#x7528;&#x4E86;uv_async_send&#x540E;&#x7ACB;&#x5373;&#x88AB;&#x8C03;&#x7528;, &#x6216;&#x8005;&#x5728;&#x7A0D;&#x540E;&#x7684;&#x67D0;&#x4E2A;&#x65F6;&#x523B;&#x88AB;&#x8C03;&#x7528;&#x3002;  
-libuv&#x4E5F;&#x6709;&#x53EF;&#x80FD;&#x591A;&#x6B21;&#x8C03;&#x7528; uv_async_send&#xFF0C;&#x4F46;&#x53EA;&#x8C03;&#x7528;&#x4E86;&#x4E00;&#x6B21;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x3002;&#x552F;&#x4E00;&#x53EF;&#x4EE5;&#x4FDD;&#x8BC1;&#x7684;&#x662F;: &#x7EBF;&#x7A0B;&#x5728;&#x8C03;&#x7528;uv_async_send&#x4E4B;&#x540E;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x53EF;&#x81F3;&#x5C11;&#x88AB;&#x8C03;&#x7528;&#x4E00;&#x6B21;&#x3002;  
-&#x5982;&#x679C;&#x4F60;&#x6CA1;&#x6709;&#x672A;&#x8C03;&#x7528;&#x7684; uv_async_send, &#x90A3;&#x4E48;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E5F;&#x4E0D;&#x4F1A;&#x88AB;&#x8C03;&#x7528;&#x3002;  
-&#x5982;&#x679C;&#x4F60;&#x8C03;&#x7528;&#x4E86;&#x4E24;&#x6B21;(&#x4EE5;&#x4E0A;)&#x7684; uv_async_send, &#x800C; libuv &#x6682;&#x65F6;&#x8FD8;&#x6CA1;&#x6709;&#x673A;&#x4F1A;&#x8FD0;&#x884C;&#x56DE;&#x8C03;&#x51FD;&#x6570;, &#x5219;libuv&#x53EF;&#x80FD;&#x4F1A;&#x5728;&#x591A;&#x6B21;&#x8C03;&#x7528; uv_async_send &#x540E;&#x53EA;&#x8C03;&#x7528;&#x4E00;&#x6B21;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x4F60;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x7EDD;&#x5BF9;&#x4E0D;&#x4F1A;&#x5728;&#x4E00;&#x6B21;&#x4E8B;&#x4EF6;&#x4E2D;&#x88AB;&#x8C03;&#x7528;&#x4E24;&#x6B21;(&#x6216;&#x591A;&#x6B21;)&#x3002;
-</code></pre><h4 id="progressmainc">progress/main.c</h4>
+<blockquote>
+<p>&#x5E94;&#x8BE5;&#x6CE8;&#x610F;: &#x6D88;&#x606F;&#x7684;&#x53D1;&#x9001;&#x662F;&#x5F02;&#x6B65;&#x7684;,&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x5E94;&#x8BE5;&#x5728;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x8C03;&#x7528;&#x4E86;uv_async_send&#x540E;&#x7ACB;&#x5373;&#x88AB;&#x8C03;&#x7528;, &#x6216;&#x8005;&#x5728;&#x7A0D;&#x540E;&#x7684;&#x67D0;&#x4E2A;&#x65F6;&#x523B;&#x88AB;&#x8C03;&#x7528;&#x3002;<br>libuv&#x4E5F;&#x6709;&#x53EF;&#x80FD;&#x591A;&#x6B21;&#x8C03;&#x7528; uv_async_send&#xFF0C;&#x4F46;&#x53EA;&#x8C03;&#x7528;&#x4E86;&#x4E00;&#x6B21;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x3002;&#x552F;&#x4E00;&#x53EF;&#x4EE5;&#x4FDD;&#x8BC1;&#x7684;&#x662F;: &#x7EBF;&#x7A0B;&#x5728;&#x8C03;&#x7528;uv_async_send&#x4E4B;&#x540E;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x53EF;&#x81F3;&#x5C11;&#x88AB;&#x8C03;&#x7528;&#x4E00;&#x6B21;&#x3002;<br>&#x5982;&#x679C;&#x4F60;&#x6CA1;&#x6709;&#x672A;&#x8C03;&#x7528;&#x7684; uv_async_send, &#x90A3;&#x4E48;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x4E5F;&#x4E0D;&#x4F1A;&#x88AB;&#x8C03;&#x7528;&#x3002;<br>&#x5982;&#x679C;&#x4F60;&#x8C03;&#x7528;&#x4E86;&#x4E24;&#x6B21;(&#x4EE5;&#x4E0A;)&#x7684; uv_async_send, &#x800C; libuv &#x6682;&#x65F6;&#x8FD8;&#x6CA1;&#x6709;&#x673A;&#x4F1A;&#x8FD0;&#x884C;&#x56DE;&#x8C03;&#x51FD;&#x6570;, &#x5219;libuv&#x53EF;&#x80FD;&#x4F1A;&#x5728;&#x591A;&#x6B21;&#x8C03;&#x7528; uv_async_send &#x540E;&#x53EA;&#x8C03;&#x7528;&#x4E00;&#x6B21;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x4F60;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x7EDD;&#x5BF9;&#x4E0D;&#x4F1A;&#x5728;&#x4E00;&#x6B21;&#x4E8B;&#x4EF6;&#x4E2D;&#x88AB;&#x8C03;&#x7528;&#x4E24;&#x6B21;(&#x6216;&#x591A;&#x6B21;)&#x3002;</p>
+</blockquote>
+<h4 id="progressmainc">progress/main.c</h4>
 <pre><code class="lang-c"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">fake_download</span><span class="hljs-params">(uv_work_t *req)</span> </span>{
     <span class="hljs-keyword">int</span> size = *((<span class="hljs-keyword">int</span>*) req-&gt;data);
     <span class="hljs-keyword">int</span> downloaded = <span class="hljs-number">0</span>;
@@ -540,9 +544,13 @@ libuv&#x4E5F;&#x6709;&#x53EF;&#x80FD;&#x591A;&#x6B21;&#x8C03;&#x7528; uv_async_s
 </code></pre>
 <p>&#x5728;&#x4F8B;&#x5B50;&#x7684;&#x6700;&#x540E;&#xFF0C;&#x6211;&#x4EEC;&#x8981;&#x8BF4;&#x4E0B;data&#x57DF;&#x7684;&#x6EE5;&#x7528;&#xFF0C;<a href="https://github.com/bnoordhuis" target="_blank">bnoordhuis</a>&#x6307;&#x51FA;&#x4F7F;&#x7528;data&#x57DF;&#x53EF;&#x80FD;&#x4F1A;&#x5B58;&#x5728;&#x7EBF;&#x7A0B;&#x5B89;&#x5168;&#x95EE;&#x9898;&#xFF0C;<code>uv_async_send()</code>&#x4E8B;&#x5B9E;&#x4E0A;&#x53EA;&#x662F;&#x5524;&#x9192;&#x4E86;event-loop&#x3002;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4E92;&#x65A5;&#x91CF;&#x6216;&#x8005;&#x8BFB;&#x5199;&#x9501;&#x6765;&#x4FDD;&#x8BC1;&#x6267;&#x884C;&#x987A;&#x5E8F;&#x7684;&#x6B63;&#x786E;&#x6027;&#x3002;  </p>
 <h5 id="warning">Warning</h5>
-<pre><code>&#x4E92;&#x65A5;&#x91CF;&#x548C;&#x8BFB;&#x5199;&#x9501;&#x4E0D;&#x80FD;&#x5728;&#x4FE1;&#x53F7;&#x5904;&#x7406;&#x51FD;&#x6570;&#x4E2D;&#x6B63;&#x786E;&#x5DE5;&#x4F5C;&#xFF0C;&#x4F46;&#x662F;`uv_async_send`&#x53EF;&#x4EE5;&#x3002;
-</code></pre><p>&#x4E00;&#x79CD;&#x9700;&#x8981;&#x4F7F;&#x7528;<code>uv_async_send</code>&#x7684;&#x573A;&#x666F;&#x662F;&#xFF0C;&#x5F53;&#x8C03;&#x7528;&#x9700;&#x8981;&#x7EBF;&#x7A0B;&#x4EA4;&#x4E92;&#x7684;&#x5E93;&#x65F6;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4E3E;&#x4E00;&#x4E2A;&#x5728;nodejs&#x4E2D;V8&#x5F15;&#x64CE;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;&#x4E0A;&#x4E0B;&#x6587;&#x548C;&#x5BF9;&#x8C61;&#x90FD;&#x662F;&#x4E0E;v8&#x5F15;&#x64CE;&#x7684;&#x7EBF;&#x7A0B;&#x7ED1;&#x5B9A;&#x7684;&#xFF0C;&#x4ECE;&#x53E6;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x4E2D;&#xFF0C;&#x76F4;&#x63A5;&#x5411;v8&#x8BF7;&#x6C42;&#x6570;&#x636E;&#x4F1A;&#x5BFC;&#x81F4;&#x8FD4;&#x56DE;&#x4E0D;&#x786E;&#x5B9A;&#x7684;&#x7ED3;&#x679C;&#x3002;&#x4F46;&#x662F;&#xFF0C;&#x8003;&#x8651;&#x5230;&#x73B0;&#x5728;&#x5F88;&#x591A;nodejs&#x7684;&#x6A21;&#x5757;&#x90FD;&#x662F;&#x548C;&#x7B2C;&#x4E09;&#x65B9;&#x5E93;&#x7ED1;&#x5B9A;&#x7684;&#xFF0C;&#x53EF;&#x4EE5;&#x50CF;&#x4E0B;&#x9762;&#x4E00;&#x6837;&#xFF0C;&#x89E3;&#x51B3;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#xFF1A;  </p>
+<blockquote>
+<p>&#x4E92;&#x65A5;&#x91CF;&#x548C;&#x8BFB;&#x5199;&#x9501;&#x4E0D;&#x80FD;&#x5728;&#x4FE1;&#x53F7;&#x5904;&#x7406;&#x51FD;&#x6570;&#x4E2D;&#x6B63;&#x786E;&#x5DE5;&#x4F5C;&#xFF0C;&#x4F46;&#x662F;<code>uv_async_send</code>&#x53EF;&#x4EE5;&#x3002;</p>
+</blockquote>
+<p>&#x4E00;&#x79CD;&#x9700;&#x8981;&#x4F7F;&#x7528;<code>uv_async_send</code>&#x7684;&#x573A;&#x666F;&#x662F;&#xFF0C;&#x5F53;&#x8C03;&#x7528;&#x9700;&#x8981;&#x7EBF;&#x7A0B;&#x4EA4;&#x4E92;&#x7684;&#x5E93;&#x65F6;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x4E3E;&#x4E00;&#x4E2A;&#x5728;nodejs&#x4E2D;V8&#x5F15;&#x64CE;&#x7684;&#x4F8B;&#x5B50;&#xFF0C;&#x4E0A;&#x4E0B;&#x6587;&#x548C;&#x5BF9;&#x8C61;&#x90FD;&#x662F;&#x4E0E;v8&#x5F15;&#x64CE;&#x7684;&#x7EBF;&#x7A0B;&#x7ED1;&#x5B9A;&#x7684;&#xFF0C;&#x4ECE;&#x53E6;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x4E2D;&#xFF0C;&#x76F4;&#x63A5;&#x5411;v8&#x8BF7;&#x6C42;&#x6570;&#x636E;&#x4F1A;&#x5BFC;&#x81F4;&#x8FD4;&#x56DE;&#x4E0D;&#x786E;&#x5B9A;&#x7684;&#x7ED3;&#x679C;&#x3002;&#x4F46;&#x662F;&#xFF0C;&#x8003;&#x8651;&#x5230;&#x73B0;&#x5728;&#x5F88;&#x591A;nodejs&#x7684;&#x6A21;&#x5757;&#x90FD;&#x662F;&#x548C;&#x7B2C;&#x4E09;&#x65B9;&#x5E93;&#x7ED1;&#x5B9A;&#x7684;&#xFF0C;&#x53EF;&#x4EE5;&#x50CF;&#x4E0B;&#x9762;&#x4E00;&#x6837;&#xFF0C;&#x89E3;&#x51B3;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#xFF1A;  </p>
+<blockquote>
 <p>1.&#x5728;node&#x4E2D;&#xFF0C;&#x7B2C;&#x4E09;&#x65B9;&#x5E93;&#x4F1A;&#x5EFA;&#x7ACB;javascript&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x4EE5;&#x4FBF;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x88AB;&#x8C03;&#x7528;&#x65F6;&#xFF0C;&#x80FD;&#x591F;&#x8FD4;&#x56DE;&#x66F4;&#x591A;&#x7684;&#x4FE1;&#x606F;&#x3002;</p>
+</blockquote>
 <pre><code class="lang-javascript"><span class="hljs-keyword">var</span> lib = <span class="hljs-built_in">require</span>(<span class="hljs-string">&apos;lib&apos;</span>);
 lib.on_progress(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Progress&quot;</span>);
@@ -552,7 +560,9 @@ lib.do();
 
 <span class="hljs-comment">// do other stuff</span>
 </code></pre>
+<blockquote>
 <p>2.<code>lib.do</code>&#x5E94;&#x8BE5;&#x662F;&#x975E;&#x963B;&#x585E;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x7B2C;&#x4E09;&#x65B9;&#x5E93;&#x5374;&#x662F;&#x963B;&#x585E;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x9700;&#x8981;&#x8C03;&#x7528;<code>uv_queue_work</code>&#x51FD;&#x6570;&#x3002;<br>3.&#x5728;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x4E2D;&#x5B8C;&#x6210;&#x4EFB;&#x52A1;&#x60F3;&#x8981;&#x8C03;&#x7528;progress&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x4F46;&#x662F;&#x4E0D;&#x80FD;&#x76F4;&#x63A5;&#x4E0E;v8&#x901A;&#x4FE1;&#xFF0C;&#x6240;&#x4EE5;&#x9700;&#x8981;<code>uv_async_send</code>&#x51FD;&#x6570;&#x3002;<br>4.&#x5728;&#x4E3B;&#x7EBF;&#x7A0B;&#xFF08;v8&#x7EBF;&#x7A0B;&#xFF09;&#x4E2D;&#x8C03;&#x7528;&#x7684;&#x5F02;&#x6B65;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x4F1A;&#x5728;v8&#x7684;&#x914D;&#x5408;&#x4E0B;&#x6267;&#x884C;javscript&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x3002;&#xFF08;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x4E3B;&#x7EBF;&#x7A0B;&#x4F1A;&#x8C03;&#x7528;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x5E76;&#x4E14;&#x63D0;&#x4F9B;v8&#x89E3;&#x6790;javascript&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x4EE5;&#x4FBF;&#x5176;&#x5B8C;&#x6210;&#x4EFB;&#x52A1;&#xFF09;&#x3002;</p>
+</blockquote>
 
                     
                     </section>
