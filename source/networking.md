@@ -9,11 +9,11 @@ TCP是面向连接的，字节流协议，因此基于libuv的stream实现。
 
 ####server
 服务器端的建立流程如下：  
-1.```uv_tcp_init```建立tcp句柄。  
-2.```uv_tcp_bind```绑定。  
-3.```uv_listen```建立监听，当有新的连接到来时，激活调用回调函数。  
-4.```uv_accept```接收链接。   
-5.使用stream处理来和客户端通信。  
+>1.```uv_tcp_init```建立tcp句柄。  
+>2.```uv_tcp_bind```绑定。  
+>3.```uv_listen```建立监听，当有新的连接到来时，激活调用回调函数。  
+>4.```uv_accept```接收链接。   
+>5.使用stream处理来和客户端通信。  
 
 ####tcp-echo-server/main.c - The listen socket
 ```c
@@ -37,9 +37,7 @@ int main() {
 
 你可以调用```uv_ip4_addr()```函数来将ip地址和端口号转换为sockaddr_in结构，这样就可以被BSD的socket使用了。要想完成逆转换的话可以调用```uv_ip4_name()```。   
 #####note
-```
-对应ipv6有类似的uv_ip6_*
-```
+>对应ipv6有类似的uv_ip6_*
 
 大多数的设置函数是同步的，因为它们不会消耗太多cpu资源。到了```uv_listen```这句，我们再次回到回调函数的风格上来。第二个参数是待处理的连接请求队列－最大长度的请求连接队列。  
 
@@ -88,9 +86,7 @@ uv_tcp_connect(connect, socket, dest, on_connect);
 用户数据报协议(User Datagram Protocol)提供无连接的，不可靠的网络通信。因此，libuv不会提供一个stream实现的形式，而是提供了一个```uv_udp_t```句柄（接收端），和一个```uv_udp_send_t```句柄（发送端），还有相关的函数。也就是说，实际的读写api与正常的流读取类似。下面的例子展示了一个从DCHP服务器获取ip的例子。  
 
 #####note
-```
-你必须以管理员的权限运行udp-dhcp，因为它的端口号低于1024
-```
+>你必须以管理员的权限运行udp-dhcp，因为它的端口号低于1024
 
 ####udp-dhcp/main.c - Setup and send UDP packets
 ```c
@@ -125,9 +121,7 @@ int main() {
 ```
 
 #####note
-```
-ip地址为0.0.0.0，用来绑定所有的接口。255.255.255.255是一个广播地址，这也意味着数据报将往所有的子网接口中发送。端口号为0代表着由操作系统随机分配一个端口。
-```
+>ip地址为0.0.0.0，用来绑定所有的接口。255.255.255.255是一个广播地址，这也意味着数据报将往所有的子网接口中发送。端口号为0代表着由操作系统随机分配一个端口。
 
 首先，我们设置了一个接收的socket，端口号为68，作为DHCP客户端，然后开始从中读取数据。它会接收所有来自DHCP服务器的返回数据。我们设置了```UV_UDP_REUSEADDR```标记，用来和其他共享端口的 DHCP客户端和平共处。接着，我们设置了一个类似的发送socket，然后使用```uv_udp_send```向DHCP服务器（在67端口）发送广播。  
 
@@ -168,13 +162,13 @@ void on_read(uv_udp_t *req, ssize_t nread, const uv_buf_t *buf, const struct soc
 ####UDP Options
 
 生存时间（Time-to-live）  
-可以通过`uv_udp_set_ttl`更改生存时间。  
+>可以通过`uv_udp_set_ttl`更改生存时间。  
 
 只允许IPV6协议栈  
-在调用`uv_udp_bind`时，设置`UV_UDP_IPV6ONLY`标示，可以强制只使用ipv6。  
+>在调用`uv_udp_bind`时，设置`UV_UDP_IPV6ONLY`标示，可以强制只使用ipv6。  
 
 组播  
-socket也支持组播，可以这么使用：  
+>socket也支持组播，可以这么使用：  
 
 ```c
 UV_EXTERN int uv_udp_set_membership(uv_udp_t* handle,

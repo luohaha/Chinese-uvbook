@@ -3,10 +3,7 @@
 简单的文件读写是通过```uv_fs_*```函数族和与之相关的```uv_fs_t```结构体完成的.
 
 ####note
-
-```
-libuv 提供的文件操作和 socket operations 并不相同. 套接字操作使用了操作系统本身提供了非阻塞操作, 而文件操作内部使用了阻塞函数, 但是 libuv 是在线程池中调用这些函数, 并在应用程序需要交互时通知在事件循环中注册的监视器. 
-```
+>libuv 提供的文件操作和 socket operations 并不相同. 套接字操作使用了操作系统本身提供了非阻塞操作, 而文件操作内部使用了阻塞函数, 但是 libuv 是在线程池中调用这些函数, 并在应用程序需要交互时通知在事件循环中注册的监视器. 
 
 所有的文件操作函数都有两种形式 - 同步 synchronous 和 asynchronous.
 
@@ -94,10 +91,7 @@ void on_write(uv_fs_t *req) {
 ```
 
 #####Warning
-
-```
-由于文件系统和磁盘的调度策略，写入成功的数据不一定就存在磁盘上。 
-``` 
+>由于文件系统和磁盘的调度策略，写入成功的数据不一定就存在磁盘上。 
 
 我们开始在main中推动多米诺骨牌：  
 
@@ -116,10 +110,7 @@ int main(int argc, char **argv) {
 ```
 
 #####Warning
-
-```
-函数uv_fs_req_cleanup()在文件系统操作结束后必须要被调用，用来回收在读写中分配的内存。
-```
+>函数uv_fs_req_cleanup()在文件系统操作结束后必须要被调用，用来回收在读写中分配的内存。
 
 ##Filesystem operations
 
@@ -365,11 +356,7 @@ void write_data(uv_stream_t *dest, size_t size, uv_buf_t buf, uv_write_cb cb) {
 
 
 #####WARNING
-```
-你的程序在被其他的程序调用的过程中，有意无意地会向pipe写入数据，这样的话它会很容易被信号SIGPIPE终止掉，你最好加入这句：  
-signal(SIGPIPE, SIG_IGN)  
-在初始化程序的时候。
-```
+>你的程序在被其他的程序调用的过程中，有意无意地会向pipe写入数据，这样的话它会很容易被信号SIGPIPE终止掉，你最好在初始化程序的时候加入这句：`signal(SIGPIPE, SIG_IGN)`。
 
 
 ##File change events
@@ -414,10 +401,10 @@ int main(int argc, char **argv) {
 
 `UV_FS_EVENT_RECURSIVE`可以在支持的系统平台上递归地监视子文件夹。  
 在回调函数`run_command()`中，接收的参数如下：  
-1.`uv_fs_event_t *handle`-句柄。里面的path保存了发生改变的文件的地址。  
-2.`const char *filename`-发生改变的文件名。   
-3.`int flags` -`UV_RENAME`名字改变，`UV_CHANGE`内容改变。   
-4.`int status`－当前为0.
+>1.`uv_fs_event_t *handle`-句柄。里面的path保存了发生改变的文件的地址。  
+>2.`const char *filename`-发生改变的文件名。   
+>3.`int flags` -`UV_RENAME`名字改变，`UV_CHANGE`内容改变。   
+>4.`int status`－当前为0.
 
 在我们的例子中，简单地打印参数和调用`system()`.
 

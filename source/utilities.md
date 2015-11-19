@@ -29,7 +29,7 @@ uv_timer_set_repeat(uv_timer_t *timer, int64_t repeat);
 
 它会在可能的时候发挥作用。如果上述函数是在回调函数中调用的，这意味着：  
 
-* 如果定时器未设置为循环，这意味着定时器已经停止。需要先用`uv_timer_start`重新启动。  
+>* 如果定时器未设置为循环，这意味着定时器已经停止。需要先用`uv_timer_start`重新启动。  
 * 如果定时器被设置为循环，那么下一次超时的时间已经被规划好了，所以在切换到新的间隔之前，旧的间隔还会发挥一次作用。  
 
 函数：  
@@ -389,10 +389,7 @@ Registered plugin "Hello World!"
 ```
 
 #####Note
-
-```
-共享库的后缀名在不同平台上是不一样的。在Linux上是libhello.so。
-```
+>共享库的后缀名在不同平台上是不一样的。在Linux上是libhello.so。
 
 使用`uv_dlopen`首先载入了共享库`libhello.dylib`。再使用`uv_dlsym`获取了该插件的`initialize`函数，最后在调用它。  
 

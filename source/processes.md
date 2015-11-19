@@ -42,7 +42,7 @@ int main() {
 
 #####Note
 
-由于上述的options是全局变量，因此被初始化为0。如果你在局部变量中定义options，请记得将所有没用的域设为0   
+>由于上述的options是全局变量，因此被初始化为0。如果你在局部变量中定义options，请记得将所有没用的域设为0   
 
 ```c
 uv_process_options_t options = {0};
@@ -80,7 +80,7 @@ void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
 
 通过使用下面标识的按位或的值设置`uv_process_options_t.flags`的值，可以定义子进程的行为：  
 
-* `UV_PROCESS_SETUID`-将子进程的执行用户id（UID）设置为`uv_process_options_t.uid`中的值。  
+>* `UV_PROCESS_SETUID`-将子进程的执行用户id（UID）设置为`uv_process_options_t.uid`中的值。  
 * `UV_PROCESS_SETGID`-将子进程的执行组id(GID)设置为`uv_process_options_t.gid`中的值。  
 只有在unix系的操作系统中支持设置用户id和组id，在windows下设置会失败，`uv_spawn`会返回`UV_ENOTSUP`。 
 * `UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS`-在windows上，`uv_process_options_t.args`参数不要用引号包裹。此标记对unix无效。  
@@ -207,8 +207,7 @@ int main()
 ```
 
 #####Note
-
-`uv_run(loop, UV_RUN_NOWAIT)`和`uv_run(loop, UV_RUN_ONCE)`非常像，因为它们都只处理一个事件。但是不同在于，UV_RUN_ONCE会在没有任务的时候阻塞，但是UV_RUN_NOWAIT会立刻返回。我们使用`NOWAIT`，这样才使得一个loop不会因为另外一个loop没有要处理的事件而挨饿。  
+>`uv_run(loop, UV_RUN_NOWAIT)`和`uv_run(loop, UV_RUN_ONCE)`非常像，因为它们都只处理一个事件。但是不同在于，UV_RUN_ONCE会在没有任务的时候阻塞，但是UV_RUN_NOWAIT会立刻返回。我们使用`NOWAIT`，这样才使得一个loop不会因为另外一个loop没有要处理的事件而挨饿。  
 
 当向进程发送`SIGUSR1`，你会发现signal_handler函数被激发了4次，每次都对应一个`uv_signal_t`。然后signal_handler调用uv_signal_stop终止了每一个`uv_signal_t`，最终程序退出。对每个handler函数来说，任务的分配很重要。一个使用了多个event-loop的服务器程序，只要简单地给每一个进程添加信号SIGINT监视器，就可以保证程序在中断退出前，数据能够安全地保存。  
 
