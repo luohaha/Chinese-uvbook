@@ -8,7 +8,7 @@
     "links": {
         
     },
-    "plugins": ["github", "github-buttons", "maxiang"],
+    "plugins": ["github", "github-buttons"],
     "pluginsConfig": {
        "github": {
             "url": "https://github.com/luohaha/Chinese-uvbook"
