@@ -5,9 +5,9 @@
 ####note
 >libuv 提供的文件操作和 socket operations 并不相同. 套接字操作使用了操作系统本身提供了非阻塞操作, 而文件操作内部使用了阻塞函数, 但是 libuv 是在线程池中调用这些函数, 并在应用程序需要交互时通知在事件循环中注册的监视器. 
 
-所有的文件操作函数都有两种形式 - 同步 synchronous 和 asynchronous.
+所有的文件操作函数都有两种形式 - 同步 synchronous 和 异步 asynchronous.
 
-同步 synchronous 形式如果没有指定回调函数则会被自动调用( 阻塞的 ), 函数的返回值和 Unix 系统的函数调用返回值相同(调用成功通常返回 0, 若出现错误则返回 -1).
+同步 synchronous 形式如果没有指定回调函数则会被自动调用( 并阻塞的), 函数的返回值是```libuv error code```. 但以上通常只对同步调用有意义.
 
 而异步 asynchronous 形式则会在传入回调函数时被调用, 并且返回 0.
 
@@ -53,7 +53,7 @@ void callback(uv_fs_t* req);
 }
 ```
 
-返回的```uv_fs_t```的result值保存了打开的文件的文件描述符。如果文件被正确地打开，我们可以开始读取了：  
+```uv_fs_t```的```result```域保存了```uv_fs_open```回调函数打开的文件描述符。如果文件被正确地打开，我们可以开始读取了：  
 
 ```c
 void on_read(uv_fs_t *req) {
@@ -72,7 +72,7 @@ void on_read(uv_fs_t *req) {
 }
 ```
 
-在调用读取函数的时候，你必须传递一个已经初始化的缓冲区，在```on_read()```被触发后，缓冲区被被写入数据。```uv_fs_*```系列的函数是和POSIX的函数对应的，所以当读到文件的末尾时(EOF)，result返回0。在使用stream或者pipe的情况下，使用的是libuv自定义的```UV_EOF```。   
+在调用读取函数的时候，你必须传递一个已经初始化的缓冲区，在```on_read()```被触发后，缓冲区被被写入数据。```uv_fs_*```系列的函数是和POSIX的函数对应的，所以当读到文件的末尾时(EOF)，result返回0。在使用streams或者pipe的情况下，使用的是libuv自定义的```UV_EOF```。   
 
 现在你看到类似的异步编程的模式。但是```uv_fs_close()```是同步的，一般来说，一次性的，开始的或者关闭的部分，都是同步的，因为我们一般关心的主要是任务和多路I/O的快速I/O。所以在这些对性能微不足道的地方，都是使用同步的，这样代码还会简单一些。  
 
@@ -115,7 +115,8 @@ int main(int argc, char **argv) {
 ##Filesystem operations
 
 
-所有像 ``unlink``, ``rmdir``, ``stat`` 这样的标准文件操作都是支持异步的，并且使用方法和上述类似。下面的各个函数的使用方法和read/write/open类似，在``uv_fs_t.result``中保存返回值.所有的函数如下所示：
+所有像 ``unlink``, ``rmdir``, ``stat`` 这样的标准文件操作都是支持异步的，并且使用方法和上述类似。下面的各个函数的使用方法和read/write/open类似，在``uv_fs_t.result``中保存返回值.所有的函数如下所示：  
+（译者注：返回的result值，<0表示出错，其他值表示成功。但>=0的值在不同的函数中表示的意义不一样，比如在```uv_fs_read```或者```uv_fs_write```中，它代表读取或写入的数据总量，但在```uv_fs_open```中表示打开的文件描述符.）
 
 ```c
 UV_EXTERN int uv_fs_close(uv_loop_t* loop,
@@ -245,13 +246,13 @@ int uv_write(uv_write_t* req, uv_stream_t* handle,
 ```
 
 可以看出，流操作要比上述的文件操作要简单一些，而且当``uv_read_start()``一旦被调用，libuv会保持从流中持续地读取数据，直到``uv_read_stop()``被调用。  
-数据的离散的单元（buffer）-``uv_buffer_t``。它包含了指向数据的开始地址的指针(``uv_buf_t.base``)，和buffer的长度(``uv_buf_t.len``)，这两个信息。``uv_buf_t``很轻量级，使用值传递。就是说需要在程序中分配和回收。
+数据的离散单元是buffer-``uv_buffer_t``。它包含了指向数据的开始地址的指针(``uv_buf_t.base``)和buffer的长度(``uv_buf_t.len``)这两个信息。``uv_buf_t``很轻量级，使用值传递。我们需要管理的只是实际的数据，即程序必须自己分配和回收内存。
 
 .. ERROR::
 
     THIS PROGRAM DOES NOT ALWAYS WORK, NEED SOMETHING BETTER**
 
-为了更好地演示流stream，我们将会使用``uv_pipe_t``。它可以将文件转换为流stream的形态。接下来的这个是使用libuv实现的，一个简单的T型工具（如果不是很了解，请看[维基百科](https://en.wikipedia.org/wiki/Tee_(command))）。所有的操作都是异步的，这也正是事件驱动I/O的威力所在。两个输出操作不会相互阻塞，但是我们也必须要注意，确保一块缓冲区不会在还没有写入之前，就提前被回收了。  
+为了更好地演示流stream，我们将会使用``uv_pipe_t``。它可以将本地文件转换为流（stream）的形态。接下来的这个是使用libuv实现的，一个简单的T型工具（如果不是很了解，请看[维基百科](https://en.wikipedia.org/wiki/Tee_(command))）。所有的操作都是异步的，这也正是事件驱动I/O的威力所在。两个输出操作不会相互阻塞，但是我们也必须要注意，确保一块缓冲区不会在还没有写入之前，就提前被回收了。  
 
 这个程序执行命令如下
   
@@ -285,7 +286,7 @@ int main(int argc, char **argv) {
 }	
 ```
 
-当需要使用IPC的命名管道的时候（*无名管道是Unix最初的IPC形式，但是由于无名管道的局限性，后来出现了有名管道FIFO，这种管道由于可以在文件系统中创建一个名字，所以可以被没有亲缘关系的进程访问*），``uv_pipe_init()``的第三个参数应该被设置为1。这部分会在Process进程的这一章节说明。``uv_pipe_open()``需要两个参数，第一个是管道需要关联的文件的文件描述符，第二个参数``0``代表标准输入（``1``代表标准输出，``2``代表标准错误输出）。  
+当需要使用IPC的命名管道的时候（*无名管道是Unix最初的IPC形式，但是由于无名管道的局限性，后来出现了有名管道FIFO，这种管道由于可以在文件系统中创建一个名字，所以可以被没有亲缘关系的进程访问*），``uv_pipe_init()``的第三个参数应该被设置为1。这部分会在Process进程的这一章节说明。``uv_pipe_open()``函数把管道和文件描述符关联起来，在上面的代码中表示把管道``stdin_pipe``和标准输入关联起来（译者注：``0``代表标准输入，``1``代表标准输出，``2``代表标准错误输出）。  
 
 当调用``uv_read_start()``后，我们开始监听``stdin``，当需要新的缓冲区来存储数据时，调用alloc_buffer，在函数``read_stdin()``中可以定义缓冲区中的数据处理操作。
 
@@ -318,7 +319,7 @@ void read_stdin(uv_stream_t *stream, ssize_t nread, const uv_buf_t *buf) {
 
 当回调函数```read_stdin()```的nread参数小于0时，表示错误发生了。其中一种可能的错误是EOF(**读到文件的尾部**)，这时我们可以使用函数```uv_close()```关闭流了。除此之外，当nread大于0时，nread代表我们可以向输出流中写入的字节数目。最后注意，缓冲区要由我们手动回收。  
 
-当分配函数```alloc_buf()```返回一个长度为0的缓冲区时，代表它分配内存失败。在这种情况下，读取的回调函数会被错误```UV_ENOBUFS```唤醒。libuv同时也会继续尝试从流中读取数据，所以如果你想要停止的话，必须明确地调用```uv_close()```。  
+当分配函数```alloc_buf()```返回一个长度为0的缓冲区时，代表它分配内存失败。在这种情况下，读取的回调函数会被错误```UV_ENOBUFS```唤醒。libuv同时也会继续尝试从流中读取数据，所以如果你想要停止的话，必须明确地调用```uv_close()```. 
 
 当nread为0时，代表已经没有可读的了，大多数的程序会自动忽略这个。  
 
@@ -352,11 +353,12 @@ void write_data(uv_stream_t *dest, size_t size, uv_buf_t buf, uv_write_cb cb) {
 }
 ```
 
-`write_data()`开辟了一块地址空间存储从缓冲区读取出来的数据，我们之所以这样做是因为，两个调用`write_data()`是相互独立的。为了保证它们不会因为读取速度的原因，由于共享一片缓冲区而损失掉独立性，所以才开辟了新的两块区域。当然这只是一个简单的例子，你可以使用更聪明的内存管理方法来实现它，比如引用计数或者缓冲区池等。    
+`write_data()`开辟了一块地址空间存储从缓冲区读取出来的数据，这块缓存不会被释放，直到与``uv_write()``绑定的回调函数执行.为了实现它，我们用结构体``write_req_t``包裹一个write request和一个buffer，然后在回调函数中展开它。因为我们复制了一份缓存，所以我们可以在两个``write_data()``中独立释放两个缓存。 我们之所以这样做是因为，两个调用`write_data()`是相互独立的。为了保证它们不会因为读取速度的原因，由于共享一片缓冲区而损失掉独立性，所以才开辟了新的两块区域。当然这只是一个简单的例子，你可以使用更聪明的内存管理方法来实现它，比如引用计数或者缓冲区池等。    
 
 
 #####WARNING
->你的程序在被其他的程序调用的过程中，有意无意地会向pipe写入数据，这样的话它会很容易被信号SIGPIPE终止掉，你最好在初始化程序的时候加入这句：`signal(SIGPIPE, SIG_IGN)`。
+>你的程序在被其他的程序调用的过程中，有意无意地会向pipe写入数据，这样的话它会很容易被信号SIGPIPE终止掉，你最好在初始化程序的时候加入这句：  
+`signal(SIGPIPE, SIG_IGN)`。
 
 
 ##File change events
@@ -399,14 +401,14 @@ int main(int argc, char **argv) {
   UV_FS_EVENT_RECURSIVE = 4
 ```
 
-`UV_FS_EVENT_RECURSIVE`可以在支持的系统平台上递归地监视子文件夹。  
+`UV_FS_EVENT_WATCH_ENTRY`和`UV_FS_EVENT_STAT`不做任何事情(至少目前是这样)，`UV_FS_EVENT_RECURSIVE`可以在支持的系统平台上递归地监视子文件夹。  
 在回调函数`run_command()`中，接收的参数如下：  
 >1.`uv_fs_event_t *handle`-句柄。里面的path保存了发生改变的文件的地址。  
->2.`const char *filename`-发生改变的文件名。   
->3.`int flags` -`UV_RENAME`名字改变，`UV_CHANGE`内容改变。   
+>2.`const char *filename`-如果目录被监视，它代表发生改变的文件名。只在Linux和Windows上不为null，在其他平台上可能为null。   
+>3.`int flags` -`UV_RENAME`名字改变，`UV_CHANGE`内容改变之一，或者他们两者的按位或的结果(`|`)。   
 >4.`int status`－当前为0.
 
-在我们的例子中，简单地打印参数和调用`system()`.
+在我们的例子中，只是简单地打印参数和调用`system()`运行command.
 
 ####onchange/main.c - file change notification callback
 ```c
