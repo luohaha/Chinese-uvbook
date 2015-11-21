@@ -20,6 +20,7 @@
 
 ##翻译人员
 * [byronhe](https://github.com/byronhe)
+* [littleneko](https://github.com/littleneko)
 * [luohaha](https://github.com/luohaha)
 
 ##辅助阅读
