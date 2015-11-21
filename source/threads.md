@@ -32,9 +32,9 @@ int main() {
 ```
 
 #####TIP
->uv_thread_t is just an alias for pthread_t on Unix, but this is an implementation detail, avoid depending on it to always be true.
+>在Unix上``uv_thread_t``只是``pthread_t``的别名, 但是这只是一个具体实现，不要过度地依赖它，认为这永远是成立的。
 
-uv_thread_t的第二个参数指向了要执行的函数的地址。最后一个参数用来传递自定义的参数。最终，函数hare将在新的线程中执行，由操作系统调度。  
+`uv_thread_t`的第二个参数指向了要执行的函数的地址。最后一个参数用来传递自定义的参数。最终，函数hare将在新的线程中执行，由操作系统调度。  
 
 ####thread-create/main.c
 
@@ -50,11 +50,11 @@ void hare(void *arg) {
 }
 ```
 
-uv_thread_join不像pthread_join那样，允许线线程通过第二个参数向父线程返回值。想要传递数值，必须使用线程间通信，不了解的可以看这节的最后部分。  
+`uv_thread_join`不像`pthread_join`那样，允许线线程通过第二个参数向父线程返回值。想要传递值，必须使用线程间通信[Inter-thread communication](#inter_thread_communication-pane)。  
 
 ##Synchronization Primitives
 
-因为本教程重点不在线程，因此我只罗列了libuv API中一些神奇的地方。剩下的你可以自行阅读pthread的手册。  
+因为本教程重点不在线程，所以我只罗列了libuv API中一些神奇的地方。剩下的你可以自行阅读pthreads的手册。  
 
 ####Mutexes
 
@@ -72,7 +72,7 @@ UV_EXTERN void uv_mutex_unlock(uv_mutex_t* handle);
 
 `uv_mutex_init`与`uv_mutex_trylock`在成功执行后，返回0，或者在错误时，返回错误码。  
 
-如果libuv在编译的时候开启了调试模式，uv_mutex_destroy(), uv_mutex_lock() 和 uv_mutex_unlock()会在出错的地方调用`abort()`中断。类似的，uv_mutex_trylock()也同样会在错误发生时中断，除了EAGAIN和EBUSY这两个错误信息。  
+如果libuv在编译的时候开启了调试模式，`uv_mutex_destroy()`, `uv_mutex_lock()` 和 `uv_mutex_unlock()`会在出错的地方调用`abort()`中断。类似的，`uv_mutex_trylock()`也同样会在错误发生时中断，而不是返回`EAGAIN`和`EBUSY`。  
 
 递归地调用互斥量函数在某些系统平台上是支持的，但是你不能太过度依赖。因为例如在BSD上递归地调用互斥量函数会返回错误，比如你准备使用互斥量函数给一个已经上锁的临界区再次上锁的时候，就会出错。比如，像下面这个例子：  
 
@@ -83,14 +83,14 @@ uv_mutex_lock(a_mutex);
 // more things here
 ```
 
-在调试模式下，第二次调用`uv_mutex_lock()`会导致程序崩溃，或者是返回错误。  
+可以用来等待其他线程初始化一些变量然后释放`a_mutex`锁，但是第二次调用`uv_mutex_lock()`, 在调试模式下会导致程序崩溃，或者是返回错误。  
 
 #####NOTE
 >在linux中是支持递归上锁的，但是在libuv的API中并未实现。
 
 ####Lock
 
-读写锁是更颗粒化的实现机制。两个读者线程可以同时从共享区中读取数据。当读者在读取数据时，写者不能获取写入。当写者在写入数据时，其他的写者或者读者都不能，写入或者读取共享区。读写锁在数据库操作中非常常见，下面是一个玩具式的例子：  
+读写锁是更细粒度的实现机制。两个读者线程可以同时从共享区中读取数据。当读者以读模式占有读写锁时，写者不能再占有它。当写者以写模式占有这个锁时，其他的写者或者读者都不能占有它。读写锁在数据库操作中非常常见，下面是一个玩具式的例子：  
 
 ####ocks/main.c - simple rwlocks
 
@@ -154,15 +154,15 @@ int main()
 }
 ```
 
-试着来执行一下上面的程序，看读者有多少次会同步执行。在有多个写者的时候，调度器会给予他们高优先级。  
+试着来执行一下上面的程序，看读者有多少次会同步执行。在有多个写者的时候，调度器会给予他们高优先级。因此，如果你加入两个读者，你会看到所有的读者趋向于在读者得到加锁机会前结束。  
 
-我们同样会使用屏障来等待所有的线程都已经结束，最后再将屏障和锁一块回收。  
+在上面的例子中，我们也使用了屏障。因此主线程来等待所有的线程都已经结束，最后再将屏障和锁一块回收。  
 
 ####Others
 
 libuv同样支持[信号量](https://en.wikipedia.org/wiki/Semaphore_programming)，[条件变量](https://en.wikipedia.org/wiki/Monitor_synchronization#Waiting_and_signaling)和[屏障](https://en.wikipedia.org/wiki/Barrier_computer_science)，而且API的使用方法和pthread中的用法很类似。（如果你对上面的三个名词还不是很熟，可以看[这里](http://www.wuzesheng.com/?p=1668)，[这里](http://name5566.com/4535.html)，[这里](http://www.cnblogs.com/panhao/p/4653623.html)）。 
 
- 还有，libuv提供了一个简单易用的函数`uv_once()`。多个线程调用这个函数，参数可以使用一个uv_once_t和一个指向特定函数的指针，最终只有一个线程能够执行这个特定函数。这个特定函数只会被调用一次：  
+ 还有，libuv提供了一个简单易用的函数`uv_once()`。多个线程调用这个函数，参数可以使用一个uv_once_t和一个指向特定函数的指针，**最终只有一个线程能够执行这个特定函数，并且这个特定函数只会被调用一次**：  
  
  ```c
  /* Initialize guard */
@@ -189,15 +189,15 @@ int main() {
 }
  ```
 
-当所有的线程执行完毕，i==1。  
+当所有的线程执行完毕时，`i == 1`。  
 
-再libuv的v0.11.11版本里，推出了uv_key_t结构和操作[线程局部存储TLS](http://baike.baidu.com/view/598128.htm)的API，使用方法同样和pthread类似。  
+在libuv的v0.11.11版本里，推出了uv_key_t结构和操作[线程局部存储TLS](http://baike.baidu.com/view/598128.htm)的[API](http://docs.libuv.org/en/v1.x/threading.html#thread-local-storage)，使用方法同样和pthread类似。  
 
 ##libuv work queue
 
 `uv_queue_work()`是一个便利的函数，它使得一个应用程序能够在不同的线程运行任务，当任务完成后，回调函数将会被触发。它看起来好像很简单，但是它真正吸引人的地方在于它能够使得任何第三方的库都能以event-loop的方式执行。当使用event-loop的时候，最重要的是不能让loop线程阻塞，或者是执行高cpu占用的程序，因为这样会使得loop慢下来，loop event的高效特性也不能得到很好地发挥。  
 
-然而，很多带有阻塞的特性的程序(比如最常见的I/O）使用开辟新线程来响应新请求(最经典的‘一个客户，一个线程模型’)。使用event-loop可以提供另一种实现的方式。libuv提供了一个很好的抽象，使得你能够很好地使用它。  
+然而，很多带有阻塞的特性的程序(比如最常见的I/O）使用开辟新线程来响应新请求(最经典的‘一个客户，一个线程‘模型)。使用event-loop可以提供另一种实现的方式。libuv提供了一个很好的抽象，使得你能够很好地使用它。  
 
 下面有一个很好的例子，灵感来自<<[nodejs is cancer](http://teddziuba.github.io/2011/10/node-js-is-cancer.html)>>。我们将要执行fibonacci数列，并且睡眠一段时间，但是将阻塞和cpu占用时间长的任务分配到不同的线程，使得其不会阻塞event loop上的其他任务。  
 
@@ -219,7 +219,7 @@ void after_fib(uv_work_t *req, int status) {
 }
 ```
 
-任务函数很简单，也还没有运行在线程之上。uv_work_t是关键线索，你可以通过`void *data`传递任何数据，使用它来完成线程之间的沟通任务。但是要注意多线程之间的数据同步的问题。  
+任务函数很简单，也还没有运行在线程之上。`uv_work_t`是关键线索，你可以通过`void *data`传递任何数据，使用它来完成线程之间的沟通任务。但是你要确信，当你在多个线程都在运行的时候改变某个东西的时候，能够使用适当的锁。  
 
 触发器是`uv_queue_work`：  
 
@@ -242,9 +242,11 @@ int main() {
 }
 ```
 
-不同的线程都会调用fib函数，并且传入uv_work_t结构的参数，一旦fib函数返回，after_fib会被event loop中的线程调用，然后同样被传入uv_work_t结构的参数。  
+线程函数fbi()将会在不同的线程中运行，传入`uv_work_t`结构体参数，一旦fib()函数返回，after_fib()会被event loop中的线程调用，然后被传入同样的结构体。  
 
-从libuv 0.9.4版后，添加了函数`uv_cancel()`。它可以用来取消工作队列中的任务。只有任务在还未被执行或者未执行完毕的时候可以被取消，否则`uv_cancel()`会失败。  
+为了封装阻塞的库，常见的模式是用[baton](http://nikhilm.github.io/uvbook/utilities.html#baton)来交换数据。
+
+从libuv 0.9.4版后，添加了函数`uv_cancel()`。它可以用来取消工作队列中的任务。只有还未开始的任务可以被取消，如果任务已经开始执行或者已经执行完毕，`uv_cancel()`调用会失败。  
 
 当用户想要终止程序的时候，`uv_cancel()`可以用来清理任务队列中的等待执行的任务。例如，一个音乐播放器可以以歌手的名字对歌曲进行排序，如果这个时候用户想要退出这个程序，`uv_cancel()`就可以做到快速退出，而不用等待执行完任务队列后，再退出。  
 
@@ -272,7 +274,7 @@ int main() {
 }
 ```
 
-`Ctrl+C`触发执行`uv_cancel()`回收任务队列中所有的任务，如果任务已经开始执行或者执行完毕，`uv_cancel()`返回0。  
+当用户通过`Ctrl+C`触发信号时，`uv_cancel()`回收任务队列中所有的任务，如果任务已经开始执行或者执行完毕，`uv_cancel()`返回0。  
 
 ####queue-cancel/main.c  
 
@@ -288,7 +290,7 @@ void signal_handler(uv_signal_t *req, int signum)
 }
 ```
 
-对于已经成功取消的任务，他的回调函数的参数status会被设置为`UV_ECANCELED`。  
+对于已经成功取消的任务，他的回调函数的参数`status`会被设置为`UV_ECANCELED`。  
 
 ####queue-cancel/main.c
 
@@ -305,7 +307,7 @@ void after_fib(uv_work_t *req, int status) {
 >一个良好设计的程序，应该能够终止一个已经开始运行的长耗时任务。  
 Such a worker could periodically check for a variable that only the main process sets to signal termination.
 
-##Inter-thread communication
+##<a name="inter_thread_communication-pane"></a>Inter-thread communication
 
 很多时候，你希望正在运行的线程之间能够相互发送消息。例如你在运行一个持续时间长的任务（可能使用uv_queue_work），但是你需要在主线程中监视它的进度情况。下面有一个简单的例子，演示了一个下载管理程序向用户展示各个下载线程的进度。  
 
@@ -329,13 +331,13 @@ int main() {
 }
 ```
 
-因为异步的线程通信是基于event-loop的，所以所有的线程都可以是发送方，但是只有在event-loop上的线程可以是接收方（或者说event-loop是接收方）。在上述的代码中，当异步监视者接收到信号的时候，libuv会激发回调函数（print_progress）。  
+因为异步的线程通信是基于event-loop的，所以尽管所有的线程都可以是发送方，但是只有在event-loop上的线程可以是接收方（或者说event-loop是接收方）。在上述的代码中，当异步监视者接收到信号的时候，libuv会激发回调函数（print_progress）。  
 
 #####WARNING
->应该注意: 消息的发送是异步的,回调函数应该在另外一个线程调用了uv_async_send后立即被调用, 或者在稍后的某个时刻被调用。  
-libuv也有可能多次调用 uv_async_send，但只调用了一次回调函数。唯一可以保证的是: 线程在调用uv_async_send之后回调函数可至少被调用一次。  
-如果你没有未调用的 uv_async_send, 那么回调函数也不会被调用。  
-如果你调用了两次(以上)的 uv_async_send, 而 libuv 暂时还没有机会运行回调函数, 则libuv可能会在多次调用 uv_async_send 后只调用一次回调函数，你的回调函数绝对不会在一次事件中被调用两次(或多次)。
+>应该注意: 因为消息的发送是异步的,当`uv_async_send`在另外一个线程中被调用后，回调函数可能会立即被调用, 也可能在稍后的某个时刻被调用。  
+libuv也有可能多次调用`uv_async_send`，但只调用了一次回调函数。唯一可以保证的是: 线程在调用`uv_async_send`之后回调函数可至少被调用一次。  
+如果你没有未调用的`uv_async_send`, 那么回调函数也不会被调用。  
+如果你调用了两次(以上)的`uv_async_send`, 而 libuv 暂时还没有机会运行回调函数, 则libuv可能会在多次调用`uv_async_send`后只调用一次回调函数，你的回调函数绝对不会在一次事件中被调用两次(或多次)。
 
 ####progress/main.c
 ```c
@@ -367,7 +369,7 @@ void print_progress(uv_async_t *handle) {
 }
 ```
 
-函数print_progress是标准的libuv模式，从监视器中抽取数据。  
+函数`print_progress`是标准的libuv模式，从监视器中抽取数据。  
 
 最后最重要的是把监视器回收。  
 
@@ -379,12 +381,12 @@ void after(uv_work_t *req, int status) {
 }
 ```
 
-在例子的最后，我们要说下data域的滥用，[bnoordhuis](https://github.com/bnoordhuis)指出使用data域可能会存在线程安全问题，`uv_async_send()`事实上只是唤醒了event-loop。可以使用互斥量或者读写锁来保证执行顺序的正确性。  
+在例子的最后，我们要说下`data`域的滥用，[bnoordhuis](https://github.com/bnoordhuis)指出使用`data`域可能会存在线程安全问题，`uv_async_send()`事实上只是唤醒了event-loop。可以使用互斥量或者读写锁来保证执行顺序的正确性。  
 
-#####Warning
+#####Note
 >互斥量和读写锁不能在信号处理函数中正确工作，但是`uv_async_send`可以。
 
-一种需要使用`uv_async_send`的场景是，当调用需要线程交互的库时。例如，举一个在nodejs中V8引擎的例子，上下文和对象都是与v8引擎的线程绑定的，从另一个线程中，直接向v8请求数据会导致返回不确定的结果。但是，考虑到现在很多nodejs的模块都是和第三方库绑定的，可以像下面一样，解决这个问题：  
+一种需要使用`uv_async_send`的场景是，当调用需要线程交互的库时。例如，举一个在node.js中V8引擎的例子，上下文和对象都是与v8引擎的线程绑定的，从另一个线程中直接向v8请求数据会导致返回不确定的结果。但是，考虑到现在很多nodejs的模块都是和第三方库绑定的，可以像下面一样，解决这个问题：  
 
 >1.在node中，第三方库会建立javascript的回调函数，以便回调函数被调用时，能够返回更多的信息。
   
