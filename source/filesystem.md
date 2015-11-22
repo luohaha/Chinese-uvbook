@@ -53,7 +53,7 @@ void callback(uv_fs_t* req);
 }
 ```
 
-```uv_fs_t```的```result```域保存了```uv_fs_open```回调函数打开的文件描述符。如果文件被正确地打开，我们可以开始读取了：  
+`uv_fs_t`的`result`域保存了`uv_fs_open`回调函数打开的文件描述符。如果文件被正确地打开，我们可以开始读取了：  
 
 ```c
 void on_read(uv_fs_t *req) {
