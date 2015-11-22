@@ -48,7 +48,7 @@
     <body>
         
         
-    <div class="book" data-level="3" data-chapter-title="文件系统" data-filepath="source/filesystem.md" data-basepath=".." data-revision="Sat Nov 21 2015 17:58:04 GMT+0800 (CST)">
+    <div class="book" data-level="3" data-chapter-title="文件系统" data-filepath="source/filesystem.md" data-basepath=".." data-revision="Sun Nov 22 2015 09:58:23 GMT+0800 (CST)">
     
 
 <div class="book-summary">
@@ -279,20 +279,19 @@
     }
 }
 </code></pre>
-<pre><code class="lang-uv_fs_t```&#x7684;```result```&#x57DF;&#x4FDD;&#x5B58;&#x4E86;```uv_fs_open```&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x6253;&#x5F00;&#x7684;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x3002;&#x5982;&#x679C;&#x6587;&#x4EF6;&#x88AB;&#x6B63;&#x786E;&#x5730;&#x6253;&#x5F00;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5F00;&#x59CB;&#x8BFB;&#x53D6;&#x4E86;&#xFF1A;">
-```c
-void on_read(uv_fs_t *req) {
-    if (req-&gt;result &lt; 0) {
-        fprintf(stderr, &quot;Read error: %s\n&quot;, uv_strerror(req-&gt;result));
+<p><code>uv_fs_t</code>&#x7684;<code>result</code>&#x57DF;&#x4FDD;&#x5B58;&#x4E86;<code>uv_fs_open</code>&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x6253;&#x5F00;&#x7684;&#x6587;&#x4EF6;&#x63CF;&#x8FF0;&#x7B26;&#x3002;&#x5982;&#x679C;&#x6587;&#x4EF6;&#x88AB;&#x6B63;&#x786E;&#x5730;&#x6253;&#x5F00;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5F00;&#x59CB;&#x8BFB;&#x53D6;&#x4E86;&#xFF1A;  </p>
+<pre><code class="lang-c"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">on_read</span><span class="hljs-params">(uv_fs_t *req)</span> </span>{
+    <span class="hljs-keyword">if</span> (req-&gt;result &lt; <span class="hljs-number">0</span>) {
+        <span class="hljs-built_in">fprintf</span>(<span class="hljs-built_in">stderr</span>, <span class="hljs-string">&quot;Read error: %s\n&quot;</span>, uv_strerror(req-&gt;result));
     }
-    else if (req-&gt;result == 0) {
-        uv_fs_t close_req;
-        // synchronous
-        uv_fs_close(uv_default_loop(), &amp;close_req, open_req.result, NULL);
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (req-&gt;result == <span class="hljs-number">0</span>) {
+        <span class="hljs-keyword">uv_fs_t</span> close_req;
+        <span class="hljs-comment">// synchronous</span>
+        uv_fs_close(uv_default_loop(), &amp;close_req, open_req.result, <span class="hljs-literal">NULL</span>);
     }
-    else if (req-&gt;result &gt; 0) {
+    <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (req-&gt;result &gt; <span class="hljs-number">0</span>) {
         iov.len = req-&gt;result;
-        uv_fs_write(uv_default_loop(), &amp;write_req, 1, &amp;iov, 1, -1, on_write);
+        uv_fs_write(uv_default_loop(), &amp;write_req, <span class="hljs-number">1</span>, &amp;iov, <span class="hljs-number">1</span>, -<span class="hljs-number">1</span>, on_write);
     }
 }
 </code></pre>
@@ -637,9 +636,13 @@ void on_read(uv_fs_t *req) {
     <script src="../gitbook/plugins/gitbook-plugin-fontsettings/buttons.js"></script>
     
 
+    
+    <script src="../gitbook/plugins/gitbook-plugin-livereload/plugin.js"></script>
+    
+
 <script>
 require(["gitbook"], function(gitbook) {
-    var config = {"github":{"url":"https://github.com/luohaha/Chinese-uvbook"},"github-buttons":{"repo":"luohaha/Chinese-uvbook","types":["star"]},"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2}};
+    var config = {"github":{"url":"https://github.com/luohaha/Chinese-uvbook"},"github-buttons":{"repo":"luohaha/Chinese-uvbook","types":["star"]},"highlight":{},"search":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"livereload":{}};
     gitbook.start(config);
 });
 </script>
