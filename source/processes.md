@@ -48,7 +48,7 @@ int main() {
 uv_process_options_t options = {0};
 ```
 
-`uv_process_t`只是作为句柄，所有的选择项都通过`uv_process_options_t`设置，为了简单地开始一个进程，你只需要设置file和args，file是要执行的程序，args是所需的参数（和c语言中main函数的传入参数类似）。因为`uv_spawn`在内部使用了[execvp](http://man7.org/linux/man-pages/man3/exec.3.html)，所以不需要提供绝对地址。遵从惯例，实际传入参数的数目要多于需要的参数，因为最后一个参数会被设为NULL。  
+`uv_process_t`只是作为句柄，所有的选择项都通过`uv_process_options_t`设置，为了简单地开始一个进程，你只需要设置file和args，file是要执行的程序，args是所需的参数（和c语言中main函数的传入参数类似）。因为`uv_spawn`在内部使用了[execvp](http://man7.org/linux/man-pages/man3/exec.3.html)，所以不需要提供绝对地址。遵从惯例，**实际传入参数的数目要比需要的参数多一个，因为最后一个参数会被设为NULL**。  
 
 在函数`uv_spawn`被调用之后，`uv_process_t.pid`会包含子进程的id。  
 
@@ -84,7 +84,7 @@ void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
 * `UV_PROCESS_SETGID`-将子进程的执行组id(GID)设置为`uv_process_options_t.gid`中的值。  
 只有在unix系的操作系统中支持设置用户id和组id，在windows下设置会失败，`uv_spawn`会返回`UV_ENOTSUP`。 
 * `UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS`-在windows上，`uv_process_options_t.args`参数不要用引号包裹。此标记对unix无效。  
-* `UV_PROCESS_DETACHED`-使得子进程脱离父进程，这样子进程就可以在父进程退出后继续进行。请看下面的例子：  
+* `UV_PROCESS_DETACHED`-在新会话(session)中启动子进程，这样子进程就可以在父进程退出后继续进行。请看下面的例子：  
 
 ##Detaching processes
 
