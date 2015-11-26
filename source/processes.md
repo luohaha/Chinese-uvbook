@@ -48,7 +48,7 @@ int main() {
 uv_process_options_t options = {0};
 ```
 
-`uv_process_t`只是作为句柄，所有的选择项都通过`uv_process_options_t`设置，为了简单地开始一个进程，你只需要设置file和args，file是要执行的程序，args是所需的参数（和c语言中main函数的传入参数类似）。因为`uv_spawn`在内部使用了[execvp](http://man7.org/linux/man-pages/man3/exec.3.html)，所以不需要提供绝对地址。遵从惯例，实际传入参数的数目要多于需要的参数，因为最后一个参数会被设为NULL。  
+`uv_process_t`只是作为句柄，所有的选择项都通过`uv_process_options_t`设置，为了简单地开始一个进程，你只需要设置file和args，file是要执行的程序，args是所需的参数（和c语言中main函数的传入参数类似）。因为`uv_spawn`在内部使用了[execvp](http://man7.org/linux/man-pages/man3/exec.3.html)，所以不需要提供绝对地址。遵从惯例，**实际传入参数的数目要比需要的参数多一个，因为最后一个参数会被设为NULL**。  
 
 在函数`uv_spawn`被调用之后，`uv_process_t.pid`会包含子进程的id。  
 
@@ -84,7 +84,7 @@ void on_exit(uv_process_t *req, int64_t exit_status, int term_signal) {
 * `UV_PROCESS_SETGID`-将子进程的执行组id(GID)设置为`uv_process_options_t.gid`中的值。  
 只有在unix系的操作系统中支持设置用户id和组id，在windows下设置会失败，`uv_spawn`会返回`UV_ENOTSUP`。 
 * `UV_PROCESS_WINDOWS_VERBATIM_ARGUMENTS`-在windows上，`uv_process_options_t.args`参数不要用引号包裹。此标记对unix无效。  
-* `UV_PROCESS_DETACHED`-使得子进程脱离父进程，这样子进程就可以在父进程退出后继续进行。请看下面的例子：  
+* `UV_PROCESS_DETACHED`-在新会话(session)中启动子进程，这样子进程就可以在父进程退出后继续进行。请看下面的例子：  
 
 ##Detaching processes
 
@@ -133,7 +133,7 @@ uv_err_t uv_kill(int pid, int signum);
 
 libuv对unix信号和一些[windows下类似的机制](http://docs.libuv.org/en/v1.x/signal.html#signal)，做了很好的打包。  
 
-使用`uv_signal_init`初始化一饿handle，然后将它与loop关联。为了使用handle监听特定的信号，使用`uv_signal_start()`函数。每一个handle只能与一个信号关联，后续的`uv_signal_start`会覆盖前面的关联。使用`uv_signal_stop`终止监听。下面的这个小例子展示了各种用法：  
+使用`uv_signal_init`初始化handle（`uv_signal_t `），然后将它与loop关联。为了使用handle监听特定的信号，使用`uv_signal_start()`函数。每一个handle只能与一个信号关联，后续的`uv_signal_start`会覆盖前面的关联。使用`uv_signal_stop`终止监听。下面的这个小例子展示了各种用法：  
 
 ####signal/main.c
 
@@ -228,7 +228,7 @@ int main()
 }
 ```
 
-实际的执行程序` proc-streams`在运行的时候，只向子进程分享stderr。在`stdio`域中的`uv_process_options_t`设置了子进程的文件描述符。首先设置`stdio_count`，定义文件描述符的个数。再使用`uv_stdio_container_t`队列来设置`uv_process_options_t.stdio`。  
+实际的执行程序` proc-streams`在运行的时候，只向子进程分享`stderr`。使用`uv_process_options_t`的`stdio`域设置子进程的文件描述符。首先设置`stdio_count`，定义文件描述符的个数。`uv_process_options_t.stdio`是一个`uv_stdio_container_t`数组。定义如下：  
 
 ```c
 typedef struct uv_stdio_container_s {
@@ -299,7 +299,7 @@ int main() {
 }
 ```
 
-CGI服务器用到了这章和网络那章的知识，所以每一个client在中断连接后，都会被发送tick。  
+CGI服务器用到了这章和[网络](http://luohaha.github.io/Chinese-uvbook/source/networking.html)那章的知识，所以每一个client在中断连接后，都会被发送10个tick。  
 
 ####cgi/main.c
 
@@ -388,7 +388,7 @@ int main() {
 }
 ```
 
-我们把socket命名为echo.sock，意味着它将会在本地文件夹中被创造。对于stream API来说，本地socekt表现得和tcp的socket差不多。你可以使用socat测试一下服务器：  
+我们把socket命名为echo.sock，意味着它将会在本地文件夹中被创造。对于stream API来说，本地socekt表现得和tcp的socket差不多。你可以使用[socat](http://www.dest-unreach.org/socat/)测试一下服务器：  
 
 ```
 $ socat - /path/to/socket
@@ -404,7 +404,7 @@ void uv_pipe_connect(uv_connect_t *req, uv_pipe_t *handle, const char *name, uv_
 
 ####Sending file descriptors over pipes
 
-最酷的事情是本地socket可以传递文件描述符，也就是说进程间可以交换文件描述符。这样就允许进程将它们的I/O描述符传递给其他进程。它的应用场景包括，比如负载均衡服务器，分派工作进程等，各种可以使得cpu使用最优化的应用。libuv当前只支持通过管道传输tcp socket或者其他的pipe。  
+最酷的事情是本地socket可以传递文件描述符，也就是说进程间可以交换文件描述符。这样就允许进程将它们的I/O传递给其他进程。它的应用场景包括，负载均衡服务器，分派工作进程等，各种可以使得cpu使用最优化的应用。libuv当前只支持通过管道传输**TCP sockets或者其他的pipes**。  
 
 为了展示这个功能，我们将来实现一个由循环中的工人进程处理client端请求，的这么一个echo服务器程序。这个程序有一些复杂，在教程中只截取了部分的片段，为了更好地理解，我推荐你去读下完整的[代码](https://github.com/nikhilm/uvbook/tree/master/code/multi-echo-server)。  
 
@@ -425,7 +425,7 @@ int main() {
 }
 ```
 
-`queue`是另一端连接上主进程的管道，因此，文件描述符可以传送过来。在`uv_pipe_init`中将ipc参数设置为1很关键，因为它标明了这个管道将被用来做进程间通信。因为主进程需要把文件handle赋给了工人进程作为标准输入，因此我们使用`uv_pipe_open`把stdin作为pipe（别忘了，0代表stdin）。  
+`queue`是另一端连接上主进程的管道，因此，文件描述符可以传送过来。在`uv_pipe_init`中将`ipc`参数设置为1很关键，因为它标明了这个管道将被用来做进程间通信。因为主进程需要把文件handle赋给了工人进程作为标准输入，因此我们使用`uv_pipe_open`把stdin作为pipe（别忘了，0代表stdin）。  
 
 ####multi-echo-server/worker.c
 
