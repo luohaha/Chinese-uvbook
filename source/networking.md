@@ -1,19 +1,23 @@
 #Networking
 
-在libuv中使用网络编程接口不会像在BSD上使用socket接口那么的麻烦，因为libuv上所有的都是非阻塞的，但是原理都是一样的。可以这么说，libuv提供了覆盖了恼人的，啰嗦的和底层的任务的抽象函数，比如使用BSD的socket结构的来设置socket，还有DNS查找，libuv还调整了一些socket的参数。  
+在 libuv 中，网络编程与直接使用 BSD socket 区别不大，有些地方还更简单。概念保持不变的同时，libuv 上所有接口都是非阻塞的。它还提供了很多工具函数，抽象了恼人、啰嗦的底层任务，如使用 BSD socket 结构体设置 socket 、DNS 查找以及调整各种 socket 参数。
 
 在网络I/O中会使用到```uv_tcp_t```和```uv_udp_t```。   
+
+#####note
+>本章中的代码片段仅用于展示 libuv API ，并不是优质代码的范例，常有内存泄露和未关闭的连接。
 
 ##TCP
 TCP是面向连接的，字节流协议，因此基于libuv的stream实现。  
 
 ####server
 服务器端的建立流程如下：  
->1.```uv_tcp_init```建立tcp句柄。  
->2.```uv_tcp_bind```绑定。  
->3.```uv_listen```建立监听，当有新的连接到来时，激活调用回调函数。  
->4.```uv_accept```接收链接。   
->5.使用stream处理来和客户端通信。  
+
+1.```uv_tcp_init```建立tcp句柄。  
+2.```uv_tcp_bind```绑定。  
+3.```uv_listen```建立监听，当有新的连接到来时，激活调用回调函数。  
+4.```uv_accept```接收链接。   
+5.使用stream处理来和客户端通信。  
 
 ####tcp-echo-server/main.c - The listen socket
 ```c
