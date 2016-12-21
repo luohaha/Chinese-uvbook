@@ -299,7 +299,7 @@ int main() {
 }
 ```
 
-CGI服务器用到了这章和[网络](http://luohaha.github.io/Chinese-uvbook/source/networking.html)那章的知识，所以每一个client在中断连接后，都会被发送10个tick。  
+CGI服务器用到了这章和[网络](http://luohaha.github.io/Chinese-uvbook/source/networking.html)那章的知识，所以每一个client都会被发送10个tick，然后被中断连接。  
 
 ####cgi/main.c
 
