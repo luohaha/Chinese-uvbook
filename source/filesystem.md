@@ -39,6 +39,7 @@ void callback(uv_fs_t* req);
 ####uvcat/main.c - opening a file
 
 ```c
+void on_open(uv_fs_t *req) {
     // The request passed to the callback is the same as the one the call setup
     // function was passed.
     assert(req == &open_req);
