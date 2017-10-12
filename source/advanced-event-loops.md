@@ -1,12 +1,12 @@
-#Advanced event loops
+# Advanced event loops
 
 libuv提供了非常多的控制event-loop的方法，你能通过使用多loop来实现很多有趣的功能。你还可以将libuv的event loop嵌入到其它基于event-loop的库中。比如，想象着一个基于Qt的UI，然后Qt的event-loop是由libuv驱动的，做着加强级的系统任务。  
 
-##Stopping an event loop
+## Stopping an event loop
 
 `uv_stop()`用来终止event loop。loop会停止的最早时间点是在下次循环的时候，或者稍晚些的时候。这也就意味着在本次循环中已经准备被处理的事件，依然会被处理，`uv_stop`不会起到作用。当`uv_stop`被调用，在当前的循环中，loop不会被IO操作阻塞。上面这些说得有点玄乎，还是让我们看下`uv_run()`的代码：  
 
-####src/unix/core.c - uv_run
+#### src/unix/core.c - uv_run
 
 ```c
 int uv_run(uv_loop_t* loop, uv_run_mode mode) {
@@ -38,7 +38,7 @@ int uv_run(uv_loop_t* loop, uv_run_mode mode) {
 
 下面是一个简单的例子，它演示了loop的停止，以及当前的循环依旧在执行。  
 
-####uvstop/main.c
+#### uvstop/main.c
 
 ```c
 #include <stdio.h>

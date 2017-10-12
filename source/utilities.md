@@ -1,8 +1,8 @@
-#Utilities
+# Utilities
 
 本章介绍的工具和技术对于常见的任务非常的实用。libuv吸收了[libev用户手册页](http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod#COMMON_OR_USEFUL_IDIOMS_OR_BOTH)中所涵盖的一些模式，并在此基础上对API做了少许的改动。本章还包含了一些无需用完整的一章来介绍的libuv API。  
 
-##Timers
+## Timers
 
 在定时器启动后的特定时间后，定时器会调用回调函数。libuv的定时器还可以设定为，按时间间隔定时启动，而不是只启动一次。  
 可以简单地使用超时时间`timeout`作为参数初始化一个定时器，还有一个可选参数`repeat`。定时器能在任何时间被终止。  
@@ -43,7 +43,7 @@ int uv_timer_again(uv_timer_t *)
 
 下面的一节会出现使用定时器的例子。  
 
-##Event loop reference count
+## Event loop reference count
 
 event-loop在没有了活跃的handle之后，便会终止。整套系统的工作方式是：在handle增加时，event-loop的引用计数加1，在handle停止时，引用计数减少1。当然，libuv也允许手动地更改引用计数，通过使用：  
 
@@ -58,7 +58,7 @@ void uv_unref(uv_handle_t*);
 
 它们同样会出现在node.js中，如js的API中封装的libuv方法。每一个js的对象产生一个`uv_handle_t`（所有监视器的超类），同样可以被uv_ref和uv_unref。  
 
-####ref-timer/main.c
+#### ref-timer/main.c
 
 ```c
 uv_loop_t *loop;
@@ -82,11 +82,11 @@ int main() {
 
 首先初始化垃圾回收器的定时器，然后在立刻`unref`它。注意观察9秒之后，此时fake_job完成，程序会自动退出，即使垃圾回收器还在运行。  
 
-##Idler pattern
+## Idler pattern
 
 空转的回调函数会在每一次的event-loop循环激发一次。空转的回调函数可以用来执行一些优先级较低的活动。比如，你可以向开发者发送应用程序的每日性能表现情况，以便于分析，或者是使用用户应用cpu时间来做[SETI](http://www.seti.org)运算:)。空转程序还可以用于GUI应用。比如你在使用event-loop来下载文件，如果tcp连接未中断而且当前并没有其他的事件，则你的event-loop会阻塞，这也就意味着你的下载进度条会停滞，用户会面对一个无响应的程序。面对这种情况，空转监视器可以保持UI可操作。  
 
-####idle-compute/main.c
+#### idle-compute/main.c
 
 ```c
 uv_loop_t *loop;
@@ -108,7 +108,7 @@ int main() {
 
 上述程序中，我们将空转监视器和我们真正关心的事件排在一起。`crunch_away`会被循环地调用，直到输入字符并回车。然后程序会被中断很短的时间，用来处理数据读取，然后在接着调用空转的回调函数。  
 
-####idle-compute/main.c
+#### idle-compute/main.c
 
 ```c
 void crunch_away(uv_idle_t* handle) {
@@ -122,7 +122,7 @@ void crunch_away(uv_idle_t* handle) {
 }
 ```
 
-##Passing data to worker thread
+## Passing data to worker thread
 
 在使用`uv_queue_work`的时候，你通常需要给工作线程传递复杂的数据。解决方案是自定义struct，然后使用`uv_work_t.data`指向它。一个稍微的不同是必须让`uv_work_t`作为这个自定义struct的成员之一（把这叫做接力棒）。这么做就可以使得，同时回收数据和`uv_wortk_t`。  
 
@@ -168,7 +168,7 @@ void ftp_cleanup(uv_work_t *req) {
 
 我们既回收了接力棒，同时也回收了监视器。  
 
-##External I/O with polling
+## External I/O with polling
 
 通常在使用第三方库的时候，需要应对他们自己的IO，还有保持监视他们的socket和内部文件。在此情形下，不可能使用标准的IO流操作，但第三方库仍然能整合进event-loop中。所有这些需要的就是，第三方库就必须允许你访问它的底层文件描述符，并且提供可以处理有用户定义的细微任务的函数。但是一些第三库并不允许你这么做，他们只提供了一个标准的阻塞IO函数，此函数会完成所有的工作并返回。在event-loop的线程直接使用它们是不明智的，而是应该使用libuv的工作线程。当然，这也意味着失去了对第三方库的颗粒化控制。  
 
@@ -176,7 +176,7 @@ libuv的`uv_poll`简单地监视了使用了操作系统的监控机制的文件
 
 现在我们简单地实现一个下载管理程序，它会通过[libcurl](http://curl.haxx.se/libcurl/)来下载文件。我们不会直接控制libcurl，而是使用libuv的event-loop，通过非阻塞的异步的[多重接口](http://curl.haxx.se/libcurl/c/libcurl-multi.html)来处理下载，与此同时，libuv会监控IO的就绪状态。  
 
-####uvwget/main.c - The setup
+#### uvwget/main.c - The setup
 
 ```c
 #include <assert.h>
@@ -227,7 +227,7 @@ $ ./uvwget [url1] [url2] ...
 
 我们可以把url当成参数传入程序。  
 
-####uvwget/main.c - Adding urls
+#### uvwget/main.c - Adding urls
 
 ```c
 void add_download(const char *url, int num) {
@@ -253,7 +253,7 @@ void add_download(const char *url, int num) {
 
 `start_timeout`会被libcurl立即调用。它会启动一个libuv的定时器，使用`CURL_SOCKET_TIMEOUT`驱动`curl_multi_socket_action`，当其超时时，调用它。`curl_multi_socket_action`会驱动libcurl，也会在socket状态改变的时候被调用。但在我们深入讲解它之前，我们需要轮询监听socket，等待`handle_socket`被调用。  
 
-####uvwget/main.c - Setting up polling
+#### uvwget/main.c - Setting up polling
 
 ```c
 void start_timeout(CURLM *multi, long timeout_ms, void *userp) {
@@ -302,7 +302,7 @@ int handle_socket(CURL *easy, curl_socket_t s, int action, void *userp, void *so
 
 我们使用`UV_READABLE`或`UV_WRITABLE`开始轮询，基于libcurl想要监视的事件。当socket已经准备好读或写后，libuv会调用轮询的回调函数。在相同的handle上调用多次`uv_poll_start`是被允许的，这么做可以更新事件的参数。`curl_perform`是整个程序的关键。  
 
-####uvwget/main.c - Driving libcurl.
+#### uvwget/main.c - Driving libcurl.
 
 ```c
 void curl_perform(uv_poll_t *req, int status, int events) {
@@ -324,7 +324,7 @@ void curl_perform(uv_poll_t *req, int status, int events) {
 
 首先我们要做的是停止定时器，因为内部还有其他要做的事。接下来我们我们依据触发回调函数的事件，来设置flag。然后，我们使用上述socket和flag作为参数，来调用`curl_multi_socket_action`。在此刻libcurl会在内部完成所有的工作，然后尽快地返回事件驱动程序在主线程中急需的数据。libcurl会在自己的队列中将传输进度的消息排队。对于我们来说，我们只关心是否传输完成，这类消息。所以我们将这类消息提取出来，并将传输完成的handle回收。  
 
-####uvwget/main.c - Reading transfer status.
+#### uvwget/main.c - Reading transfer status.
 
 ```c
 void check_multi_info(void) {
@@ -351,13 +351,13 @@ void check_multi_info(void) {
 }
 ```
 
-##Loading libraries
+## Loading libraries
 
 libuv提供了一个跨平台的API来加载[共享库shared libraries](http://liaoph.com/linux-shared-libary/)。这就可以用来实现你自己的插件／扩展／模块系统，它们可以被nodejs通过`require()`调用。只要你的库输出的是正确的符号，用起来还是很简单的。在载入第三方库的时候，要注意错误和安全检查，否则你的程序就会表现出不可预测的行为。下面这个例子实现了一个简单的插件，它只是打印出了自己的名字。  
 
 首先看下提供给插件作者的接口。  
 
-####plugin/plugin.h
+#### plugin/plugin.h
 
 ```c
 #ifndef UVBOOK_PLUGIN_SYSTEM
@@ -371,7 +371,7 @@ void mfp_register(const char *name);
 
 你可以在你的程序中给插件添加更多有用的功能（mfp is My Fancy Plugin）。使用了这个api的插件的例子：  
 
-####plugin/hello.c
+#### plugin/hello.c
 
 ```c
 #include "plugin.h"
@@ -389,12 +389,12 @@ Loading libhello.dylib
 Registered plugin "Hello World!"
 ```
 
-#####Note
+##### Note
 >共享库的后缀名在不同平台上是不一样的。在Linux上是libhello.so。
 
 使用`uv_dlopen`首先载入了共享库`libhello.dylib`。再使用`uv_dlsym`获取了该插件的`initialize`函数，最后在调用它。  
 
-####plugin/main.c
+#### plugin/main.c
 
 ```c
 #include "plugin.h"
@@ -436,7 +436,7 @@ int main(int argc, char **argv) {
 
 `uv_dlsym`的第三个参数保存了一个指向第二个参数所保存的函数的指针。`init_plugin_function`是一个函数的指针，它指向了我们所需要的程序插件的函数。  
 
-##TTY
+## TTY
 
 文字终端长期支持非常标准化的[控制序列](https://en.wikipedia.org/wiki/ANSI_escape_code)。它经常被用来增强终端输出的可读性。例如`grep --colour`。libuv提供了跨平台的，`uv_tty_t`抽象（stream）和相关的处理ANSI escape codes 的函数。这也就是说，libuv同样在Windows上实现了对等的ANSI codes，并且提供了获取终端信息的函数。  
 
@@ -454,7 +454,7 @@ int uv_tty_init(uv_loop_t*, uv_tty_t*, uv_file fd, int readable)
 
 下面是一个把白字打印到红色背景上的例子。  
 
-####tty/main.c
+#### tty/main.c
 
 ```c
 #include <stdio.h>
@@ -490,7 +490,7 @@ int main() {
 
 最后要说的是`uv_tty_get_winsize()`，它能获取到终端的宽和长，当成功获取后返回0。下面这个小程序实现了一个动画的效果。  
 
-####tty-gravity/main.c
+#### tty-gravity/main.c
 
 ```c
 #include <stdio.h>
