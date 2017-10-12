@@ -6,17 +6,15 @@
 目前关闭gitbook在线阅读，大家直接在github上查看md文件即可。
 
 ## 目录
-1. [简介](https://github.com/luohaha/Chinese-uvbook/blob/master/source/introduction.md)。
-2. [libuv基础](https://github.com/luohaha/Chinese-uvbook/blob/master/source/basics_of_libuv.md)。
-3. [文件系统](https://github.com/luohaha/Chinese-uvbook/blob/master/source/filesystem.md)。
-4. [网络](https://github.com/luohaha/Chinese-uvbook/blob/master/source/networking.md)。
-5. [线程](https://github.com/luohaha/Chinese-uvbook/blob/master/source/threads.md)。
-6. [进程](https://github.com/luohaha/Chinese-uvbook/blob/master/source/processes.md)。
-7. [高级事件循环](https://github.com/luohaha/Chinese-uvbook/blob/master/source/advanced-event-loops.md)。
-8. [实用工具](https://github.com/luohaha/Chinese-uvbook/blob/master/source/utilities.md)。
-9. [关于](https://github.com/luohaha/Chinese-uvbook/blob/master/source/about.md)。
-
-（文章源文件均在`source/`文件夹下）
+1. [简介](./source/introduction.md)
+2. [libuv基础](./source/basics_of_libuv.md)
+3. [文件系统](./source/filesystem.md)
+4. [网络](./source/networking.md)
+5. [线程](./source/threads.md)
+6. [进程](./source/processes.md)
+7. [高级事件循环](./source/advanced-event-loops.md)
+8. [实用工具](./source/utilities.md)
+9. [关于](./source/about.md)
 
 ## 翻译人员
 翻译人员[在这](https://github.com/luohaha/Chinese-uvbook/graphs/contributors)。
