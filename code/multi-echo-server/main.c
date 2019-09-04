@@ -51,7 +51,11 @@ void on_new_connection(uv_stream_t *server, int status) {
 void setup_workers() {
     size_t path_size = 500;
     uv_exepath(worker_path, &path_size);
+#if WIN32
+    strcpy(worker_path + (strlen(worker_path) - strlen("multi-echo-server.exe")), "worker.exe");
+#else
     strcpy(worker_path + (strlen(worker_path) - strlen("multi-echo-server")), "worker");
+#endif
     fprintf(stderr, "Worker path: %s\n", worker_path);
 
     char* args[2];

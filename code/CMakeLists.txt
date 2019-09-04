@@ -46,14 +46,10 @@ endforeach()
 
 
 add_executable(tick cgi/tick.c)
-add_dependencies(tick uv_a)
 if(WIN32)
 	target_include_directories(tick
 		PUBLIC ${CMAKE_SOURCE_DIR}/code/win_patch)
 endif()
-target_include_directories(tick
-	PUBLIC ${CMAKE_SOURCE_DIR}/libuv/include)
-target_link_libraries(tick uv_a)
 
 
 add_executable(worker multi-echo-server/worker.c)
@@ -68,12 +64,4 @@ target_link_libraries(worker uv_a)
 
 
 add_executable(test proc-streams/test.c)
-add_dependencies(test uv_a)
-if(WIN32)
-	target_include_directories(test
-		PUBLIC ${CMAKE_SOURCE_DIR}/code/win_patch)
-endif()
-target_include_directories(test
-	PUBLIC ${CMAKE_SOURCE_DIR}/libuv/include)
-target_link_libraries(test uv_a)
 
