@@ -1,11 +1,12 @@
 list(APPEND samples
     cgi                                                                             
 	detach                                                                          
-	dns                                                                             
+	dns    
+	duplex                                                                         
 	helloworld                                                                      
 	idle-basic                                                                      
 	idle-compute                                                                    
-	interfaces                                                                      
+	interfaces
 	locks                                                                           
 	multi-echo-server                                                               
 	onchange                                                                        
@@ -31,6 +32,8 @@ list(APPEND samples
 foreach(i ${samples})
 	if(${i} STREQUAL plugin)
 		add_executable(${i} ${i}/main.c ${i}/hello.c)
+	elseif(${i} STREQUAL duplex)
+		add_executable(${i} ${i}/main.cpp)
 	else()
 		add_executable(${i} ${i}/main.c)
 	endif()
@@ -62,6 +65,7 @@ target_include_directories(worker
 	PUBLIC ${CMAKE_SOURCE_DIR}/libuv/include)
 target_link_libraries(worker uv_a)
 
-
 add_executable(test proc-streams/test.c)
 
+add_dependencies(proc-streams test)
+add_dependencies(multi-echo-server worker)

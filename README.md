@@ -30,15 +30,22 @@
 
 ## 编译支持
 
-* Linux & macOS
+* Linux
 
-> cmake -Bbuild/Debug -DCMAKE_INSTALL_PREFIX=./build/Debug -DCMAKE_BUILD_TYPE=Debug .
-> cmake --build build/Debug --config Debug
-> cmake -Bbuild/Release -DCMAKE_INSTALL_PREFIX=./build/Release -DCMAKE_BUILD_TYPE=Release .
-> cmake --build build/Release --config Release
+> * cmake -Bbuild/Linux/Debug -DCMAKE_INSTALL_PREFIX=./build/Linux/Debug -DCMAKE_BUILD_TYPE=Debug .
+> * cmake --build build/Linux/Debug --config Debug
+> * cmake -Bbuild/Linux/Release -DCMAKE_INSTALL_PREFIX=./build/Linux/Release -DCMAKE_BUILD_TYPE=Release .
+> * cmake --build build/Linux/Release --config Release
+
+* macOS
+
+> * cmake -Bbuild/macOS/Debug -DCMAKE_INSTALL_PREFIX=./build/macOS/Debug -DCMAKE_BUILD_TYPE=Debug .
+> * cmake --build build/macOS/Debug --config Debug
+> * cmake -Bbuild/macOS/Release -DCMAKE_INSTALL_PREFIX=./build/macOS/Release -DCMAKE_BUILD_TYPE=Release .
+> * cmake --build build/macOS/Release --config Release
 
 * Windows
 
-> cmake -Bbuild -DCMAKE_INSTALL_PREFIX=./build .
-> cmake --build build --config Debug
-> cmake --build build --config Release
+> * cmake -Bbuild/Windows -DCMAKE_INSTALL_PREFIX=./build/Windows .
+> * cmake --build build/Windows --config Debug
+> * cmake --build build/Windows --config Release
