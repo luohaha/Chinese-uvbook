@@ -1,0 +1,13 @@
+{
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "C_Cpp.configurationWarnings": "Disabled",
+    "cmake.configureOnOpen": false,
+    "cmake.buildBeforeRun": false,
+    // 在环境变量中设置 OS=[macOS|Windows|Linux]，如果不设置就不建立系统目录
+    "cmake.buildDirectory": "${workspaceRoot}/build/${env:OS}/${buildType}",
+    "cmake.installPrefix": "${workspaceRoot}/build/${env:OS}/${buildType}",
+    "cmake.configureSettings": {
+        // "MSVC_USE_UNICODE": "ON",
+        // "MSVC_USE_STATIC_C_LIBRARY": "ON"
+    }
+}
