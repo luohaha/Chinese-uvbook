@@ -26,3 +26,26 @@
 ## 说明
 在翻译的过程中，对于一些个人觉得可能不是那么容易理解的知识点，我都会附上自己收集的说明资料的链接，以方便学习。由于个人的英文水平有限，如果大家发现翻译出错或者不合适的地方，欢迎PR（修改master分支下，source文件夹下的md文件即可）。
 
+
+
+## 编译支持
+
+* Linux
+
+> * cmake -Bbuild/Linux/Debug -DCMAKE_INSTALL_PREFIX=./build/Linux/Debug -DCMAKE_BUILD_TYPE=Debug .
+> * cmake --build build/Linux/Debug --config Debug
+> * cmake -Bbuild/Linux/Release -DCMAKE_INSTALL_PREFIX=./build/Linux/Release -DCMAKE_BUILD_TYPE=Release .
+> * cmake --build build/Linux/Release --config Release
+
+* macOS
+
+> * cmake -Bbuild/macOS/Debug -DCMAKE_INSTALL_PREFIX=./build/macOS/Debug -DCMAKE_BUILD_TYPE=Debug .
+> * cmake --build build/macOS/Debug --config Debug
+> * cmake -Bbuild/macOS/Release -DCMAKE_INSTALL_PREFIX=./build/macOS/Release -DCMAKE_BUILD_TYPE=Release .
+> * cmake --build build/macOS/Release --config Release
+
+* Windows
+
+> * cmake -Bbuild/Windows -DCMAKE_INSTALL_PREFIX=./build/Windows .
+> * cmake --build build/Windows --config Debug
+> * cmake --build build/Windows --config Release
