@@ -50,7 +50,7 @@ void hare(void *arg) {
 }
 ```
 
-`uv_thread_join`不像`pthread_join`那样，允许线线程通过第二个参数向父线程返回值。想要传递值，必须使用线程间通信[Inter-thread communication](#inter_thread_communication-pane)。  
+`uv_thread_join`不像`pthread_join`那样，允许线程通过第二个参数向父线程返回值。想要传递值，必须使用线程间通信[Inter-thread communication](#inter_thread_communication-pane)。  
 
 ## Synchronization Primitives
 
